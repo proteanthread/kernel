@@ -551,7 +551,7 @@ extern BYTE FAR hcTablesStart[], hcTablesEnd[];
 	COUNTRY.SYS into other files.
 */
 
-#define CSYS_FD_IDSTRING "LibreDOS COUNTRY.SYS v1.0\r\n\x1a"
+#define CSYS_LD_IDSTRING "LibreDOS COUNTRY.SYS v1.0\r\n\x1a"
 
 #if 0
 struct csys_function {       /* S3: function definition */
@@ -606,7 +606,7 @@ struct csys_numEntries {     /* helper structure for "number of entries" */
 
 /* Header of the COUNTRY.SYS file */
 struct nlsCSys_fileHeader {     /* COUNTRY.SYS header */
-  unsigned char csys_idstring[sizeof(CSYS_FD_IDSTRING)];
+  unsigned char csys_idstring[sizeof(CSYS_LD_IDSTRING)];
   UWORD csys_maxTotalSize;	/* maximal size of the total amount of
   								any individual definition, that includes
   								the nlsPackage skeleton and the sum of

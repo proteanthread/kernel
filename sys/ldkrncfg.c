@@ -1,6 +1,28 @@
+/*
+ * LibreDOS Kernel Utilities - SYS CONFIG (ldkrncfg) Patch Tool
+ *
+ * Architectural Role:
+ *   Modifies options within the LowKernelConfig block inside the compiled kernel binary.
+ *   Reads values such as dynamic loading options and HMA allocations directly from kernel file
+ *   signatures and updates them inline.
+ *
+ * Changeability & Constraints:
+ *   - CAN BE CHANGED: Option descriptions, output formatting, warning notices, and command line arguments.
+ *   - CANNOT BE CHANGED: Binary file parsing structure and offset calculations matching the signature block.
+ *     Any changes to target structure schemas must match dyndata/init-mod headers exactly.
+ *
+ * Expected Behavior:
+ *   - Reads, offsets, and writes back option fields inside binary files. Must check signatures to prevent
+ *     patching incompatible or corrupt kernel files.
+ *
+ * Diagnostics & Recovery:
+ *   - If the configuration tool reports invalid signatures, verify that the compiled kernel contains the
+ *     signature markers (e.g. OEM ID and config bounds) matching version declarations.
+ */
+
 /***************************************************************************
 *                                                                          *
-*  FDKRNCFG.C - LibreDOS Kernel Configuration                               *
+*  LDKRNCFG.C - LibreDOS Kernel Configuration                               *
 *  This is a simple little program that merely displays and/or changes     *
 *  the configuration options specified within the CONFIG section of        *
 *  the LibreDOS Kernel (if supported)                                       *
@@ -36,8 +58,8 @@ unsigned _dos_close(int handle);
 #define close _dos_close
 #define SEEK_SET 0
 int open(const char *pathname, int flags, ...);
-int read(int fd, void *buf, unsigned count);
-int write(int fd, const void *buf, unsigned count);
+int read(int fdesc, void *buf, unsigned count);
+int write(int fdesc, const void *buf, unsigned count);
 int stat(const char *file_name, struct stat *buf);
 unsigned long lseek(int fildes, unsigned long offset, int whence);
 #pragma aux lseek =  \
@@ -404,7 +426,7 @@ void setSWordOption(sword * option, char *value, sdword min, sdword max,
 /* Main, processes command line options and calls above
    functions as required.
 */
-int FDKrnConfigMain(int argc, char **argv)
+int LDKrnConfigMain(int argc, char **argv)
 {
   char *kfilename = KERNEL;
   int kfile;

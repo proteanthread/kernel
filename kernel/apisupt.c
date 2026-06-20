@@ -1,6 +1,19 @@
 /*
- * apisupt.c - API Support helper routines (C17 standard)
- * Original assembly source: apisupt.asm
+ * LibreDOS Kernel - C17 Assembly counterpart interface for API Support
+ *
+ * Architectural Role:
+ *   Serves as the C-level counterpart stub for apisupt.asm, providing helper functions
+ *   to resolve memory offsets during API system calls.
+ *
+ * Changeability & Constraints:
+ *   - CAN BE CHANGED: Logical calculation formatting or local helpers.
+ *   - CANNOT BE CHANGED: Memory translation layouts matching registers stack frames in entry.asm/apisupt.asm.
+ *
+ * Expected Behavior:
+ *   - Returns exact byte-offset calculations mapping segment-offset pairs.
+ *
+ * Diagnostics & Recovery:
+ *   - Verify compiler registers usage output against generated assembly file listings.
  */
 
 #include <stdint.h>

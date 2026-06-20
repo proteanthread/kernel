@@ -1,3 +1,26 @@
+/*
+ * LibreDOS Kernel - Main Kernel Entry & System Initialization Router
+ *
+ * Architectural Role:
+ *   Contains the initial C entry points for kernel execution (init_kernel) after low-level
+ *   assembly initialization. Sets up standard DCB/DPB disk parameter blocks, signs on,
+ *   initializes logical disk drives, clock services, and boots the shell (command.com).
+ *
+ * Changeability & Constraints:
+ *   - CAN BE CHANGED: Signon strings, initialization routing sequences (e.g. printer/serial hooks),
+ *     command parameters passed to command.com.
+ *   - CANNOT BE CHANGED: Low-level segment variables, order of disk/device initialization (devices
+ *     must be set up before filesystem is parsed), memory allocation layout checks.
+ *
+ * Expected Behavior:
+ *   - Runs during initial boot phase where HMA is configured. Any static allocations must
+ *     fit within initial memory limits before dyninit relocates data blocks.
+ *
+ * Diagnostics & Recovery:
+ *   - Early boot panics (before console output is initialized) can be diagnosed by checking the COM
+ *     port logger or examining memory state offsets in the map file.
+ */
+
 /****************************************************************/
 /*                                                              */
 /*                           main.c                             */
@@ -145,7 +168,7 @@ VOID ASMCFUNC LibreDOSmain(void)
     
     or MakeNortonDiskEditorHappy()
 
-    it has been determined, that FDOS's BPB tables are initialized,
+    it has been determined, that LibreDOS's BPB tables are initialized,
     only when used (like DIR H:).
     at least one known utility (norton DE) seems to access them directly.
     ok, so we access for all drives, that the stuff gets build

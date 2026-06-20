@@ -107,9 +107,9 @@ VOID panic(BYTE * s);
 /* display info on various DOS directory functions (fatdir.c) */
 /* #define DEBUGFATDIR */
 #ifdef DEBUGFATDIR
-#define FDirDbgPrintf(x) DebugPrintf(x)
+#define FatDirDbgPrintf(x) DebugPrintf(x)
 #else
-#define FDirDbgPrintf(x)
+#define FatDirDbgPrintf(x)
 #endif
 
 /* extra debug output when transferring I/O chunks of data */

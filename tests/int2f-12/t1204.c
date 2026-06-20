@@ -1,7 +1,7 @@
 /*
  * t1204.c  --  INT 2Fh / AX=1204h  NORMALIZE PATH SEPARATOR
  *
- * RBIL (https://fd.lod.bz/rbil/interrup/dos_kernel/2f1204.html):
+ * RBIL (https://ld.lod.bz/rbil/interrup/dos_kernel/2f1204.html):
  *   AX = 1204h
  *   STACK: WORD character to normalize
  *   Return: AL = normalized character ('/' -> '\', others unchanged)

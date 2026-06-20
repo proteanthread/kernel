@@ -1,3 +1,25 @@
+/*
+ * LibreDOS Kernel Utilities - EXE Flat Converter (exeflat)
+ *
+ * Architectural Role:
+ *   Converts standard MS-DOS MZ executable format files (such as kernel.exe) into flat binary
+ *   images (kernel.sys). Processes relocation entries, performs segment adjustments, and optional
+ *   UPX compressor header injections.
+ *
+ * Changeability & Constraints:
+ *   - CAN BE CHANGED: Argument checks, status outputs, temporary file names, and error handling paths.
+ *   - CANNOT BE CHANGED: Calculation rules for relocation targets and MZ header parsing. The entry
+ *     point jump code formatting (-S, -E, -D options) must remain compatible with kernel.asm offsets.
+ *
+ * Expected Behavior:
+ *   - Strips EXE header and applies offset factors to segment relocation records. Handles UPX DOS/SYS
+ *     decompressor trampoline stubs when UPX options are active.
+ *
+ * Diagnostics & Recovery:
+ *   - Relocation mismatches lead to boot failures or kernel segment panics. Verify compiled kernel.sys
+ *     structures by checking mapped segment offsets in kernel.map outputs.
+ */
+
 /****************************************************************/
 /*                                                              */
 /*                          exeflat.c                           */

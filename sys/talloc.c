@@ -189,7 +189,7 @@ void testfree(void* p)
 
 
 
-main()
+int main(void)
 {
   char *s1,*s2,*s3,*s4,*s5,*s6;
   unsigned size;

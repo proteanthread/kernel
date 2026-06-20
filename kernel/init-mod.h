@@ -172,11 +172,11 @@ extern void ASM DosIdle_hlt(VOID);
  */
 unsigned ASMPASCAL init_call_intr(int nr, iregs * rp);
 
-unsigned ASMPASCAL read(int fd, void *buf, unsigned count);
+unsigned ASMPASCAL read(int fdesc, void *buf, unsigned count);
 int ASMPASCAL open(const char *pathname, int flags);
-int ASMPASCAL close(int fd);
-int ASMPASCAL dup2(int oldfd, int newfd);
-ULONG ASMPASCAL lseek(int fd, long position);
+int ASMPASCAL close(int fdesc);
+int ASMPASCAL dup2(int old_fdesc, int new_fdesc);
+ULONG ASMPASCAL lseek(int fdesc, long position);
 seg ASMPASCAL allocmem(UWORD size);
 void ASMPASCAL init_PSPSet(seg psp_seg);
 int ASMPASCAL init_DosExec(int mode, exec_blk * ep, char * lp);

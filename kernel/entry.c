@@ -1,7 +1,26 @@
 /*
- * entry.c - System API Interrupt Router & Context Entry (C17 standard)
- * Part of the LibreDOS Memory Specification (LMS)
- * Original assembly source: entry.asm
+ * LibreDOS Kernel - System API Interrupt Router & Context Entry
+ *
+ * Architectural Role:
+ *   Routes LIM EMS, XMS, and virtualized system calls. Implements the LibreDOS
+ *   Memory Specification (LMS) routing services including the 4KB page frame 
+ *   allocator, XMS handler (HIMEM), UMB link emulator, and LIM EMS 4.0 emulator.
+ *
+ * Changeability & Constraints:
+ *   - CAN BE CHANGED: Logical conditions inside allocation checks, page tracking arrays,
+ *     and handler statistics.
+ *   - CANNOT BE CHANGED: Assembly linkage calling conventions, layout of registers in the 
+ *     context structs, and hardcoded EMS/XMS segment limits. Alignment of MCB headers 
+ *     created for the UMB area must remain paragraph-aligned (16-byte boundary).
+ *
+ * Expected Behavior:
+ *   - Operates under strict real-mode segment limit assumptions. Emulated EMS/XMS memory
+ *     calls must avoid memory-overlap and must map physical memory pages dynamically 
+ *     within the 1MB DOS memory bounds (typically mapping EMS frames at segment 0xE000).
+ *
+ * Diagnostics & Recovery:
+ *   - Trace memory corruption by verifying segment bases in map files (e.g. kwc38632.map).
+ *   - Check stack footprint in registers struct if stack-switching fails.
  */
 
 #include <stdint.h>

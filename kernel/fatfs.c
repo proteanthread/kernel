@@ -1,3 +1,25 @@
+/*
+ * LibreDOS Kernel - FAT Filesystem High-Level Operations
+ *
+ * Architectural Role:
+ *   Implements filesystem operations for directory management and file I/O (Create, Open, Close,
+ *   Read, Write, Seek, Mkdir, Rmdir, Rename, Delete). Interfaces with the block buffer cache (blockio.c)
+ *   and cluster mapping algorithms (fattab.c).
+ *
+ * Changeability & Constraints:
+ *   - CAN BE CHANGED: Logical validations, filename parsing checks, and internal directory search maps.
+ *   - CANNOT BE CHANGED: Binary directory layouts on disk (e.g. 8.3 formats and FAT12/16/32 directory records).
+ *     Structure of block buffer handles and sector limits must remain unchanged.
+ *
+ * Expected Behavior:
+ *   - Translates high-level file operations to relative sectors and cluster operations. Cooperates
+ *     with share lock manager to validate concurrent reads and writes.
+ *
+ * Diagnostics & Recovery:
+ *   - Disk write failures or filesystem corruption can be diagnosed by checking the return statuses
+ *     of blockio sector reads and verifying cluster chains using CHKDSK-like utilities on test images.
+ */
+
 /****************************************************************/
 /*                                                              */
 /*                          fatfs.c                             */
@@ -35,7 +57,7 @@
 /*                                                                      */
 /*      function prototypes                                             */
 /*                                                                      */
-STATIC f_node_ptr sft_to_fnode(int fd);
+STATIC f_node_ptr sft_to_fnode(int fdesc);
 STATIC void fnode_to_sft(f_node_ptr fnp);
 STATIC int find_fname(const char *path, int attr, f_node_ptr fnp);
     /* /// Added - Ron Cemer */
@@ -119,9 +141,9 @@ STATIC void init_direntry(struct dirent *dentry, unsigned attrib,
 /* see DosOpenSft(), dosfns.c for an explanation of the flags bits      */
 /* directory opens are allowed here; these are not allowed by DosOpenSft*/
 
-int dos_open(char *path, unsigned flags, unsigned attrib, int fd)
+int dos_open(char *path, unsigned flags, unsigned attrib, int fdesc)
 {
-  REG f_node_ptr fnp = sft_to_fnode(fd);
+  REG f_node_ptr fnp = sft_to_fnode(fdesc);
   int status = find_fname(path, D_ALL | attrib, fnp);
 
   /* Check that we don't have a duplicate name, so if we  */
@@ -178,7 +200,7 @@ int dos_open(char *path, unsigned flags, unsigned attrib, int fd)
   }
 
   /* Now change to file                                   */
-  fnp->f_sft_idx = fd;
+  fnp->f_sft_idx = fdesc;
   fnp->f_offset = 0l;
   fnp->f_cluster_offset = 0;
 
@@ -209,10 +231,10 @@ BOOL fcmp_wild(const char * s1, const char * s2, unsigned n)
   return TRUE;
 }
 
-COUNT dos_close(COUNT fd)
+COUNT dos_close(COUNT fdesc)
 {
-  /* Translate the fd into a useful pointer                       */
-  f_node_ptr fnp = sft_to_fnode(fd);
+  /* Translate the fdesc into a useful pointer                       */
+  f_node_ptr fnp = sft_to_fnode(fdesc);
 
   if (!(fnp->f_flags & SFT_FCLEAN))
   {
@@ -241,7 +263,7 @@ f_node_ptr split_path(const char * path, f_node_ptr fnp)
 /*  11/29/99 jt
    * Networking and Cdroms. You can put in here a return.
    * Maybe a return of 0xDEADBEEF or something for Split or Dir_open.
-   * Just to let upper level Fdos know its a sft, CDS function.
+   * Just to let upper level Ldos know its a sft, CDS function.
    * Right now for Networking there is no support for Rename, MkDir
    * RmDir & Delete.
 
@@ -352,7 +374,7 @@ STATIC int merge_file_changes(f_node_ptr fnp, int collect)
           && (sftp->sft_attrib & D_VOLID) == 0
           && fnp->f_diridx == sftp->sft_diridx
           && fnp->f_dirsector == sftp->sft_dirsector
-        ) /* same file, but different FD */
+        ) /* same file, but different handle */
       {
         if (collect == -1)
         {
@@ -390,9 +412,9 @@ STATIC int merge_file_changes(f_node_ptr fnp, int collect)
   return SUCCESS;
 }
 
-void dos_merge_file_changes(int fd)
+void dos_merge_file_changes(int fdesc)
 {
-  merge_file_changes(sft_to_fnode(fd), FALSE);
+  merge_file_changes(sft_to_fnode(fdesc), FALSE);
 }
 
 STATIC COUNT delete_dir_entry(f_node_ptr fnp)
@@ -1166,8 +1188,8 @@ STATIC COUNT dos_extend(f_node_ptr fnp, BOOL emptywrite)
   running a program like 
   
   while (1) {
-    read(fd, header, sizeof(header));   // small read 
-    read(fd, buffer, header.size);      // where size is large, up to 63K 
+    read(handle, header, sizeof(header));   // small read 
+    read(handle, buffer, header.size);      // where size is large, up to 63K 
                                         // with average ~32K
     }                                        
 
@@ -1227,11 +1249,11 @@ STATIC COUNT dos_extend(f_node_ptr fnp, BOOL emptywrite)
 /* Read/write block from disk */
 /* checking for valid access was already done by the functions in
    dosfns.c */
-long rwblock(COUNT fd, VOID FAR * buffer, UCOUNT count, int mode)
+long rwblock(COUNT fdesc, VOID FAR * buffer, UCOUNT count, int mode)
 {
-  /* Translate the fd into an fnode pointer, since all internal   */
+  /* Translate the fdesc into an fnode pointer, since all internal   */
   /* operations are achieved through fnodes.                      */
-  REG f_node_ptr fnp = sft_to_fnode(fd);
+  REG f_node_ptr fnp = sft_to_fnode(fdesc);
   REG struct buffer FAR *bp;
   UCOUNT xfr_cnt = 0;
   UCOUNT ret_cnt = 0;
@@ -1242,8 +1264,8 @@ long rwblock(COUNT fd, VOID FAR * buffer, UCOUNT count, int mode)
 #if 0 /*DSK_DEBUG*/
   if (bDumpRdWrParms)
   {
-    printf("rwblock:fd %02x  buffer %04x:%04x count %x\n",
-           fd, FP_SEG(buffer), FP_OFF(buffer), count);
+    printf("rwblock:fdesc %02x  buffer %04x:%04x count %x\n",
+           fdesc, FP_SEG(buffer), FP_OFF(buffer), count);
   }
 #endif
 
@@ -1806,13 +1828,13 @@ COUNT media_check(REG struct dpb FAR * dpbp)
   }
 }
 
-/* copy the SFT fd into the first near fnode */
-STATIC f_node_ptr sft_to_fnode(int fd)
+/* copy the SFT fdesc into the first near fnode */
+STATIC f_node_ptr sft_to_fnode(int fdesc)
 {
-  sft FAR *sftp = idx_to_sft(fd);
+  sft FAR *sftp = idx_to_sft(fdesc);
   f_node_ptr fnp = &fnode[0];
 
-  fnp->f_sft_idx = fd;
+  fnp->f_sft_idx = fdesc;
 
   fnp->f_flags = sftp->sft_flags;
 

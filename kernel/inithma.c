@@ -34,7 +34,7 @@
     
     suppress High Loading, if any SHIFT status detected (for debugging)
     
-    if no XMS driver (HIMEM,FDXMS,...) loaded, should work
+    if no XMS driver (HIMEM,LDXMS,...) loaded, should work
     
     cooperation with XMS drivers as follows:
     
@@ -47,7 +47,7 @@
     
     this works with
     
-     FD FDXMS - no problems detected
+     LD LDXMS - no problems detected
     
     
      MS HIMEM.SYS (from DOS 6.2, 9-30-93)
@@ -240,8 +240,8 @@ int MoveKernelToHMA()
 }
 
 /*   
-    now protect against HIMEM/FDXMS/... by simulating a VDISK 
-    FDXMS should detect us and not give HMA access to ohers
+    now protect against HIMEM/LDXMS/... by simulating a VDISK 
+    LDXMS should detect us and not give HMA access to ohers
     unfortunately this also disables HIMEM completely
 
     so: we install this after all drivers have been loaded
@@ -249,7 +249,7 @@ int MoveKernelToHMA()
 STATIC void InstallVDISK(void)
 {
   static struct {               /* Boot-Sektor of a RAM-Disk */
-    UBYTE dummy1[3];            /* HIMEM.SYS uses 3, but FDXMS uses 2 */
+    UBYTE dummy1[3];            /* HIMEM.SYS uses 3, but LDXMS uses 2 */
     char Name[5];
     BYTE dummy2[3];
     WORD BpS;
@@ -264,7 +264,7 @@ STATIC void InstallVDISK(void)
     {
     ' ', ' ', ' '}, 512,
     {
-    'F', 'D', 'O', 'S', ' ', ' '}, 128, /* 128*512 = 64K */
+    'L', 'D', 'O', 'S', ' ', ' '}, 128, /* 128*512 = 64K */
   ' '};
 
   if (!DosLoadedInHMA)

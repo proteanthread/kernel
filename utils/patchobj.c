@@ -1,3 +1,25 @@
+/*
+ * LibreDOS Kernel Utilities - Object File LNAMES Patch Utility (patchobj)
+ *
+ * Architectural Role:
+ *   Modifies the compiler-generated object files (.obj) to replace segment and segment group
+ *   names (LNAMES record) before linking. This allows customization of segment destinations,
+ *   such as forcing Watcom libraries into designated HMA or INIT code blocks.
+ *
+ * Changeability & Constraints:
+ *   - CAN BE CHANGED: Replacement array capacity, error logging, and standard terminal display options.
+ *   - CANNOT BE CHANGED: OMF record signature matching (LNAMES record type 0x96 / 0x8C) and CRC/checksum
+ *     calculations. Chesksum logic must match Intel OMF specifications exactly.
+ *
+ * Expected Behavior:
+ *   - Parses binary records, checks record types, performs string replacement in place, and computes
+ *     the required checksum before rewriting the target file.
+ *
+ * Diagnostics & Recovery:
+ *   - If linking fails with missing segment errors after running patchobj, verify that the segment
+ *     replacements match the names expected by the linker map configuration files.
+ */
+
 /*****************************************************************************
 ** PATCHOBJ facility - change strings in the LNAMES record					 
 **
@@ -21,6 +43,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdarg.h>
 
 #ifndef TRUE
 #define TRUE (1==1)
@@ -32,11 +55,14 @@ struct {
 } repl[100];
 int repl_count;
 
-void go_records(FILE * fdin, FILE * fdo);
+void go_records(FILE * infile, FILE * outfile);
 
 void quit(char *s, ...)
 {
-  vprintf(s, (void *)((char *)&s + sizeof(s)));
+  va_list args;
+  va_start(args, s);
+  vprintf(s, args);
+  va_end(args);
   exit(1);
 }
 
@@ -60,7 +86,7 @@ void define_replace(char *sin)
 int main(int argc, char *argv[])
 {
   char *argptr;
-  FILE *fd, *fdo;
+  FILE *infile, *outfile;
   char *inname = 0, *outname = "~patchob.tmp";
 
   int use_temp_file = TRUE;
@@ -99,16 +125,16 @@ int main(int argc, char *argv[])
   if (repl_count == 0)
     quit("no replacements defined");
 
-  if ((fd = fopen(inname, "rb")) == NULL)       /* open for READ/WRITE                                                                                                                                          */
+  if ((infile = fopen(inname, "rb")) == NULL)       /* open for READ/WRITE                                                                                                                                          */
     quit("can't read %s\n", inname);
 
-  if ((fdo = fopen(outname, "wb")) == NULL)     /* open for READ/WRITE                                                                                                                                          */
+  if ((outfile = fopen(outname, "wb")) == NULL)     /* open for READ/WRITE                                                                                                                                          */
     quit("can't write %s\n", outname);
 
-  go_records(fd, fdo);
+  go_records(infile, outfile);
 
-  fclose(fd);
-  fclose(fdo);
+  fclose(infile);
+  fclose(outfile);
   if (use_temp_file)
   {
     unlink(inname);
@@ -129,7 +155,7 @@ struct record {
 
 struct verify_pack1 { char x[ sizeof(struct record) == 0x2003 ? 1 : -1];};
 
-void go_records(FILE * fdin, FILE * fdo)
+void go_records(FILE * infile, FILE * outfile)
 {
   unsigned char stringlen;
   char *string, *s;
@@ -138,15 +164,15 @@ void go_records(FILE * fdin, FILE * fdo)
 
   do
   {
-    if (fread(&Record, 1, 3, fdin) != 3)
+    if (fread(&Record, 1, 3, infile) != 3)
     {                           /* read type and reclen */
-      /* printf("end of fdin read\n"); */
+      /* printf("end of infile read\n"); */
       break;
     }
     if (Record.datalen > sizeof(Record.buffer))
       quit("record to large : length %u Bytes \n", Record.datalen);
 
-    if (fread(Record.buffer, 1, Record.datalen, fdin) != Record.datalen)
+    if (fread(Record.buffer, 1, Record.datalen, infile) != Record.datalen)
     {
       printf("invalid record format\n");
       quit("can't continue\n");
@@ -154,11 +180,11 @@ void go_records(FILE * fdin, FILE * fdo)
 
     if (Record.rectyp != 0x96 && Record.rectyp != 0x8c)  /* we are only interested in LNAMES */
     {
-      fwrite(&Record, 1, 3 + Record.datalen, fdo);
+      fwrite(&Record, 1, 3 + Record.datalen, outfile);
       continue;
     }
 
-    /* printf("at %lx - record type %x len %x\n",ftell(fdin)-3,Record.rectyp,
+    /* printf("at %lx - record type %x len %x\n",ftell(infile)-3,Record.rectyp,
        Record.datalen);*/
     Outrecord.rectyp = Record.rectyp;
     Outrecord.datalen = 0;
@@ -197,7 +223,7 @@ void go_records(FILE * fdin, FILE * fdo)
 
     /* printf("^sum = %02x - %02x\n",chksum,~chksum); */
 
-    fwrite(&Outrecord, 1, 3 + Outrecord.datalen, fdo);
+    fwrite(&Outrecord, 1, 3 + Outrecord.datalen, outfile);
 
   }
   while (Record.rectyp != 0x00 /*ENDFIL*/);

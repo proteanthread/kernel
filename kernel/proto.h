@@ -150,11 +150,11 @@ const char *ConvertNameSZToName83(char *destFCBName, const char *srcSZ);
 /* fatfs.c */
 struct dpb FAR *get_dpb(COUNT dsk);
 ULONG clus2phys(CLUSTER cl_no, struct dpb FAR * dpbp);
-int dos_open(char * path, unsigned flag, unsigned attrib, int fd);
+int dos_open(char * path, unsigned flag, unsigned attrib, int fdesc);
 BOOL fcbmatch(const char *fcbname1, const char *fcbname2);
 BOOL fcmp_wild(const char * s1, const char * s2, unsigned n);
 VOID touc(BYTE * s, COUNT n);
-COUNT dos_close(COUNT fd);
+COUNT dos_close(COUNT fdesc);
 COUNT dos_delete(BYTE * path, int attrib);
 COUNT dos_rmdir(BYTE * path);
 COUNT dos_rename(BYTE * path1, BYTE * path2, int attrib);
@@ -163,9 +163,9 @@ dtime dos_gettime(void);
 COUNT dos_mkdir(BYTE * dir);
 BOOL last_link(f_node_ptr fnp);
 COUNT map_cluster(REG f_node_ptr fnp, COUNT mode);
-long rwblock(COUNT fd, VOID FAR * buffer, UCOUNT count, int mode);
-COUNT dos_read(COUNT fd, VOID FAR * buffer, UCOUNT count);
-COUNT dos_write(COUNT fd, const VOID FAR * buffer, UCOUNT count);
+long rwblock(COUNT fdesc, VOID FAR * buffer, UCOUNT count, int mode);
+COUNT dos_read(COUNT fdesc, VOID FAR * buffer, UCOUNT count);
+COUNT dos_write(COUNT fdesc, const VOID FAR * buffer, UCOUNT count);
 CLUSTER dos_free(struct dpb FAR * dpbp);
 BOOL dir_exists(char * path);
 VOID dpb16to32(struct dpb FAR *dpbp);
@@ -177,10 +177,10 @@ int dos_cd(char * PathName);
 COUNT dos_getfattr(BYTE * name);
 COUNT dos_setfattr(BYTE * name, UWORD attrp);
 COUNT media_check(REG struct dpb FAR * dpbp);
-f_node_ptr xlt_fd(COUNT fd);
+f_node_ptr xlt_fdesc(COUNT fdesc);
 COUNT xlt_fnp(f_node_ptr fnp);
 struct dhdr FAR * select_unit(COUNT drive);
-void dos_merge_file_changes(int fd);
+void dos_merge_file_changes(int fdesc);
 
 /* fattab.c */
 void read_fsinfo(struct dpb FAR * dpbp);
@@ -220,7 +220,7 @@ UBYTE FcbFindFirstNext(xfcb FAR * lpXfcb, BOOL First);
 /* intr.asm */
 UWORD ASMPASCAL call_intr(WORD nr, iregs FAR * rp);
 COUNT ASMPASCAL res_DosExec(COUNT mode, exec_blk * ep, BYTE * lp);
-UCOUNT ASMPASCAL res_read(int fd, void *buf, UCOUNT count);
+UCOUNT ASMPASCAL res_read(int fdesc, void *buf, UCOUNT count);
 #ifdef __WATCOMC__
 #pragma aux (__pascal) call_intr __modify __exact [__ax]
 #pragma aux (__pascal) res_DosExec __modify __exact [__ax __bx __dx __es]

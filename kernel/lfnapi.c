@@ -90,7 +90,7 @@ COUNT lfn_allocate_inode(VOID)
  */
 COUNT lfn_free_inode(COUNT handle)
 {
-  f_node_ptr fnp = xlt_fd(handle);
+  f_node_ptr fnp = xlt_fdesc(handle);
   if (fnp == 0 || fnp->f_count <= 0) return LHE_INVLDHNDL;
 
   dir_close(fnp);
@@ -107,7 +107,7 @@ COUNT lfn_free_inode(COUNT handle)
  */
 COUNT lfn_setup_inode(COUNT handle, ULONG dirstart, ULONG diroff)
 {
-  f_node_ptr fnp = xlt_fd(handle);
+  f_node_ptr fnp = xlt_fdesc(handle);
   if (fnp == 0 || fnp->f_count <= 0) return LHE_INVLDHNDL;
 
   dir_init_fnode(fnp, (CLUSTER)dirstart);
@@ -127,7 +127,7 @@ COUNT lfn_setup_inode(COUNT handle, ULONG dirstart, ULONG diroff)
  */
 COUNT lfn_create_entries(COUNT handle, lfn_inode_ptr lip)
 {
-  f_node_ptr fnp = xlt_fd(handle);
+  f_node_ptr fnp = xlt_fdesc(handle);
   COUNT entries_needed, free_entries, i, rc;
   UNICODE FAR *lfn_name = lip->l_name;
   UBYTE id = 1, sfn_checksum = lfn_checksum(lip->l_dir.dir_name);
@@ -208,7 +208,7 @@ COUNT lfn_dir_read(COUNT handle, lfn_inode_ptr lip)
   UNICODE FAR *lfn_name = lip->l_name;
   UWORD sfn_diroff;
   BOOL name_tail;
-  f_node_ptr fnp = xlt_fd(handle);
+  f_node_ptr fnp = xlt_fdesc(handle);
   if (fnp == 0 || fnp->f_count <= 0) return LHE_INVLDHNDL;
 
   /* Scan a directory for the next valid SFN entry */
@@ -267,7 +267,7 @@ COUNT lfn_dir_read(COUNT handle, lfn_inode_ptr lip)
  */
 COUNT lfn_dir_write(COUNT handle)
 {
-  f_node_ptr fnp = xlt_fd(handle);
+  f_node_ptr fnp = xlt_fdesc(handle);
   if (fnp == 0 || fnp->f_count <= 0) return LHE_INVLDHNDL;
 
   fnp->f_flags.f_dmod = TRUE;

@@ -123,7 +123,7 @@ UWORD FcbParseFname(UBYTE *wTestMode, const BYTE FAR * lpFileName, fcb FAR * lpF
     lpFcb->fcb_drive = Drive + 1;
     lpFileName += 2;
   } else if (!(*wTestMode & PARSE_DFLT_DRIVE)) {
-    lpFcb->fcb_drive = FDFLT_DRIVE;
+    lpFcb->fcb_drive = LDFLT_DRIVE;
   }
 
   /* Undocumented behavior, set record number & record size to 0  */

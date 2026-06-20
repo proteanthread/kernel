@@ -1,7 +1,7 @@
 /*
  * t121c.c  --  INT 2Fh / AX=121Ch  CHECKSUM MEMORY BLOCK
  *
- * RBIL (https://fd.lod.bz/rbil/interrup/dos_kernel/2f121c.html):
+ * RBIL (https://ld.lod.bz/rbil/interrup/dos_kernel/2f121c.html):
  *   AX = 121Ch
  *   DS:SI -> start of buffer
  *   CX    = byte count (0 = no bytes processed)

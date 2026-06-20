@@ -1,7 +1,7 @@
 /*
  * t1213.c  --  INT 2Fh / AX=1213h  UPPERCASE CHARACTER
  *
- * RBIL (https://fd.lod.bz/rbil/interrup/dos_kernel/2f1213.html):
+ * RBIL (https://ld.lod.bz/rbil/interrup/dos_kernel/2f1213.html):
  *   AX = 1213h
  *   STACK: WORD containing character to uppercase (low byte used)
  *   Return: AL = uppercased character

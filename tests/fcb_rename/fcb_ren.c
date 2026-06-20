@@ -1,6 +1,6 @@
 /*
   based on tests from andrewbird
-  https://github.com/dosemu2/fdpp/pull/42#issuecomment-446309983
+  https://github.com/dosemu2/ldpp/pull/42#issuecomment-446309983
 
 	test 1
             fn1 = "*"                                                           
@@ -55,7 +55,7 @@ typedef char BYTE;
 #define FNAME_SIZE      8       /* limit on file name           */
 #define FEXT_SIZE       3       /* limit on extension           */
 
-#define FDFLT_DRIVE     0       /* default drive                */
+#define LDFLT_DRIVE     0       /* default drive                */
 
 /* #pragma pack(1) assumed */
 struct fcb {
@@ -93,7 +93,7 @@ int fcb_rename(const char *old_fname, const char *old_fext,
 	printf("FCB rename %s.%s to %s.%s\n", old_fname, old_fext, new_fname, new_fext);
 
 	memset(&_fcb, ' ', sizeof(struct fcb));
-	_fcb.fcb_drive = FDFLT_DRIVE;	
+	_fcb.fcb_drive = LDFLT_DRIVE;	
 	set_field(&(_fcb.old_fname), old_fname, FNAME_SIZE);
 	set_field(&(_fcb.old_fext), old_fext, FEXT_SIZE);
 	set_field(&(_fcb.new_fname), new_fname, FNAME_SIZE);

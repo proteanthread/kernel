@@ -1,7 +1,26 @@
 /*
- * kernel.c - Anchor tables for List of Lists & SDA (C17 standard)
- * Part of the LibreDOS Memory Specification (LMS)
- * Original assembly source: kernel.asm
+ * LibreDOS Kernel - Anchor Tables for List of Lists, SDA, & Virtual Console Contexts
+ *
+ * Architectural Role:
+ *   Declares the global tracking structures for the 1MB Hybrid Memory Mode virtual consoles
+ *   and system instance state contexts (dos_chunk_t). Integrates directly with variables
+ *   defined in kernel.asm (such as List of Lists anchors and Swappable Data Area bounds).
+ *
+ * Changeability & Constraints:
+ *   - CAN BE CHANGED: Maximum virtual system limits (MAX_VIRTUAL_SYSTEMS), layout of internal
+ *     context tracking maps, and chunk initialization parameters.
+ *   - CANNOT BE CHANGED: Struct members mapped to low-level assembly offsets must not be reordered
+ *     or have their sizes changed. Struct padding rules must be strictly preserved to prevent
+ *     pointer translation misalignment in assembly routines.
+ *
+ * Expected Behavior:
+ *   - Multiple system execution segments are dynamically managed via memory paging. Paging context
+ *     switches must guarantee register isolation, keeping each DOS application context in its
+ *     own isolated boundaries.
+ *
+ * Diagnostics & Recovery:
+ *   - Misaligned structs lead to memory leaks or data contamination between virtual DOS sessions.
+ *     Verify structural offsets via assembly listings (.lst) generated during compilation.
  */
 
 #include <stdint.h>

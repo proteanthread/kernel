@@ -1,3 +1,26 @@
+/*
+ * LibreDOS Kernel Utilities - SYS Installer
+ *
+ * Architectural Role:
+ *   Installs the boot sector to a partition or floppy drive and copies the kernel
+ *   (kernel.sys/command.com) system files. Accesses raw sector records, partition tables,
+ *   and updates FAT12/16/32 directory listings.
+ *
+ * Changeability & Constraints:
+ *   - CAN BE CHANGED: Command argument parsing, print messages, path checking, and file copy order.
+ *   - CANNOT BE CHANGED: Boot sector offset definitions, FAT parameter configurations, and structural
+ *     boot records layouts. Changing these will result in corrupted boot records or non-bootable
+ *     system states.
+ *
+ * Expected Behavior:
+ *   - Direct disk access commands are sent via standard filesystem calls or BIOS interrupts.
+ *     Must check drive types and hidden sector metrics when installing onto active partitions.
+ *
+ * Diagnostics & Recovery:
+ *   - If the target disk fails to boot, verify the partition offset geometry and check for missing
+ *     partition signatures (0xAA55). Use an emulator (like 86Box or QEMU) to inspect boot trace.
+ */
+
 /***************************************************************
 
                                     sys.c
@@ -29,7 +52,7 @@
 /* #define DEBUG */           /* to display extra information */
 /* #define DDEBUG */          /* to enable display of sector dumps */
 /* #define WITHOEMCOMPATBS */ /* include support for OEM MS/PC DOS 3.??-6.x */
-#define FDCONFIG              /* include support to configure FD kernel */
+#define LDCONFIG              /* include support to configure LD kernel */
 
 #define SYS_VERSION "v3.6f"
 #define SYS_NAME "DOS System Installer "
@@ -283,18 +306,18 @@ int open(const char *pathname, int flags, ...)
   return (result == 0 ? handle : -1);
 }
 
-int read(int fd, void *buf, unsigned count)
+int read(int fdesc, void *buf, unsigned count)
 {
   unsigned bytes;
-  int result = _dos_read(fd, buf, count, &bytes);
+  int result = _dos_read(fdesc, buf, count, &bytes);
 
   return (result == 0 ? bytes : -1);
 }
 
-int write(int fd, const void *buf, unsigned count)
+int write(int fdesc, const void *buf, unsigned count)
 {
   unsigned bytes;
-  int result = _dos_write(fd, buf, count, &bytes);
+  int result = _dos_write(fdesc, buf, count, &bytes);
 
   return (result == 0 ? bytes : -1);
 }
@@ -418,8 +441,8 @@ struct VerifyBootSectorSize {
 /* (Watcom has a nice warning for this, by the way) */
 };
 
-#ifdef FDCONFIG
-int FDKrnConfigMain(int argc, char **argv);
+#ifdef LDCONFIG
+int LDKrnConfigMain(int argc, char **argv);
 #endif
 
 /* LibreDOS sys, we default to our kernel and load segment, but
@@ -435,7 +458,7 @@ typedef struct DOSBootFiles {
   const char * dos;      /* optional secondary file for OS */
   WORD         loadaddr; /* segment kernel file expects to start at for stdbs */
                          /* or offset to jump into kernel for oem compat bs */
-  BOOL         stdbs;    /* use FD boot sector (T) or oem compat one (F) */
+  BOOL         stdbs;    /* use LD boot sector (T) or oem compat one (F) */
   LONG         minsize;  /* smallest dos file can be and be valid, 0=existance optional */
 } DOSBootFiles;
 #define LIBREDOS_FILES      { "KERNEL.SYS", NULL, 0x60/*:0*/, 1, 0 },
@@ -459,7 +482,7 @@ DOSBootFiles bootFiles[] = {
 
 /* associate friendly name with index into bootFiles array */
 #define OEM_AUTO (-1) /* attempt to guess DOS on source drive */
-#define OEM_FD     0  /* standard LibreDOS mode */
+#define OEM_LD     0  /* standard LibreDOS mode */
 #define OEM_EDR    1  /* DRBIO, DRDOS version of EDR kernel  */
 #define OEM_LEDRPACK 2 /* lDOS drload version of EDR kernel */
 #define OEM_LEDR   3  /* lDOS iniload version of EDR kernel */
@@ -492,7 +515,7 @@ CONST char * msgDOS[DOSFLAVORS] = {  /* order should match above items */
 typedef struct SYSOptions {
   BYTE srcDrive[SYS_MAXPATH];   /* source drive:[path], root assumed if no path */
   BYTE dstDrive;                /* destination drive [STD SYS option] */
-  int flavor;                   /* DOS variant we want to boot, default is AUTO/FD */
+  int flavor;                   /* DOS variant we want to boot, default is AUTO/LD */
   DOSBootFiles kernel;          /* file name(s) and relevant data for kernel */
   BYTE defBootDrive;            /* value stored in boot sector for drive, eg 0x0=A, 0x80=C */
   BOOL ignoreBIOS;              /* true to NOP out boot sector code to get drive# from BIOS */
@@ -527,7 +550,7 @@ void showHelpAndExit(void)
       "  /BOOTONLY: do *not* copy kernel / shell, only update boot sector or image\n"
       "  /UPDATE  : copy kernel and update boot sector (do *not* copy shell)\n"
       "  /OEM     : indicates boot sector, filenames, and load segment to use\n"
-      "             /OEM:FD       LibreDOS settings\n"
+      "             /OEM:LD       LibreDOS settings\n"
       "             /OEM:EDR      Enhanced DR-DOS (DRBIO.SYS and DRDOS.SYS)\n"
       "             /OEM:LEDRPACK Enhanced DR-DOS (EDRPACK.SYS, lDOS drload)\n"
       "             /OEM:LEDR     Enhanced DR-DOS (EDRDOS.COM, lDOS iniload)\n"
@@ -548,12 +571,12 @@ void showHelpAndExit(void)
       "             /FORCE:BSDRV use boot drive # set in bootsector\n"
       "             /FORCE:BIOSDRV use boot drive # provided by BIOS\n"
       "  /NOBAKBS : skips copying boot sector to backup bs, FAT32 only else ignored\n"
-#ifdef FDCONFIG
+#ifdef LDCONFIG
       "%s CONFIG /help\n"
 #endif
       /*SYS, KERNEL.SYS/DRBIO.SYS 0x60/0x70*/
       , pgm, bootFiles[0].kernel, bootFiles[0].loadaddr
-#ifdef FDCONFIG
+#ifdef LDCONFIG
       , pgm
 #endif
   );
@@ -646,8 +669,8 @@ void initOptions(int argc, char *argv[], SYSOptions *opts)
           else if (memicmp(argp, "RX", 2) == 0)
             opts->flavor = OEM_RX;
 #endif
-          else if (memicmp(argp, "FD", 2) == 0)
-            opts->flavor = OEM_FD;
+          else if (memicmp(argp, "LD", 2) == 0)
+            opts->flavor = OEM_LD;
           else
           {
             printf("%s: unknown OEM qualifier %s\n", pgm, argp);
@@ -720,9 +743,9 @@ void initOptions(int argc, char *argv[], SYSOptions *opts)
           opts->defBootDrive = (BYTE)strtol(argv[argno], NULL, 16);
         }
         /* options not documented by showHelpAndExit() */
-        else if (memicmp(argp, "SKFN", 4) == 0) /* set KERNEL.SYS input file and /OEM:FD */
+        else if (memicmp(argp, "SKFN", 4) == 0) /* set KERNEL.SYS input file and /OEM:LD */
         {
-          opts->flavor = OEM_FD;
+          opts->flavor = OEM_LD;
           opts->fnKernel = argv[argno];
         }
         else if (memicmp(argp, "SCFN", 4) == 0) /* sets COMMAND.COM input file */
@@ -907,7 +930,7 @@ void initOptions(int argc, char *argv[], SYSOptions *opts)
   }
 
   /* if unable to determine DOS, assume LibreDOS */
-  if (opts->flavor == OEM_AUTO) opts->flavor = OEM_FD;
+  if (opts->flavor == OEM_AUTO) opts->flavor = OEM_LD;
 
   /* set compatibility settings not explicitly set */
   if (!opts->kernel.kernel) opts->kernel.kernel = bootFiles[opts->flavor].kernel;
@@ -987,10 +1010,10 @@ int main(int argc, char **argv)
   SYSOptions opts;            /* boot options and other flags */
   BYTE srcFile[SYS_MAXPATH];  /* full path+name of [kernel] file [to copy] */
 
-#ifdef FDCONFIG
+#ifdef LDCONFIG
   if (argc > 1 && memicmp(argv[1], "CONFIG", 6) == 0)
   {
-    exit(FDKrnConfigMain(argc, argv));
+    exit(LDKrnConfigMain(argc, argv));
   }
 #endif
 
@@ -1317,7 +1340,7 @@ BOOL haveLBA(void)
   r.h.dl = 0x80;
   sr.ds = 0x40;
   /* ds = 40h is to work around a Xi8088 ROM-BIOS bug,
-      refer to https://github.com/FDOS/kernel/issues/156
+      refer to https://github.com/LDOS/kernel/issues/156
       and https://www.bttr-software.de/forum/forum_entry.php?id=21275 */
   int86x(0x13, &r, &r, &sr);
   return r.x.bx == 0xAA55 && r.x.cx & 1;
@@ -1352,7 +1375,7 @@ void readBS(const char *bsFile, UBYTE *bootsector)
 {
   if (bsFile != NULL)
   {
-    int fd;
+    int fdesc;
 
 #ifdef DEBUG
     printf("reading bootsector from file %s\n", bsFile);
@@ -1361,18 +1384,18 @@ void readBS(const char *bsFile, UBYTE *bootsector)
     /* open boot sector file, it must exists, then overwrite
        drive with 1st SEC_SIZE bytes from the [image] file
     */
-    if ((fd = open(bsFile, O_RDONLY | O_BINARY)) < 0)
+    if ((fdesc = open(bsFile, O_RDONLY | O_BINARY)) < 0)
     {
       printf("%s: can't open\"%s\"\nDOS errnum %d", pgm, bsFile, errno);
       exit(1);
     }
-    if (read(fd, bootsector, SEC_SIZE) != SEC_SIZE)
+    if (read(fdesc, bootsector, SEC_SIZE) != SEC_SIZE)
     {
       printf("%s: failed to read %u bytes from %s\n", pgm, SEC_SIZE, bsFile);
-      close(fd);
+      close(fdesc);
       exit(1);
     }
-    close(fd);
+    close(fdesc);
   }
 }
 
@@ -1412,7 +1435,7 @@ void saveBS(const char *bsFile, UBYTE *bootsector)
 {
   if (bsFile != NULL)
   {
-    int fd;
+    int fdesc;
 
 #ifdef DEBUG
     printf("writing bootsector to file %s\n", bsFile);
@@ -1422,20 +1445,20 @@ void saveBS(const char *bsFile, UBYTE *bootsector)
        but don't truncate if exists so we can replace
        1st SEC_SIZE bytes of an image file
     */
-    if ((fd = open(bsFile, O_WRONLY | O_CREAT | O_BINARY,
+    if ((fdesc = open(bsFile, O_WRONLY | O_CREAT | O_BINARY,
               S_IREAD | S_IWRITE)) < 0)
     {
       printf("%s: can't create\"%s\"\nDOS errnum %d", pgm, bsFile, errno);
       exit(1);
     }
-    if (write(fd, bootsector, SEC_SIZE) != SEC_SIZE)
+    if (write(fdesc, bootsector, SEC_SIZE) != SEC_SIZE)
     {
       printf("%s: failed to write %u bytes to %s\n", pgm, SEC_SIZE, bsFile);
-      close(fd);
+      close(fdesc);
       /* unlink(bsFile); don't delete in case was image */
       exit(1);
     }
-    close(fd);
+    close(fdesc);
   } /* if write boot sector file */
 }
 
@@ -1931,7 +1954,7 @@ BOOL copy(SYSOptions *opts, const BYTE *source, COUNT drive, const BYTE * filena
   static BYTE src[SYS_MAXPATH];
   static BYTE dest[SYS_MAXPATH];
   unsigned ret;
-  int fdin, fdout;
+  int infile, outfile;
   ULONG copied = 0;
 
 #if defined __WATCOMC__ || defined _MSC_VER /* || defined __BORLANDC__ */
@@ -1957,41 +1980,41 @@ BOOL copy(SYSOptions *opts, const BYTE *source, COUNT drive, const BYTE * filena
     return TRUE;
   }
 
-  if ((fdin = open(source, O_RDONLY | O_BINARY)) < 0)
+  if ((infile = open(source, O_RDONLY | O_BINARY)) < 0)
   {
     printf("%s: failed to open \"%s\"\n", pgm, source);
     return FALSE;
   }
 
 #if defined __WATCOMC__ || defined _MSC_VER /* || defined __BORLANDC__ */
-  _dos_getftime(fdin, &date, &time);
+  _dos_getftime(infile, &date, &time);
 #elif defined __TURBOC__
-  getftime(fdin, &ftime);
+  getftime(infile, &ftime);
 #endif
 
-  if (!check_space(drive, filelength(fdin)))
+  if (!check_space(drive, filelength(infile)))
   {
     printf("%s: Not enough space to transfer %s\n", pgm, filename);
-    close(fdin);
+    close(infile);
     return FALSE;
   }
 
-  if ((fdout =
+  if ((outfile =
        open(dest, O_RDWR | O_TRUNC | O_CREAT | O_BINARY,
             S_IREAD | S_IWRITE)) < 0)
   {
     printf(" %s: can't create\"%s\"\nDOS errnum %d\n", pgm, dest, errno);
-    close(fdin);
+    close(infile);
     return FALSE;
   }
 
 #if 0 /* simple copy loop, read chunk then write chunk, repeat until all data copied */
-  while ((ret = read(fdin, copybuffer, COPY_SIZE)) > 0)
+  while ((ret = read(infile, copybuffer, COPY_SIZE)) > 0)
   {
-    if (write(fdout, copybuffer, ret) != ret)
+    if (write(outfile, copybuffer, ret) != ret)
     {
       printf("Can't write %u bytes to %s\n", ret, dest);
-      close(fdout);
+      close(outfile);
       unlink(dest);
       return FALSE;
     }
@@ -2006,7 +2029,7 @@ BOOL copy(SYSOptions *opts, const BYTE *source, COUNT drive, const BYTE * filena
     unsigned chunk_size;
     
     /* get length of file to copy, then allocate enough memory for whole file */
-    filesize = filelength(fdin);
+    filesize = filelength(infile);
     if (alloc_dos_mem(filesize, &theseg)!=0)
     {
       printf("Not enough memory to buffer %lu bytes for %s\n", filesize, source);
@@ -2016,7 +2039,7 @@ BOOL copy(SYSOptions *opts, const BYTE *source, COUNT drive, const BYTE * filena
 
     /* read in whole file, a chunk at a time; adjust size of last chunk to match remaining bytes */
     chunk_size = (COPY_SIZE < filesize)?COPY_SIZE:(unsigned)filesize;
-    while ((ret = read(fdin, copybuffer, chunk_size)) > 0)
+    while ((ret = read(infile, copybuffer, chunk_size)) > 0)
     {
       for (offs = 0; offs < ret; offs++)
       {
@@ -2053,10 +2076,10 @@ BOOL copy(SYSOptions *opts, const BYTE *source, COUNT drive, const BYTE * filena
       }
 
       /* write the data to disk, abort on any error */
-      if (write(fdout, copybuffer, chunk_size) != chunk_size)
+      if (write(outfile, copybuffer, chunk_size) != chunk_size)
       {
         printf("Can't write %u bytes to %s\n", ret, dest);
-        close(fdout);
+        close(outfile);
         unlink(dest);
         return FALSE;
       }
@@ -2066,14 +2089,14 @@ BOOL copy(SYSOptions *opts, const BYTE *source, COUNT drive, const BYTE * filena
   }
  #endif
 
-#if defined __WATCOMC__ || defined _MSC_VER /* || defined __BORLANDC__ */
-  _dos_setftime(fdout, date, time);
+#if 0
+  _dos_setftime(outfile, date, time);
 #elif defined __TURBOC__
-  setftime(fdout, &ftime);
+  setftime(outfile, &ftime);
 #endif
 
   /* reduce disk swap on single drives, close file on drive last accessed 1st */
-  close(fdout);
+  close(outfile);
 
 #ifdef __SOME_OTHER_COMPILER__
   {
@@ -2087,7 +2110,7 @@ BOOL copy(SYSOptions *opts, const BYTE *source, COUNT drive, const BYTE * filena
 #endif
 
   /* and close input file, usually same drive as next action will access */
-  close(fdin);
+  close(infile);
 
   if (opts->verbose)
 	printf("%lu Bytes transferred\n", copied);

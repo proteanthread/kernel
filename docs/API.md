@@ -138,4 +138,4 @@ When running LibreDOS on 86Box:
   ```
   - This instruction maps UMBs between `C8000h` and `EFFFFh`, reserving `D0000h - DFFFFh` for the EMS Page Frame.
 - **SYS CONFIG Configuration**:
-  - Customize the compiled kernel file using `fdkrncfg.c` settings to verify load-high configurations inside 86Box.
+  - Customize the compiled kernel file using `ldkrncfg.c` settings to verify load-high configurations inside 86Box.

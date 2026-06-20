@@ -1,3 +1,27 @@
+/*
+ * LibreDOS Kernel - DOS API File & Device Handle Functions
+ *
+ * Architectural Role:
+ *   Handles file I/O system calls and device access routines (Int 21h functions).
+ *   Coordinates between user-provided file handles, SFT (System File Table) entries,
+ *   logical file sharing constraints, and driver calls.
+ *
+ * Changeability & Constraints:
+ *   - CAN BE CHANGED: Logic checks on file handle access, error translation maps,
+ *     and directory search setups.
+ *   - CANNOT BE CHANGED: Core SFT table lookup functions and driver calling conventions.
+ *     Must ensure that structure paddings for `sft` entries remain unaltered as they map
+ *     directly to low-level assembly definitions.
+ *
+ * Expected Behavior:
+ *   - Translates user file handles to internal SFT pointer addresses. Must support sharing
+ *     locks and reentrancy boundaries.
+ *
+ * Diagnostics & Recovery:
+ *   - File descriptor leaks or handle corruption can be traced by monitoring SFT entry
+ *     counts and verifying active locks via low-level print statements or memory dumps.
+ */
+
 /****************************************************************/
 /*                                                              */
 /*                           dosfns.c                           */
@@ -1108,7 +1132,7 @@ COUNT DosFindNext(void)
 /*
  *  The new version of SHSUCDX 1.0 looks at the dm_drive byte to
  *  test 40h. I used RamView to see location MSD 116:04be and
- *  FD f??:04be, the byte set with 0xc4 = Remote/Network drive 4.
+ *  LD f??:04be, the byte set with 0xc4 = Remote/Network drive 4.
  *  Ralf Brown docs for dos 4eh say bit 7 set == remote so what is
  *  bit 6 for? 
  *  SHSUCDX Mod info say "test redir not network bit".

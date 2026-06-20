@@ -1,7 +1,7 @@
 /*
  * t1212.c  --  INT 2Fh / AX=1212h  GET LENGTH OF ASCIZ STRING
  *
- * RBIL (https://fd.lod.bz/rbil/interrup/dos_kernel/2f1212.html):
+ * RBIL (https://ld.lod.bz/rbil/interrup/dos_kernel/2f1212.html):
  *   AX = 1212h
  *   ES:DI -> ASCIZ string
  *   Return: CX = length of string (not counting NUL terminator)

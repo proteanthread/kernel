@@ -115,7 +115,7 @@ COUNT nUnits BSS_INIT(0);
  * some programs intercept int 13 and do not support LBA addressing. So
  * it is worth using CHS if possible, unless the user asks us not to,
  * either by specifying a 0x0c/0x0e/0x0f partition type or enabling
- * the ForceLBA setting in the fd kernel (sys) config. This will make
+ * the ForceLBA setting in the ld kernel (sys) config. This will make
  * multi-sector reads and BIOS computations more efficient, at the cost
  * of some compatibility.
  *
@@ -537,12 +537,12 @@ VOID CalculateFATData(ddt * pddt, ULONG NumSectors, UBYTE FileSystem)
 
 STATIC void push_ddt(ddt *pddt)
 {
-  ddt FAR *fddt = DynAlloc("ddt", 1, sizeof(ddt));
-  fmemcpy(fddt, pddt, sizeof(ddt));
+  ddt FAR *far_ddt = DynAlloc("ddt", 1, sizeof(ddt));
+  fmemcpy(far_ddt, pddt, sizeof(ddt));
   if (pddt->ddt_logdriveno != 0) {
-    (fddt - 1)->ddt_next = fddt;
+    (far_ddt - 1)->ddt_next = far_ddt;
     if (pddt->ddt_driveno == 0 && pddt->ddt_logdriveno == 1)
-      (fddt - 1)->ddt_descflags |= DF_CURLOG | DF_MULTLOG;
+      (far_ddt - 1)->ddt_descflags |= DF_CURLOG | DF_MULTLOG;
   }
 }
 
@@ -654,7 +654,7 @@ STATIC int LBA_Get_Drive_Parameters(int drive, struct DriveParamS *driveParam, i
   regs.d.b.l = drive;
   regs.ds = 0x40;
   /* ds = 40h is to work around a Xi8088 ROM-BIOS bug,
-      refer to https://github.com/FDOS/kernel/issues/156
+      refer to https://github.com/LDOS/kernel/issues/156
       and https://www.bttr-software.de/forum/forum_entry.php?id=21275 */
   regs.flags = FLG_CARRY;  /* ensure carry is set to force error if unsupported */
 
@@ -899,7 +899,7 @@ BOOL ScanForPrimaryPartitions(struct DriveParamS * driveParam, int scan_type,
     LBA_to_CHS(&chs, partitionStart, driveParam);
     LBA_to_CHS(&end, partitionStart + pEntry->NumSect - 1, driveParam);
 
-    /* some FDISKs enter for partitions 
+    /* some LDISKs enter for partitions 
        > 8 GB cyl = 1023, other (cyl&1023)
      */
 
@@ -945,7 +945,7 @@ BOOL ScanForPrimaryPartitions(struct DriveParamS * driveParam, int scan_type,
       {
         printf
             ("WARNING: Partition ID does not suggest LBA - part %s FS %02x.\n"
-             "Please run FDISK to correct this - using LBA to access partition.\n",
+             "Please run LDISK to correct this - using LBA to access partition.\n",
              partitionName, pEntry->FileSystem);
 
         printCHS(" start ", &chs);

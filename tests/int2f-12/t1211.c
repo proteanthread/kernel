@@ -1,7 +1,7 @@
 /*
  * t1211.c  --  INT 2Fh / AX=1211h  NORMALIZE ASCIZ FILENAME
  *
- * RBIL (https://fd.lod.bz/rbil/interrup/dos_kernel/2f1211.html):
+ * RBIL (https://ld.lod.bz/rbil/interrup/dos_kernel/2f1211.html):
  *   AX = 1211h
  *   DS:SI -> ASCIZ filename to normalize (source)
  *   ES:DI -> buffer for normalized filename (destination)

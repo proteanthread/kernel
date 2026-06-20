@@ -1,7 +1,7 @@
 /*
  * t1214.c  --  INT 2Fh / AX=1214h  COMPARE FAR POINTERS
  *
- * RBIL (https://fd.lod.bz/rbil/interrup/dos_kernel/2f1214.html):
+ * RBIL (https://ld.lod.bz/rbil/interrup/dos_kernel/2f1214.html):
  *   AX = 1214h
  *   DS:SI = first  far pointer
  *   ES:DI = second far pointer

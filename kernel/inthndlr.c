@@ -2015,7 +2015,7 @@ VOID ASMCFUNC int2F_12_handler(struct int2f12regs FAR *pr)
         /* This should only be called if AX=1607h/BX=15h is not supported. */
         /* The data returned here corresponds directly with text entries that
            can also be in INSTANCE.386 [which in theory means Windows could
-           be updated to support FD kernel without responding to these?].
+           be updated to support LD kernel without responding to these?].
          */
         DebugPrintf(("get instance data\n"));
         break;
@@ -2095,7 +2095,7 @@ VOID ASMCFUNC int2F_12_handler(struct int2f12regs FAR *pr)
               r.BX = r.DX;    /* sure we support everything asked for, ;-) */
               r.DX = 0xA2AB;  /* on succes DX:AX set to A2AB:B97Ch */
               r.AX = 0xB97C;
-              /* FIXME: do we need to do anything special for FD kernel? */
+              /* FIXME: do we need to do anything special for LD kernel? */
               break;
             }
             case 0x02:    /* disable Win support, ie remove patches */

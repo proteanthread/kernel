@@ -13,7 +13,7 @@ NASMFLAGS = -DSYS=1
 
 SYS_EXE_dependencies =  \
  sys.obj \
- fdkrncfg.obj \
+ ldkrncfg.obj \
  prf.obj \
  talloc.obj
 
@@ -21,7 +21,7 @@ SYS_EXE_dependencies =  \
 production:     bin2c.exe ../bin/sys.com
 
 bin2c.exe:      bin2c.c
-		$(CLC) bin2c.c
+		$(CL_HOST) bin2c.c
 
 ../bin/sys.com: sys.com
 		$(CP) sys.com ..$(DIRSEP)bin
@@ -47,7 +47,7 @@ oemfat16.h:	../boot/oemfat16.bin bin2c.exe
 prf.obj:	../kernel/prf.c
 		$(CC) $(CFLAGS) ..$(DIRSEP)kernel$(DIRSEP)prf.c
 
-fdkrncfg.obj:   fdkrncfg.c ../hdr/kconfig.h
+ldkrncfg.obj:   ldkrncfg.c ../hdr/kconfig.h
 
 talloc.obj:     talloc.c
 

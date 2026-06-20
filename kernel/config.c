@@ -1,3 +1,27 @@
+/*
+ * LibreDOS Kernel - CONFIG.SYS Directives & Driver Loading Engine
+ *
+ * Architectural Role:
+ *   Parses the config.sys configuration file and sets up system buffers, files limit,
+ *   country parameters, and the base driver chain. Loads device drivers (DEVICE= / DEVICEHIGH=)
+ *   and relocates code blocks based on memory options.
+ *
+ * Changeability & Constraints:
+ *   - CAN BE CHANGED: Parsing logic, custom configuration command support, error warning strings,
+ *     and defaults.
+ *   - CANNOT BE CHANGED: Struct mappings for LowKernelConfig variables or internal device driver
+ *     header structures. Stack allocations inside driver load commands must remain safe to prevent
+ *     corrupting adjacent memory segments.
+ *
+ * Expected Behavior:
+ *   - Runs early in the initialization phase before memory manager is active. Static buffers are
+ *     used to store parsing buffers.
+ *
+ * Diagnostics & Recovery:
+ *   - Driver loading failures or memory corruption can be diagnosed by checking config load addresses
+ *     against the map layout and verifying segment registers in debugger listings.
+ */
+
 /****************************************************************/
 /*                                                              */
 /*                          config.c                            */
@@ -405,7 +429,7 @@ void PostConfig(void)
 {
   sfttbl FAR *sp;
 
-  /* We could just have loaded FDXMS or HIMEM */
+  /* We could just have loaded LDXMS or HIMEM */
   if (HMAState == HMA_REQ && MoveKernelToHMA())
     HMAState = HMA_DONE;
 
@@ -842,7 +866,7 @@ VOID DoConfig(int nPass)
     static char commandbuffer[256];
     char * end = &kernel_command_line[kernel_command_line_length];
     static char * configfile = "";
-    static char * altconfigfile = "fdconfig.sys";
+    static char * altconfigfile = "ldconfig.sys";
     static char * oldconfigfile = "config.sys";
     static struct { char ** pointer; char const * command; }
       configcommands[] = {
@@ -1563,42 +1587,42 @@ STATIC BOOL LoadCountryInfo(char *filenam, UWORD ctryCode, UWORD codePage)
   };
   static struct subf_hdr hdr[9];
   static int entries, count;
-  int fd, i, subf_tbl_ndx;
+  int handle, i, subf_tbl_ndx;
   char *filename = filenam == NULL ? "\\COUNTRY.SYS" : filenam;
   BOOL rc = FALSE;
   BYTE FAR *ptable;
   void FAR *CharMapFn;
 
-  if ((fd = open(filename, 0)) < 0)
+  if ((handle = open(filename, 0)) < 0)
   {
     if (filenam == NULL)
       return !LoadCountryInfoHardCoded(ctryCode);
     printf("%s not found\n", filename);
     return rc;
   }
-  if (read(fd, &header, sizeof(header)) != sizeof(header))
+  if (read(handle, &header, sizeof(header)) != sizeof(header))
   {
     printf("Error reading %s\n", filename);
     goto ret;
   }
   if (memcmp(header.name, "\377COUNTRY", sizeof(header.name)))
   {
-err:printf("%s has invalid format\n", filename);
+ err:printf("%s has invalid format\n", filename);
     goto ret;
   }
-  if (lseek(fd, header.offset) == 0xffffffffL
-    || read(fd, &entries, sizeof(entries)) != sizeof(entries))
+  if (lseek(handle, header.offset) == 0xffffffffL
+    || read(handle, &entries, sizeof(entries)) != sizeof(entries))
     goto err;
   for (i = 0; i < entries; i++)
   {
-    if (read(fd, &entry, sizeof(entry)) != sizeof(entry) || entry.length != 12)
+    if (read(handle, &entry, sizeof(entry)) != sizeof(entry) || entry.length != 12)
       goto err;
     if (entry.country != ctryCode || entry.codepage != codePage && codePage)
       continue;
-    if (lseek(fd, entry.offset) == 0xffffffffL
-      || read(fd, &count, sizeof(count)) != sizeof(count)
+    if (lseek(handle, entry.offset) == 0xffffffffL
+      || read(handle, &count, sizeof(count)) != sizeof(count)
       || count > LENGTH(hdr)
-      || read(fd, hdr, sizeof(struct subf_hdr) * count)
+      || read(handle, hdr, sizeof(struct subf_hdr) * count)
                       != sizeof(struct subf_hdr) * count)
       goto err;
 
@@ -1612,11 +1636,11 @@ err:printf("%s has invalid format\n", filename);
         continue;
       if (subf_tbl_ndx == 35)
         subf_tbl_ndx = 8;  /* 0 through 7 match, but subfunction 35 is 9th entry in table[] */
-      if (lseek(fd, hdr[i].offset) == 0xffffffffL
-       || read(fd, &subf_data, 10) != 10
+      if (lseek(handle, hdr[i].offset) == 0xffffffffL
+       || read(handle, &subf_data, 10) != 10
        || memcmp(subf_data.signature, table[subf_tbl_ndx].sig, 8) && (hdr[i].id !=4
        || memcmp(subf_data.signature, table[2].sig, 8))  /* UCASE for FUCASE ^*/
-       || read(fd, subf_data.buffer, subf_data.length) != subf_data.length)
+       || read(handle, subf_data.buffer, subf_data.length) != subf_data.length)
         goto err;
       if (hdr[i].id == 1)
       {
@@ -1673,7 +1697,7 @@ err:printf("%s has invalid format\n", filename);
   }
   printf("could not find country info for country ID %u\n", ctryCode);
 ret:
-  close(fd);
+  close(handle);
   return rc;
 }
 
@@ -2629,21 +2653,21 @@ STATIC VOID CmdInstallHigh(BYTE * pLine)
 STATIC VOID CmdChain(BYTE * pLine)
 {
   struct CfgFile *cfg;
-  int fd;
+  int handle;
 
   InstallPrintf(("CHAIN: %s\n", pLine));
   if (nCurChain >= MAX_CHAINS) {
     CfgFailure(pLine);
     return;
   }
-  if ((fd = open(pLine, 0)) < 0) {
+  if ((handle = open(pLine, 0)) < 0) {
     CfgFailure(pLine);
     return;
   }
   cfg = &cfgFile[nCurChain++];
   cfg->nFileDesc = nFileDesc;
   cfg->nCfgLine = nCfgLine;
-  nFileDesc = fd;
+  nFileDesc = handle;
   nCfgLine = 0;
 }
 

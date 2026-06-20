@@ -1,7 +1,7 @@
 /*
  * t121a.c  --  INT 2Fh / AX=121Ah  GET DRIVE NUMBER FROM PATH
  *
- * RBIL (https://fd.lod.bz/rbil/interrup/dos_kernel/2f121a.html):
+ * RBIL (https://ld.lod.bz/rbil/interrup/dos_kernel/2f121a.html):
  *   AX = 121Ah
  *   DS:SI -> ASCIZ path string (e.g. "C:\DIR\FILE.TXT" or "C:FOO")
  *   Return: AL = drive number (0=A:, 1=B:, 2=C:, ..., 25=Z:)

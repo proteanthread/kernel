@@ -18,6 +18,14 @@ File: .gitmodules
 Size: 183 bytes
 Description: Defines submodules used within the Git repository.
 --------------------------------------------------------------------------------
+File: bin2c.exe
+Size: 32768 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: bin2c.obj
+Size: 971 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: build.bat
 Size: 6056 bytes
 Description: Core MS-DOS/Windows build orchestrator accepting compiler and architecture options.
@@ -50,6 +58,10 @@ File: config.b
 Size: 4149 bytes
 Description: Default batch file configuration template defining toolchain paths on DOS/Windows.
 --------------------------------------------------------------------------------
+File: config.bat
+Size: 4016 bytes
+Description: Command batch script.
+--------------------------------------------------------------------------------
 File: config.m
 Size: 2132 bytes
 Description: Default GNU Make configuration template defining toolchain paths on Linux.
@@ -61,6 +73,14 @@ Description: GNU General Public License Version 2, under which this kernel is di
 File: default.bat
 Size: 2447 bytes
 Description: Helper batch script to set compiler paths and reset environment parameters.
+--------------------------------------------------------------------------------
+File: exeflat.exe
+Size: 45056 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: exeflat.obj
+Size: 7873 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: filelist
 Size: 3143 bytes
@@ -74,6 +94,14 @@ File: MAKEPKGS.BAT
 Size: 3954 bytes
 Description: MS-DOS batch script to compile and package various kernel flavors.
 --------------------------------------------------------------------------------
+File: patchobj.exe
+Size: 34816 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: patchobj.obj
+Size: 2544 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: README.md
 Size: 1367 bytes
 Description: Markdown documentation explaining the repository contents and basic build status.
@@ -83,7 +111,7 @@ Size: 1105 bytes
 Description: MS-DOS batch script to compile and organize release packages.
 --------------------------------------------------------------------------------
 File: SOURCE_TREE.txt
-Size: 65098 bytes
+Size: 65313 bytes
 Description: Documentation file.
 --------------------------------------------------------------------------------
 File: .github\workflows\ci-build.yml
@@ -98,9 +126,33 @@ File: bin\config.sys
 Size: 90 bytes
 Description: Sample operating system configuration file containing directives for drivers and memory.
 --------------------------------------------------------------------------------
+File: bin\country.sys
+Size: 42615 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: bin\install.bat
 Size: 672 bytes
 Description: Batch installation utility script to deploy compiled kernel files.
+--------------------------------------------------------------------------------
+File: bin\kernel.sys
+Size: 72189 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: bin\kwc38632.map
+Size: 88664 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: bin\kwc38632.sys
+Size: 72189 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: bin\setver.sys
+Size: 109 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: bin\sys.com
+Size: 21794 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: boot\boot.asm
 Size: 23193 bytes
@@ -126,6 +178,38 @@ File: boot\boot32lb.c
 Size: 225 bytes
 Description: C source code file.
 --------------------------------------------------------------------------------
+File: boot\fat12com.bin
+Size: 512 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: boot\fat12com.lst
+Size: 52082 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: boot\fat16com.bin
+Size: 512 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: boot\fat16com.lst
+Size: 52082 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: boot\fat32chs.bin
+Size: 512 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: boot\fat32chs.lst
+Size: 35676 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: boot\fat32lba.bin
+Size: 512 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: boot\fat32lba.lst
+Size: 35337 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: boot\magic.mac
 Size: 2092 bytes
 Description: NASM bootloader compilation helper macro file.
@@ -141,6 +225,22 @@ Description: Custom bootloader source featuring OEM loading specifications.
 File: boot\oemboot.c
 Size: 214 bytes
 Description: C source code file.
+--------------------------------------------------------------------------------
+File: boot\oemfat12.bin
+Size: 512 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: boot\oemfat12.lst
+Size: 60600 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: boot\oemfat16.bin
+Size: 512 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: boot\oemfat16.lst
+Size: 60600 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: country\.git
 Size: 32 bytes
@@ -161,6 +261,18 @@ Description: National Language Support assembly source with date formats, sortin
 File: country\country.lsm
 Size: 403 bytes
 Description: LSM metadata file for LibreDOS country files.
+--------------------------------------------------------------------------------
+File: country\country.lst
+Size: 2295512 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: country\country.map
+Size: 59457 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: country\country.sys
+Size: 42615 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: country\kernel.tb1
 Size: 4622 bytes
@@ -286,6 +398,10 @@ File: docs\_config.yml
 Size: 155 bytes
 Description: Repository asset.
 --------------------------------------------------------------------------------
+File: drivers\device.lib
+Size: 6144 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: drivers\floppy.asm
 Size: 7020 bytes
 Description: Low-level floppy disk controller BIOS parameter table initialization driver.
@@ -293,6 +409,10 @@ Description: Low-level floppy disk controller BIOS parameter table initializatio
 File: drivers\floppy.c
 Size: 571 bytes
 Description: C source code file.
+--------------------------------------------------------------------------------
+File: drivers\floppy.obj
+Size: 1228 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: drivers\makefile
 Size: 965 bytes
@@ -306,6 +426,10 @@ File: drivers\rdpcclk.c
 Size: 230 bytes
 Description: C source code file.
 --------------------------------------------------------------------------------
+File: drivers\rdpcclk.obj
+Size: 963 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: drivers\wratclk.asm
 Size: 2035 bytes
 Description: Real-time clock writing driver for AT BIOS.
@@ -314,6 +438,10 @@ File: drivers\wratclk.c
 Size: 227 bytes
 Description: C source code file.
 --------------------------------------------------------------------------------
+File: drivers\wratclk.obj
+Size: 949 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: drivers\wrpcclk.asm
 Size: 1404 bytes
 Description: Real-time clock writing driver for standard PC BIOS.
@@ -321,6 +449,10 @@ Description: Real-time clock writing driver for standard PC BIOS.
 File: drivers\wrpcclk.c
 Size: 221 bytes
 Description: C source code file.
+--------------------------------------------------------------------------------
+File: drivers\wrpcclk.obj
+Size: 924 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: hdr\algnbyte.h
 Size: 308 bytes
@@ -351,7 +483,7 @@ Size: 2772 bytes
 Description: Structure mapping the 16-bit bitfields of a DOS date.
 --------------------------------------------------------------------------------
 File: hdr\debug.h
-Size: 5069 bytes
+Size: 5073 bytes
 Description: Pre-processor settings and print logging macros for kernel debugging.
 --------------------------------------------------------------------------------
 File: hdr\device.h
@@ -431,7 +563,7 @@ Size: 5304 bytes
 Description: Structure defining process control blocks and environment vectors.
 --------------------------------------------------------------------------------
 File: hdr\sft.h
-Size: 7031 bytes
+Size: 7032 bytes
 Description: Structure defining System File Table (SFT) entry layout.
 --------------------------------------------------------------------------------
 File: hdr\stacks.inc
@@ -462,6 +594,10 @@ File: kernel\apisupt.c
 Size: 305 bytes
 Description: C source code file.
 --------------------------------------------------------------------------------
+File: kernel\apisupt.obj
+Size: 886 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: kernel\asmsupt.asm
 Size: 15304 bytes
 Description: Highly optimized assembly string and block memory handling (memcpy, memset, strcmp).
@@ -470,25 +606,45 @@ File: kernel\asmsupt.c
 Size: 421 bytes
 Description: C source code file.
 --------------------------------------------------------------------------------
+File: kernel\asmsupt.obj
+Size: 1333 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: kernel\blockio.c
 Size: 15983 bytes
 Description: Low-level block cache buffer reading, writing, and flushing logic.
+--------------------------------------------------------------------------------
+File: kernel\blockio.obj
+Size: 3815 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: kernel\break.c
 Size: 3551 bytes
 Description: Handles Ctrl-Break checks, signal registration, and Int 23h execution.
 --------------------------------------------------------------------------------
+File: kernel\break.obj
+Size: 2189 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: kernel\chario.c
 Size: 14642 bytes
 Description: Character device input/output operations (CON, AUX, PRN).
 --------------------------------------------------------------------------------
+File: kernel\chario.obj
+Size: 5471 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: kernel\config.c
-Size: 76733 bytes
+Size: 76798 bytes
 Description: CONFIG.SYS configuration file parser and memory layout initialization.
 --------------------------------------------------------------------------------
 File: kernel\config.h
 Size: 2712 bytes
 Description: Directives configuration definitions.
+--------------------------------------------------------------------------------
+File: kernel\config.obj
+Size: 19748 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: kernel\console.asm
 Size: 10846 bytes
@@ -498,6 +654,10 @@ File: kernel\console.c
 Size: 242 bytes
 Description: C source code file.
 --------------------------------------------------------------------------------
+File: kernel\console.obj
+Size: 1453 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: kernel\cpu.asm
 Size: 3306 bytes
 Description: Detects host CPU model and flags using a assembly sequence.
@@ -506,9 +666,17 @@ File: kernel\cpu.c
 Size: 330 bytes
 Description: C source code file.
 --------------------------------------------------------------------------------
+File: kernel\cpu.obj
+Size: 985 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: kernel\dosfns.c
 Size: 43847 bytes
 Description: Core DOS API actions (Open, Close, Read, Write, Lseek, Lock).
+--------------------------------------------------------------------------------
+File: kernel\dosfns.obj
+Size: 10255 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: kernel\dosidle.asm
 Size: 2979 bytes
@@ -518,9 +686,17 @@ File: kernel\dosidle.c
 Size: 202 bytes
 Description: C source code file.
 --------------------------------------------------------------------------------
+File: kernel\dosidle.obj
+Size: 1153 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: kernel\dsk.c
 Size: 36166 bytes
 Description: BIOS block drive parameter queries and geometry configuration.
+--------------------------------------------------------------------------------
+File: kernel\dsk.obj
+Size: 7375 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: kernel\dyndata.h
 Size: 468 bytes
@@ -530,6 +706,10 @@ File: kernel\dyninit.c
 Size: 2376 bytes
 Description: Dynamic memory layout calculations for starting kernel elements.
 --------------------------------------------------------------------------------
+File: kernel\dyninit.obj
+Size: 2001 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: kernel\entry.asm
 Size: 25438 bytes
 Description: System interrupt handlers (Int 21h, 20h, 25h, 26h, 27h) and stack switching.
@@ -538,9 +718,17 @@ File: kernel\entry.c
 Size: 12701 bytes
 Description: C source code file.
 --------------------------------------------------------------------------------
+File: kernel\entry.obj
+Size: 2379 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: kernel\error.c
 Size: 3737 bytes
 Description: Kernel panic and fatal halting routines.
+--------------------------------------------------------------------------------
+File: kernel\error.obj
+Size: 2080 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: kernel\execrh.asm
 Size: 2966 bytes
@@ -550,6 +738,14 @@ File: kernel\execrh.c
 Size: 410 bytes
 Description: C source code file.
 --------------------------------------------------------------------------------
+File: kernel\execrh.obj
+Size: 949 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: kernel\exeflat.rsp
+Size: 114 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: kernel\exfat.c
 Size: 2590 bytes
 Description: exFAT filesystem handler implementing partition mounts, directory sets parser, and contiguous sector maps.
@@ -558,45 +754,81 @@ File: kernel\fatdir.c
 Size: 15924 bytes
 Description: Directory sector parsing, directory search, and file match comparisons.
 --------------------------------------------------------------------------------
+File: kernel\fatdir.obj
+Size: 3733 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: kernel\fatfs.c
-Size: 64328 bytes
+Size: 64394 bytes
 Description: Filesystem interface implementing directory operations (Mkdir, Rmdir, Delete, Rename).
+--------------------------------------------------------------------------------
+File: kernel\fatfs.obj
+Size: 11142 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: kernel\fattab.c
 Size: 14091 bytes
 Description: FAT cluster chain lookup, allocation, and table updating.
 --------------------------------------------------------------------------------
+File: kernel\fattab.obj
+Size: 3678 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: kernel\fcbfns.c
 Size: 22028 bytes
 Description: Old-style FCB compatibility functions.
 --------------------------------------------------------------------------------
+File: kernel\fcbfns.obj
+Size: 6426 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: kernel\globals.h
 Size: 16999 bytes
 Description: Declaration of global kernel variables.
+--------------------------------------------------------------------------------
+File: kernel\iasmsupt.obj
+Size: 64 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: kernel\init-dat.h
 Size: 837 bytes
 Description: Declaration of dynamic data elements utilized in the initialization phase.
 --------------------------------------------------------------------------------
 File: kernel\init-mod.h
-Size: 11731 bytes
+Size: 11748 bytes
 Description: Dynamic loading declarations.
 --------------------------------------------------------------------------------
 File: kernel\initclk.c
 Size: 3467 bytes
 Description: Registers and starts the system real-time clock driver.
 --------------------------------------------------------------------------------
+File: kernel\initclk.obj
+Size: 2033 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: kernel\initdisk.c
-Size: 51140 bytes
+Size: 51155 bytes
 Description: Mounts partition tables, handles partition mappings, and validates geometries.
+--------------------------------------------------------------------------------
+File: kernel\initdisk.obj
+Size: 9470 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: kernel\inithma.c
 Size: 10808 bytes
 Description: Relocates the kernel execution code and data into the High Memory Area (HMA).
 --------------------------------------------------------------------------------
+File: kernel\inithma.obj
+Size: 3310 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: kernel\initoem.c
 Size: 2932 bytes
 Description: OEM hook points for customize bios settings.
+--------------------------------------------------------------------------------
+File: kernel\initoem.obj
+Size: 1916 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: kernel\int2f.asm
 Size: 20352 bytes
@@ -606,9 +838,17 @@ File: kernel\int2f.c
 Size: 249 bytes
 Description: C source code file.
 --------------------------------------------------------------------------------
+File: kernel\int2f.obj
+Size: 1961 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: kernel\inthndlr.c
 Size: 116090 bytes
 Description: C-level router for Int 21h API calls.
+--------------------------------------------------------------------------------
+File: kernel\inthndlr.obj
+Size: 13849 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: kernel\intr.asm
 Size: 8291 bytes
@@ -617,6 +857,10 @@ Description: Assembly functions to invoke user-defined software interrupts.
 File: kernel\intr.c
 Size: 231 bytes
 Description: C source code file.
+--------------------------------------------------------------------------------
+File: kernel\intr.obj
+Size: 1582 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: kernel\io.asm
 Size: 19243 bytes
@@ -630,13 +874,25 @@ File: kernel\io.inc
 Size: 1878 bytes
 Description: Assembly I/O helper macros.
 --------------------------------------------------------------------------------
+File: kernel\io.obj
+Size: 2144 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: kernel\ioctl.c
 Size: 9221 bytes
 Description: Implements the DOS IOCTL functions.
 --------------------------------------------------------------------------------
+File: kernel\ioctl.obj
+Size: 2826 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: kernel\iprf.c
 Size: 187 bytes
 Description: Internal minimal formatting string printer.
+--------------------------------------------------------------------------------
+File: kernel\iprf.obj
+Size: 1659 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: kernel\irqstack.asm
 Size: 7744 bytes
@@ -645,6 +901,10 @@ Description: Manages hardware interrupts execution stacks.
 File: kernel\irqstack.c
 Size: 227 bytes
 Description: C source code file.
+--------------------------------------------------------------------------------
+File: kernel\irqstack.obj
+Size: 1555 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: kernel\kernel.asm
 Size: 49156 bytes
@@ -658,21 +918,53 @@ File: kernel\kernel.cfg
 Size: 153 bytes
 Description: Kernel compilation configuration parameters.
 --------------------------------------------------------------------------------
+File: kernel\kernel.exe
+Size: 72557 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: kernel\kernel.ld
 Size: 6027 bytes
 Description: GNU linker template script.
 --------------------------------------------------------------------------------
+File: kernel\kernel.lnk
+Size: 1060 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: kernel\kernel.map
+Size: 88664 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: kernel\kernel.obj
+Size: 9800 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: kernel\kernel.sys
+Size: 72189 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: kernel\kwc38632.lnk
+Size: 675 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: kernel\lfnapi.c
-Size: 11266 bytes
+Size: 11281 bytes
 Description: Long File Names (LFN) mapping layer.
+--------------------------------------------------------------------------------
+File: kernel\lfnapi.obj
+Size: 1747 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: kernel\ludivmul.inc
 Size: 4696 bytes
 Description: Long division and multiplication assembly optimization.
 --------------------------------------------------------------------------------
 File: kernel\main.c
-Size: 25227 bytes
+Size: 25231 bytes
 Description: LibreDOS entry logic executing initial setup and loading the user shell.
+--------------------------------------------------------------------------------
+File: kernel\main.obj
+Size: 7400 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: kernel\makefile
 Size: 6805 bytes
@@ -686,25 +978,49 @@ File: kernel\memdisk.c
 Size: 219 bytes
 Description: C source code file.
 --------------------------------------------------------------------------------
+File: kernel\memdisk.obj
+Size: 1015 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: kernel\memmgr.c
 Size: 15016 bytes
 Description: DOS Memory Arena allocator using MCB blocks.
+--------------------------------------------------------------------------------
+File: kernel\memmgr.obj
+Size: 3828 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: kernel\misc.c
 Size: 2688 bytes
 Description: Pointers manipulation and standard library wrapper helpers.
 --------------------------------------------------------------------------------
+File: kernel\misc.obj
+Size: 1743 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: kernel\network.c
 Size: 2616 bytes
 Description: Redirection calls interface to handle remote networking drives.
+--------------------------------------------------------------------------------
+File: kernel\network.obj
+Size: 2046 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: kernel\newstuff.c
 Size: 25476 bytes
 Description: Miscellaneous features (handles allocation, temporary files).
 --------------------------------------------------------------------------------
+File: kernel\newstuff.obj
+Size: 4978 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: kernel\nls.c
 Size: 24500 bytes
 Description: Locale information, case conversion, and dynamic string translation support.
+--------------------------------------------------------------------------------
+File: kernel\nls.obj
+Size: 4539 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: kernel\nlssupt.asm
 Size: 2230 bytes
@@ -714,6 +1030,10 @@ File: kernel\nlssupt.c
 Size: 221 bytes
 Description: C source code file.
 --------------------------------------------------------------------------------
+File: kernel\nlssupt.obj
+Size: 995 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: kernel\nls_hc.asm
 Size: 5064 bytes
 Description: Assembly data containing default hardcoded US-ASCII NLS tables.
@@ -721,6 +1041,10 @@ Description: Assembly data containing default hardcoded US-ASCII NLS tables.
 File: kernel\nls_hc.c
 Size: 249 bytes
 Description: C source code file.
+--------------------------------------------------------------------------------
+File: kernel\nls_hc.obj
+Size: 1824 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: kernel\nls_load.c
 Size: 2779 bytes
@@ -730,6 +1054,10 @@ File: kernel\prf.c
 Size: 12830 bytes
 Description: C source code file.
 --------------------------------------------------------------------------------
+File: kernel\prf.obj
+Size: 851 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: kernel\printer.asm
 Size: 7230 bytes
 Description: Low-level parallel port driver using BIOS Int 17h.
@@ -737,6 +1065,10 @@ Description: Low-level parallel port driver using BIOS Int 17h.
 File: kernel\printer.c
 Size: 245 bytes
 Description: C source code file.
+--------------------------------------------------------------------------------
+File: kernel\printer.obj
+Size: 1495 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: kernel\procsupt.asm
 Size: 9544 bytes
@@ -746,8 +1078,12 @@ File: kernel\procsupt.c
 Size: 254 bytes
 Description: C source code file.
 --------------------------------------------------------------------------------
+File: kernel\procsupt.obj
+Size: 1348 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: kernel\proto.h
-Size: 17043 bytes
+Size: 17070 bytes
 Description: Global kernel function prototypes.
 --------------------------------------------------------------------------------
 File: kernel\segs.inc
@@ -762,25 +1098,49 @@ File: kernel\serial.c
 Size: 228 bytes
 Description: C source code file.
 --------------------------------------------------------------------------------
+File: kernel\serial.obj
+Size: 1307 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: kernel\strings.c
 Size: 3608 bytes
 Description: Standard string processing functions.
+--------------------------------------------------------------------------------
+File: kernel\strings.obj
+Size: 315 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: kernel\sysclk.c
 Size: 5831 bytes
 Description: Internal real-time clock driver.
 --------------------------------------------------------------------------------
+File: kernel\sysclk.obj
+Size: 2706 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: kernel\syspack.c
 Size: 4117 bytes
 Description: Directory entry compression and decompression mapping.
+--------------------------------------------------------------------------------
+File: kernel\syspack.obj
+Size: 1749 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: kernel\systime.c
 Size: 5464 bytes
 Description: System date and time getters/setters.
 --------------------------------------------------------------------------------
+File: kernel\systime.obj
+Size: 2714 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: kernel\task.c
-Size: 28508 bytes
+Size: 28559 bytes
 Description: Process manager (EXEC call, environment setup, PSP initialization, and exit handling).
+--------------------------------------------------------------------------------
+File: kernel\task.obj
+Size: 6990 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: kernel\turboc.cfg
 Size: 133 bytes
@@ -814,6 +1174,14 @@ File: kernel\nls\files
 Size: 636 bytes
 Description: Repository asset.
 --------------------------------------------------------------------------------
+File: lib\device.lib
+Size: 6144 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: lib\libm.lib
+Size: 1536 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: lib\makefile
 Size: 438 bytes
 Description: Top-level GNU makefile for Unix/Linux cross-compilers.
@@ -831,7 +1199,7 @@ Size: 3156 bytes
 Description: Compiler-specific configuration makefile.
 --------------------------------------------------------------------------------
 File: mkfiles\generic.mak
-Size: 1149 bytes
+Size: 1255 bytes
 Description: Compiler-specific configuration makefile.
 --------------------------------------------------------------------------------
 File: mkfiles\mscl8.mak
@@ -1046,21 +1414,73 @@ File: sys\bin2c.c
 Size: 889 bytes
 Description: Utility to serialize binary files into C byte arrays.
 --------------------------------------------------------------------------------
-File: sys\fdkrncfg.c
-Size: 18194 bytes
+File: sys\bin2c.exe
+Size: 32768 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: sys\bin2c.obj
+Size: 971 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: sys\fat12com.h
+Size: 3360 bytes
+Description: Header definition file.
+--------------------------------------------------------------------------------
+File: sys\fat16com.h
+Size: 3360 bytes
+Description: Header definition file.
+--------------------------------------------------------------------------------
+File: sys\fat32chs.h
+Size: 3360 bytes
+Description: Header definition file.
+--------------------------------------------------------------------------------
+File: sys\fat32lba.h
+Size: 3360 bytes
+Description: Header definition file.
+--------------------------------------------------------------------------------
+File: sys\ldkrncfg.c
+Size: 18200 bytes
 Description: Command-line tool to configure the LowKernelConfig block in compiled kernels.
 --------------------------------------------------------------------------------
+File: sys\ldkrncfg.obj
+Size: 5316 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: sys\makefile
-Size: 1754 bytes
+Size: 1758 bytes
 Description: Makefile to compile SYS.COM and tools.
 --------------------------------------------------------------------------------
+File: sys\oemfat12.h
+Size: 3360 bytes
+Description: Header definition file.
+--------------------------------------------------------------------------------
+File: sys\oemfat16.h
+Size: 3360 bytes
+Description: Header definition file.
+--------------------------------------------------------------------------------
+File: sys\prf.obj
+Size: 1554 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: sys\sys.c
-Size: 66315 bytes
+Size: 66329 bytes
 Description: Core system installer (SYS.COM) writing boot sectors and copying system files.
+--------------------------------------------------------------------------------
+File: sys\sys.com
+Size: 21794 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: sys\sys.obj
+Size: 17808 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: sys\talloc.c
 Size: 4180 bytes
 Description: Linear temporary memory allocator.
+--------------------------------------------------------------------------------
+File: sys\talloc.obj
+Size: 505 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: test\cfg.sh
 Size: 875 bytes
@@ -1347,7 +1767,7 @@ Size: 91 bytes
 Description: Core MS-DOS/Windows build orchestrator accepting compiler and architecture options.
 --------------------------------------------------------------------------------
 File: tests\opendev\opendev.c
-Size: 4020 bytes
+Size: 4044 bytes
 Description: Test suite code or verification utility.
 --------------------------------------------------------------------------------
 File: tests\opendev\DIREXIST\EMPTYDIR.txt
@@ -1362,24 +1782,44 @@ File: utils\exeflat.c
 Size: 22403 bytes
 Description: Utility to strip executable headers and generate flat binary KERNEL.SYS image.
 --------------------------------------------------------------------------------
+File: utils\exeflat.exe
+Size: 45056 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: utils\exeflat.obj
+Size: 7873 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: utils\indent.ini
 Size: 109 bytes
 Description: Code formatting settings file.
 --------------------------------------------------------------------------------
 File: utils\makefile
-Size: 571 bytes
+Size: 553 bytes
 Description: Makefile for compilation utilities.
 --------------------------------------------------------------------------------
 File: utils\patchobj.c
-Size: 4990 bytes
+Size: 5050 bytes
 Description: Object file patch tool.
+--------------------------------------------------------------------------------
+File: utils\patchobj.com
+Size: 13564 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: utils\patchobj.exe
+Size: 34816 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: utils\patchobj.obj
+Size: 2544 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: utils\proto.bat
 Size: 69 bytes
 Description: Batch file generating prototypes.
 --------------------------------------------------------------------------------
 File: utils\relocinf.c
-Size: 3483 bytes
+Size: 3497 bytes
 Description: Utility processing relocation records for execution segments.
 --------------------------------------------------------------------------------
 File: utils\rmfiles.bat
@@ -1390,6 +1830,10 @@ File: utils\upxdevic.asm
 Size: 871 bytes
 Description: Assembly driver loader wrapper supporting UPX compressed kernels.
 --------------------------------------------------------------------------------
+File: utils\upxdevic.bin
+Size: 266 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
 File: utils\upxdevic.c
 Size: 278 bytes
 Description: C source code file.
@@ -1397,6 +1841,10 @@ Description: C source code file.
 File: utils\upxentry.asm
 Size: 1006 bytes
 Description: Assembly decompression entry point for UPX compressed kernels.
+--------------------------------------------------------------------------------
+File: utils\upxentry.bin
+Size: 266 bytes
+Description: Repository asset.
 --------------------------------------------------------------------------------
 File: utils\upxentry.c
 Size: 278 bytes

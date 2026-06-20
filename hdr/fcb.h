@@ -60,8 +60,8 @@ static BYTE *fcb_hRcsId =
 #define FEXT_SIZE       3       /* limit on extension           */
 #endif
 
-#ifndef FDFLT_DRIVE
-#define FDFLT_DRIVE     0       /* default drive                */
+#ifndef LDFLT_DRIVE
+#define LDFLT_DRIVE     0       /* default drive                */
 #endif
 
 #define PARSE_SEP_STOP          0x01

@@ -1,3 +1,24 @@
+/*
+ * LibreDOS Kernel Utilities - Relocation Information Tool (relocinf)
+ *
+ * Architectural Role:
+ *   Prints detailed information regarding relocation entries present inside a 16-bit
+ *   MZ executable. This helps developers verify the relocation footprint of compiled
+ *   kernel target modules.
+ *
+ * Changeability & Constraints:
+ *   - CAN BE CHANGED: Output format, sorting order, array limits, and command line validation.
+ *   - CANNOT BE CHANGED: Structure of the MZ EXE header parsing and relocation pointer logic.
+ *
+ * Expected Behavior:
+ *   - Reads MZ headers, allocates tables matching relocation counts, reads individual relocation
+ *     offset pointers, and sorts them before printing.
+ *
+ * Diagnostics & Recovery:
+ *   - If the tool reports unexpected relocation targets, trace the relocation offsets back to
+ *     source variables using compiler map files.
+ */
+
 /*****************************************************************************
 **    RelocInf.C
 **    
@@ -18,7 +39,6 @@
 ** 
 *****************************************************************************/
 
-* /
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -78,22 +98,22 @@ int __cdecl compReloc(const void *p1, const void *p2)
   return 0;
 }
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-  FILE *fdin;
+  FILE *infile;
   exe_header header;
   struct relocEntry *reloc;
 
   int i;
   ULONG image_offset;
 
-  if (argc < 2 || (fdin = fopen(argv[1], "rb")) == NULL)
+  if (argc < 2 || (infile = fopen(argv[1], "rb")) == NULL)
   {
     printf("can't open %s\n", argv[1]);
     exit(1);
   }
 
-  if (fread(&header, sizeof(header), 1, fdin) != 1 ||
+  if (fread(&header, sizeof(header), 1, infile) != 1 ||
       header.exSignature != MAGIC)
   {
     printf("%s is no EXE file\n");
@@ -114,14 +134,14 @@ main(int argc, char *argv[])
     exit(1);
   }
 
-  if (fseek(fdin, header.exRelocTable, 0))
+  if (fseek(infile, header.exRelocTable, 0))
   {
     printf("can't seek\n");
     exit(1);
   }
 
   for (i = 0; i < header.exRelocItems; i++)
-    if (fread(reloc + i, 4, 1, fdin) != 1)
+    if (fread(reloc + i, 4, 1, infile) != 1)
     {
       printf("can't read reloc info\n");
       exit(1);
@@ -133,13 +153,13 @@ main(int argc, char *argv[])
 
     image_offset += ((ULONG) reloc[i].seg << 4) + reloc[i].off;
 
-    if (fseek(fdin, image_offset, 0))
+    if (fseek(infile, image_offset, 0))
     {
       printf("can't seek reloc data\n");
       exit(1);
     }
 
-    if (fread(&reloc[i].refseg, 2, 1, fdin) != 1)
+    if (fread(&reloc[i].refseg, 2, 1, infile) != 1)
     {
       printf("can't read rel data for item %d\n", i);
       exit(1);

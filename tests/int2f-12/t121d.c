@@ -1,7 +1,7 @@
 /*
  * t121d.c  --  INT 2Fh / AX=121Dh  SUM MEMORY BLOCK (8-bit truncated)
  *
- * RBIL (https://fd.lod.bz/rbil/interrup/dos_kernel/2f121d.html):
+ * RBIL (https://ld.lod.bz/rbil/interrup/dos_kernel/2f121d.html):
  *   AX = 121Dh
  *   DS:SI -> start of buffer
  *   CX    = byte count (0 = no bytes processed)

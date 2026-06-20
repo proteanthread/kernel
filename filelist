@@ -137,7 +137,7 @@
 */*/mkfiles/tc3.mak
 */*/mkfiles/turbocpp.mak
 */*/mkfiles/watcom.mak
-*/*/sys/fdkrncfg.c
+*/*/sys/ldkrncfg.c
 */*/sys/bin2c.c
 */*/sys/makefile
 */*/sys/sys.c

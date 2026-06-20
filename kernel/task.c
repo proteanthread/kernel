@@ -1,3 +1,27 @@
+/*
+ * LibreDOS Kernel - DOS Task Execution & Process Loader
+ *
+ * Architectural Role:
+ *   Loads, allocates resources for, and executes DOS applications (COM/EXE files and overlays).
+ *   Implements the EXEC call (Int 21h Function 4Bh). Constructs Program Segment Prefix (PSP)
+ *   headers and sets up task context segments (SS:SP, CS:IP) for the target program.
+ *
+ * Changeability & Constraints:
+ *   - CAN BE CHANGED: Argument checks, loader trace print statements, and default environment
+ *     allocation logic.
+ *   - CANNOT BE CHANGED: PSP block structure offsets (which are rigidly standard across PC-DOS / MS-DOS),
+ *     relocation table parsing for EXE files, and task control block layouts. Modifying relocations
+ *     or stack bounds will cause segment faults in loaded binaries.
+ *
+ * Expected Behavior:
+ *   - Directly parses MZ executable headers, calculates memory size demands, and requests memory arenas.
+ *     Sets register states in context blocks before transferring control via software interrupt handlers.
+ *
+ * Diagnostics & Recovery:
+ *   - Program crashes or exit halts can be traced by logging PSP segment bases and inspecting
+ *     the application's stack segment limits using the debugger.
+ */
+
 /****************************************************************/
 /*                                                              */
 /*                           task.c                             */
@@ -239,7 +263,7 @@ void new_psp(seg para, seg cur_psp)
   /* critical error address                               */
   p->ps_isv24 = getvec(0x24);
   /* RBIL is wrong on zeroing parent_psp, and in fact some
-   * progs (Alpha Waves game, https://github.com/stsp/fdpp/issues/112)
+   * progs (Alpha Waves game, https://github.com/stsp/ldpp/issues/112)
    * won't work if its zeroed. */
 #if 0
   /* parent psp segment set to 0 (see RBIL int21/ah=26)   */
@@ -459,7 +483,7 @@ STATIC int ExecMemAlloc(UWORD size, seg *para, UWORD *asize)
   return rc;
 }
 
-COUNT DosComLoader(BYTE FAR * namep, exec_blk * exp, COUNT mode, COUNT fd)
+COUNT DosComLoader(BYTE FAR * namep, exec_blk * exp, COUNT mode, COUNT fdesc)
 {
   UWORD mem;
   UWORD env, asize = 0;
@@ -467,7 +491,7 @@ COUNT DosComLoader(BYTE FAR * namep, exec_blk * exp, COUNT mode, COUNT fd)
   {
     UWORD com_size;
     {
-      ULONG com_size_long = SftGetFsize(fd);
+      ULONG com_size_long = SftGetFsize(fdesc);
       /* maximally 64k - 256 bytes stack -
          256 bytes psp */
       com_size = ((UWORD)min(com_size_long, 0xfe00u) >> 4) + 0x10;
@@ -533,11 +557,11 @@ COUNT DosComLoader(BYTE FAR * namep, exec_blk * exp, COUNT mode, COUNT fd)
        -- 1999/04/21 ska */
 
     /* rewind to start */
-    SftSeek(fd, 0, 0);
+    SftSeek(fdesc, 0, 0);
     /* read everything, but at most 64K - sizeof(PSP)             */
     /* lpproj: some device drivers (not exe) are larger than 0xff00bytes... */
-    DosRWSft(fd, (mode == OVERLAY) ? 0xfffeU : 0xff00U, sp, XFR_READ);
-    DosCloseSft(fd, FALSE);
+    DosRWSft(fdesc, (mode == OVERLAY) ? 0xfffeU : 0xff00U, sp, XFR_READ);
+    DosCloseSft(fdesc, FALSE);
   }
 
   if (mode == OVERLAY)
@@ -622,7 +646,7 @@ VOID return_user(void)
   exec_user((iregs FAR *) q->ps_stack, 0);
 }
 
-COUNT DosExeLoader(BYTE FAR * namep, exec_blk * exp, COUNT mode, COUNT fd)
+COUNT DosExeLoader(BYTE FAR * namep, exec_blk * exp, COUNT mode, COUNT fdesc)
 {
   UWORD mem, env, start_seg, asize = 0;
   UWORD exe_size;
@@ -729,7 +753,7 @@ COUNT DosExeLoader(BYTE FAR * namep, exec_blk * exp, COUNT mode, COUNT fd)
 
     /* Now load the executable                              */
     /* offset to start of image                             */
-    if (SftSeek(fd, ExeHeader.exHeaderSize * 16UL, 0) != SUCCESS)
+    if (SftSeek(fdesc, ExeHeader.exHeaderSize * 16UL, 0) != SUCCESS)
     {
       if (mode != OVERLAY)
       {
@@ -765,7 +789,7 @@ COUNT DosExeLoader(BYTE FAR * namep, exec_blk * exp, COUNT mode, COUNT fd)
     {
       if (exe_size < CHUNK/16)
         toRead = exe_size*16;
-      nBytesRead = (int)DosRWSft(fd, toRead, MK_FP(sp, 0), XFR_READ);
+      nBytesRead = (int)DosRWSft(fdesc, toRead, MK_FP(sp, 0), XFR_READ);
       if (nBytesRead < toRead || exe_size <= CHUNK/16)
         break;
       sp += CHUNK/16;
@@ -778,11 +802,11 @@ COUNT DosExeLoader(BYTE FAR * namep, exec_blk * exp, COUNT mode, COUNT fd)
     UWORD reloc[2];
     seg FAR *spot;
 
-    SftSeek(fd, ExeHeader.exRelocTable, 0);
+    SftSeek(fdesc, ExeHeader.exRelocTable, 0);
     for (i = 0; i < ExeHeader.exRelocItems; i++)
     {
       if (DosRWSft
-          (fd, sizeof(reloc), (VOID FAR *) & reloc[0], XFR_READ) != sizeof(reloc))
+          (fdesc, sizeof(reloc), (VOID FAR *) & reloc[0], XFR_READ) != sizeof(reloc))
       {
         if (mode != OVERLAY)
         {
@@ -806,7 +830,7 @@ COUNT DosExeLoader(BYTE FAR * namep, exec_blk * exp, COUNT mode, COUNT fd)
   }
 
   /* and finally close the file                           */
-  DosCloseSft(fd, FALSE);
+  DosCloseSft(fdesc, FALSE);
 
   /* exit here for overlay                                */
   if (mode == OVERLAY)
@@ -840,7 +864,7 @@ COUNT DosExeLoader(BYTE FAR * namep, exec_blk * exp, COUNT mode, COUNT fd)
 COUNT DosExec(COUNT mode, exec_blk FAR * ep, BYTE FAR * lp)
 {
   COUNT rc;
-  COUNT fd;
+  COUNT fdesc;
 
   if ((mode & 0x7f) > 3 || (mode & 0x7f) == 2)
     return DE_INVLDFMT; 
@@ -849,26 +873,26 @@ COUNT DosExec(COUNT mode, exec_blk FAR * ep, BYTE FAR * lp)
   /* If file not found - free ram and return error        */
 
   if (IsDevice(lp) ||        /* we don't want to execute C:>NUL */
-      (fd = (short)DosOpenSft(lp, O_LEGACY | O_OPEN | O_RDONLY, 0)) < 0)
+      (fdesc = (short)DosOpenSft(lp, O_LEGACY | O_OPEN | O_RDONLY, 0)) < 0)
   {
     return DE_FILENOTFND;
   }
   
-  rc = (int)DosRWSft(fd, sizeof(exe_header), (BYTE FAR *)&ExeHeader, XFR_READ);
+  rc = (int)DosRWSft(fdesc, sizeof(exe_header), (BYTE FAR *)&ExeHeader, XFR_READ);
 
   if (rc == sizeof(exe_header) &&
       (ExeHeader.exSignature == MAGIC || ExeHeader.exSignature == OLD_MAGIC))
   {
-    rc = DosExeLoader(lp, &TempExeBlock, mode, fd);
+    rc = DosExeLoader(lp, &TempExeBlock, mode, fdesc);
   }
   else if (rc != 0)
   {
-    rc = DosComLoader(lp, &TempExeBlock, mode, fd);
+    rc = DosComLoader(lp, &TempExeBlock, mode, fdesc);
   } else {
     rc = DE_INVLDFMT;
   }
 
-  DosCloseSft(fd, FALSE);
+  DosCloseSft(fdesc, FALSE);
 
   if (mode == LOAD && rc == SUCCESS)
     fmemcpy(ep, &TempExeBlock, sizeof(exec_blk));

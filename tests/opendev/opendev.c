@@ -38,23 +38,23 @@ int open_dev(const char drive_letter, const char *device_name)
 
 /* close device using file descriptor returned from open_dev
  */
-void close_dev(int fd)
+void close_dev(int fdesc)
 {
 	union REGS regs;
 
 	regs.h.ah = CLOSE_HANDLE;
-	regs.x.bx = fd;
+	regs.x.bx = fdesc;
 	intdos(&regs, &regs);
 }
 
 int test_device(const char drive_letter, const char *device_name, int should_fail)
 {
-	int fd;
-	fd = open_dev(drive_letter, device_name);
-	if (fd != -1) 
-		close_dev(fd);
+	int fdesc;
+	fdesc = open_dev(drive_letter, device_name);
+	if (fdesc != -1) 
+		close_dev(fdesc);
 
-	if ( ((fd == -1) && should_fail) || ((fd != -1) && !should_fail) )
+	if ( ((fdesc == -1) && should_fail) || ((fdesc != -1) && !should_fail) )
 	{
 		printf("SUCCESS - ");
 		if (should_fail)

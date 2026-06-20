@@ -42,6 +42,11 @@ LOADSEG=0x60
 !if $(CLDEF) == 0
 CLT=$(CL) $(CFLAGST) $(TINY) -I$(INCLUDEPATH)
 CLC=$(CL) $(CFLAGSC) -I$(INCLUDEPATH)
+!if "$(COMPILER)" == "WATCOM"
+CL_HOST = wcl386 -zq -I$(COMPILERPATH)\H
+!else
+CL_HOST = $(CLC)
+!endif
 !endif
 
 TARGET=$(TARGET)$(XCPU)$(XFAT)
