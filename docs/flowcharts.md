@@ -107,10 +107,27 @@ graph TD
     K -->|No| M[Split block: Create new MCB header for remaining memory]
     M --> L
     L --> N[Return segment address of allocated block]
+```
 
 ---
 
-## 5. Flowchart Maintenance and Documentation Guidelines
+## 5. UEFI Boot Phase & Console Redirection Sequence
+
+This diagram maps the boot phase execution flow for modern UEFI motherboard firmware, detailing partition booting, LMS conventional memory chunk allocation, and console redirection via the Graphics Output Protocol (GOP).
+
+```mermaid
+graph TD
+    A[UEFI Firmware Boot] -->|Loads BOOTX64.EFI from ESP partition| B(BOOTX64.EFI)
+    B -->|Queries System Table| C[EFI Graphics Output Protocol GOP]
+    B -->|Queries Memory Map| D[LMS Conventional Memory Allocation]
+    B -->|Loads KERNEL.SYS to RAM| E(C Core Entry: uefi_init)
+    E --> F[uefi_draw_char - Plot pixels directly to GOP Framebuffer]
+    E --> G[uefi_read_sectors - Access sectors via BlockIO Services]
+```
+
+---
+
+## 6. Flowchart Maintenance and Documentation Guidelines
 
 ### A. What We Can Change
 - **Flow Diagram Visual Formatting**: The styling, shape nodes, and colors used in the Mermaid diagram configurations.
@@ -126,5 +143,3 @@ graph TD
 ### D. What to Do If Something Breaks / Troubleshooting
 - **Flow Mismatch**: If runtime execution path deviates from the chart, check listing files (`.lst`) to verify if stack swap target addresses were changed.
 - **Interrupt Routing Anomalies**: If stack pointers corrupt, check the registers stack alignment against the stack swap sequence layout.
-
-```
