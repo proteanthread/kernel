@@ -1,6 +1,6 @@
-# FreeDOS Kernel Flowcharts
+# LibreDOS Kernel Flowcharts
 
-This document provides visual flowcharts of key execution paths within the FreeDOS kernel using Mermaid syntax.
+This document provides visual flowcharts of key execution paths within the LibreDOS kernel using Mermaid syntax.
 
 ---
 
@@ -18,7 +18,7 @@ graph TD
     F --> G{Is HMA Active?}
     G -->|Yes| H(Relocate HMA_TEXT to FFFFh:0000h)
     G -->|No| I(Keep Resident Code in Conventional Memory)
-    H --> J(far call to main.c: FreeDOSmain)
+    H --> J(far call to main.c: LibreDOSmain)
     I --> J
     J --> K[setup_int_vectors]
     K --> L[init_kernel]

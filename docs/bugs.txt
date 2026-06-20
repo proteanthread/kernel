@@ -4,7 +4,7 @@ Please report kernel bugs / issues on GitHub at
 
 
 For support (or if you don't wish to use GitHub) then
-please use the FreeDOS developer and/or user mailing list.
+please use the LibreDOS developer and/or user mailing list.
 
 The former bug database is available on the web at
 

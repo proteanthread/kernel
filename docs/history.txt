@@ -1,14 +1,14 @@
 Bug reports:
 Current bug tracking for the kernel is on GitHub in the FDOS/kernel project.
-Genera FreeDOS bug tracking (kernel bug reports also accepted) at GitLab FreeDOS project.
+Genera LibreDOS bug tracking (kernel bug reports also accepted) at GitLab LibreDOS project.
 
 Note: old bug tracker and source URLs:
 bugzilla bug NUMBER at:
-	http://bugzilla.freedos.org/cgi-bin/bugzilla/show_bug.cgi?id=NUMBER
+	http://bugzilla.libredos.org/cgi-bin/bugzilla/show_bug.cgi?id=NUMBER
 and sourceforge bug tracker at:
 	http://sf.net/tracker/?func=detail&aid=NUMBER&group_id=5109&atid=105109
 SVN source (no longer updated) for old SVN revision NUMBER at:
-	http://freedos.svn.sf.net/viewvc/freedos?view=rev&sortby=rev&revision=NUMBER
+	http://libredos.svn.sf.net/viewvc/libredos?view=rev&sortby=rev&revision=NUMBER
 Changelog items may list old SVN revision NUMBER and bugzilla bug NUMBER.
 
 
@@ -119,7 +119,7 @@ Changelog items may list old SVN revision NUMBER and bugzilla bug NUMBER.
     * EXEC (func 0x4b): fix: do not crash if exMinAlloc == 0xffff
     * FCB: Rename return value lost
     * Fix division for some large numbers such as 0xFFFF01FF/0x10101FF
-    * Fix comments (Gerd Grosse, https://sourceforge.net/p/freedos/bugs/106/)
+    * Fix comments (Gerd Grosse, https://sourceforge.net/p/libredos/bugs/106/)
     * FCB: Rename return value lost
     * Fix compilation with TC2 and MSVC 1.52c.
     * disk: fix sectors count truncation for CHS [fixes #10]
@@ -202,7 +202,7 @@ Changelog items may list old SVN revision NUMBER and bugzilla bug NUMBER.
 	  Allocate bigger chunk of memory for INSTALL for __WATCOMC__
 	  because the memory layout is different from other compilers.
 	  Fixes issues mentioned by Bret Johnson and Christian Masloch
-	  in freedos-user/freedos-kernel.
+	  in libredos-user/libredos-kernel.
 	* r1568 kernel/asmsupt.asm, mkfiles/owlinux.mak: Make sure the
 	  DOS native and Linux cross-builds produce identical binaries.
 	* r1567	drivers/rdpcclk.asm,kernel/{asmsupt,entry,irqstack,kernel,
@@ -461,7 +461,7 @@ Changelog items may list old SVN revision NUMBER and bugzilla bug NUMBER.
 	* r1417 kernel/fatfs.c: RENAME: if the source and target directories
 	  are the same, rename the directory entry in-place instead of creating
 	  a new one and deleting the old one. Fixes archived bugzilla bug:
-	  http://www.freedos.org/bugzilla/cgi-bin/show_bug.cgi?id=1908
+	  http://www.libredos.org/bugzilla/cgi-bin/show_bug.cgi?id=1908
 	* r1416 kernel/fatfs.c: Change dos_rmdir to only use 1 fnode. It now
 	  first checks if the directory is empty and then opens the parent and
 	  deletes the real directory. No longer returns DE_FILENOTFND(2), but
@@ -554,7 +554,7 @@ Changelog items may list old SVN revision NUMBER and bugzilla bug NUMBER.
 -------- Pat Villani, Bart Oldeman, Eric Auer
 
 Thanks to Geraldo Netto for summarizing the 2008 SVN changelog. See also:
-http://freedos.svn.sourceforge.net/viewvc/freedos/kernel/trunk/?view=log
+http://libredos.svn.sourceforge.net/viewvc/libredos/kernel/trunk/?view=log
 Patches are mostly from Bart and Eric, some from Jeremy and Tom.
 
 + Changes Jeremy 2009
@@ -640,7 +640,7 @@ Patches are mostly from Bart and Eric, some from Jeremy and Tom.
 -------- Eric Auer (eric@coli.uni-sb.de)
 
 Thanks to Geraldo Netto for summarizing the SVN changelog - See also:
-http://freedos.svn.sourceforge.net/viewvc/freedos/kernel/trunk/?view=log
+http://libredos.svn.sourceforge.net/viewvc/libredos/kernel/trunk/?view=log
 All main features of Tom's fork are available in kernel 2038 now.
 
 + Changes Bart + Eric
@@ -695,7 +695,7 @@ All main features of Tom's fork are available in kernel 2038 now.
 	* r1310 use a command table for IOCTL, save ca 83 bytes
 	* r1309 fix typo "booot"
 
-+ these changes are already in FreeDOS 1.0 kernel 2036cvs Aug 18 2006:
++ these changes are already in LibreDOS 1.0 kernel 2036cvs Aug 18 2006:
 	* r1305 build system adjustments - suppress dos4g banner etc
 	* r1304 fix MS QB4 (QBasic/QuickBasic) problem, allow double free
 	  (freed MCBs are unlinked from the chain but not invalidated)
@@ -776,7 +776,7 @@ Most recent changes to source code (see version.h) are:
 	* mkfiles/generic.mak: undo a local only change, build list option
 	  is proper way to do this. more win3 support, upx build option.
 	* mkfiles/watcom.mak: allow printf to work correctly when SS!=DS
-	* share/MAKEFILE, share/share.c, share/share.hlp: FreeDOS SHARE
+	* share/MAKEFILE, share/share.c, share/share.hlp: LibreDOS SHARE
 	  (initial revision, later moved to UNSTABLE branch)
 	* sys/fdkrncfg.c: sync printf prototypes (uncorrupt executables)
 	* sys/sys.c: sync printf prototypes (uncorrupt executables)
@@ -863,7 +863,7 @@ Most recent changes to source code (see version.h) are:
 	* inthndlr.c
 	  - fix: for INT21/5F07 and 5F08, before changing bit CDSPHYSDRV,
 	    MS-DOS checks if physical device associated with drive letter. Without
-	    this check MS-FORMAT under FreeDOS was destroys RAMDISK.
+	    this check MS-FORMAT under LibreDOS was destroys RAMDISK.
 	  - zero serial number of Int 21h/30h (else buggy 32RTM thrashed stack) [& Bart]
 	  - set AX = ES after Int 21h/4Ah (undocumented but expected by BRUN45)
 	    (the last 2 changes needed to fix bugs discovered by Michael Devore)
@@ -2332,7 +2332,7 @@ from 2001 May 21: Build2024L
 	 of it. Support for device drivers with multiple devices.
 + Fixes  From Tom Ehlert:
          task.c bug fix (image_size is in bytes)
-	 dosfns.c change dir to E:\FREEDOS\*.PRJ fix
+	 dosfns.c change dir to E:\LIBREDOS\*.PRJ fix
 	 fcbfns.c fixes.
 	 break.c Ctrl-C Ctrl-C -> crash temporary fix.
 + Fixes  From Bart:
@@ -2539,9 +2539,9 @@ from 2001 May 21: Build2024L
 + Fixed	 Lastdrive handling
 + Fixed	 Not enough drives for number present devices
 + Added    Working (though not perfect network redirector)
-           Note: Error codes internal to freedos are negative
-                 Error codes external to freedos are postive.
-                 The network redirector is external to freedos...
+           Note: Error codes internal to libredos are negative
+                 Error codes external to libredos are postive.
+                 The network redirector is external to libredos...
            Note: Running the nonredirected functions on a redirected
                  drive is dangerous.   My patch is very careful
                  not to.  Except in truename.  Where (a) it is safe
@@ -3239,7 +3239,7 @@ Update CVS to 2020
 
 2000/05/06 jhall1
 getvec.asm, dsk.c, inthndlr.c:
-The FreeDOS Kernel.  A DOS kernel that aims to be 100% compatible with
+The LibreDOS Kernel.  A DOS kernel that aims to be 100% compatible with
 MS-DOS.  Distributed under the GNU GPL.
 
 2000/04/29 jtabor
@@ -3978,11 +3978,11 @@ Re-written to support C drive and eliminate restrictions on IPL.SYS
 
 10 Jan 1997  patv
 boot/makefile:
-Changed to use FreeDOS exe2bin and support new boot code
+Changed to use LibreDOS exe2bin and support new boot code
 
 17 Dec 1996  patv
 boot/makefile:
-Converted to FreeDOS exe2bin.
+Converted to LibreDOS exe2bin.
 
 13 Sep 1996  patv
 globals.h:

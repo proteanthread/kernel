@@ -1,6 +1,6 @@
-# FreeDOS Kernel Compilers & Build Systems Guide
+# LibreDOS Kernel Compilers & Build Systems Guide
 
-This document describes how to compile the FreeDOS (`DOS-C`) kernel codebase under various target architectures, compilers, and host operating systems.
+This document describes how to compile the LibreDOS (`DOS-C`) kernel codebase under various target architectures, compilers, and host operating systems.
 
 ---
 
@@ -8,7 +8,7 @@ This document describes how to compile the FreeDOS (`DOS-C`) kernel codebase und
 
 The kernel repository supports compilation under multiple compilers, target processors, and hosting operating systems.
 
-### A. FreeDOS (OpenWatcom)
+### A. LibreDOS (OpenWatcom)
 OpenWatcom is the preferred and recommended compiler for targeting 16-bit real mode.
 - **Compiler**: `wcc` (16-bit C compiler), `wcl` (linker).
 - **Assembler**: `wasm` or `nasm` (Netwide Assembler).

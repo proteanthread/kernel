@@ -1,4 +1,4 @@
-FreeDOS System Installer v3.6f - Nov 20, 2024
+LibreDOS System Installer v3.6f - Nov 20, 2024
 documentation by:
   Jeremy Davis
   Bart Oldeman
@@ -23,7 +23,7 @@ Usage: SYS [source] drive: [bootsect] [{option}]
   /BOOTONLY: do *not* copy kernel / shell, only update boot sector or image
   /UPDATE  : copy kernel and update boot sector (do *not* copy shell)
   /OEM     : indicates boot sector, filenames, and load segment to use
-             /OEM:FD       FreeDOS settings
+             /OEM:FD       LibreDOS settings
              /OEM:EDR      Enhanced DR-DOS (DRBIO.SYS and DRDOS.SYS)
              /OEM:LEDRPACK Enhanced DR-DOS (EDRPACK.SYS, lDOS drload)
              /OEM:LEDR     Enhanced DR-DOS (EDRDOS.COM, lDOS iniload)
@@ -60,7 +60,7 @@ The simplest usage:
 SYS dest:
 
 dest should be the drive (A:, B:, C:, ...) you wish
-to be bootable with FreeDOS (kernel & command.com)
+to be bootable with LibreDOS (kernel & command.com)
 When using this form, KERNEL.SYS and COMMAND.COM
 must reside either in the current directory (which
 is searched first) or in recent revisions may also
@@ -108,7 +108,7 @@ even 1st floppy drive attempts to use LBA support
 (note that CHS may still be used if LBA check fails)
 and /FORCE:CHS will always bypass use of LBA extensions.
 
-SYS by default installs the FreeDOS kernel KERNEL.SYS.
+SYS by default installs the LibreDOS kernel KERNEL.SYS.
 If KERNEL.SYS is not found, it may install a different
 kernel, like an Enhanced DR-DOS kernel, provided it
 finds one. You may explicitly tell SYS which kernel
@@ -209,7 +209,7 @@ BIOSes and gives slightly better performance.
 GLOBALENABLELBASUPPORT which maybe 0 or 1
 GLOBALENABLELBASUPPORT=0 or GLOBALENABLELBASUPPORT=1
 If 0 then LBA will be completely disabled, irrespective
-of the FORCELBA setting. You need this if FreeDOS thinks
+of the FORCELBA setting. You need this if LibreDOS thinks
 you have LBA available, but in reality you do not.
 This setting is set to 1 by default.
 

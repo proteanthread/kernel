@@ -1,7 +1,7 @@
 To create a bootable floppy suitable for copying the system to
 another drive:
 
-1. Change directory (if necessary) to where the FreeDOS Kernel BIN
+1. Change directory (if necessary) to where the LibreDOS Kernel BIN
    directory.
 
 3. Enter the command "install" to transfer the system files to the

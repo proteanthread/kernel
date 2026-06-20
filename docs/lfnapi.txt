@@ -1,4 +1,4 @@
-                         FreeDOS LFN helper API.
+                         LibreDOS LFN helper API.
 
 struct lfn_inode
 {

@@ -1,12 +1,12 @@
 Current version: $Id: nls.txt 59 2000-08-06 04:42:32Z jimtabor $
 
 This document describes all aspects of the implementation
-of NLS in the FreeDOS kernel	-- 2000/06/16 ska
+of NLS in the LibreDOS kernel	-- 2000/06/16 ska
 
 Note:
 	At this time this document contains only an overall description
-	of how the FreeDOS NLS works; detailed implementation details are
-	found in HDR\NLS.H and KERNEL\NLS_LOAD.C. When the FreeDOS developers
+	of how the LibreDOS NLS works; detailed implementation details are
+	found in HDR\NLS.H and KERNEL\NLS_LOAD.C. When the LibreDOS developers
 	finally adopted the current scheme, the larger comments of both
 	files will be merged into a single document -> this file.
 
@@ -30,9 +30,9 @@ Tested is:
 + MUX-14-02 - Get extended country information
 + MUX-14-04 - Get country information
 + MUX-14-FE - DRDOS get extended country information
-+ MUX-14-23 - validate Yes/No prompt (FreeDOS extension)
-+ MUX-14-22 - upcase normal character area (FreeDOS extension)
-+ MUX-14-A2 - upcase filename character area (FreeDOS extension)
++ MUX-14-23 - validate Yes/No prompt (LibreDOS extension)
++ MUX-14-22 - upcase normal character area (LibreDOS extension)
++ MUX-14-A2 - upcase filename character area (LibreDOS extension)
 
 Not implemented is:
 + DOS-65-00 - Change DOS-65-XX information

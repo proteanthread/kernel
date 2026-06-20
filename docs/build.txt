@@ -94,7 +94,7 @@ The host needs to be a 386+ with at least 8MB of memory.
 
 If you feel hardy, read on to understand the directory structure.  A
 more complete description of the build environment is contained in a
-companion book, "The FreeDOS Kernel" (ISBN: 0-87930-436-7) published
+companion book, "The LibreDOS Kernel" (ISBN: 0-87930-436-7) published
 by R&D Books, an imprint of Miller Freeman of Lawrence, Kansas (USA)
 and distributed in the USA and Canada by Publishers Group West.  See
 the file README.TXT for more details.
