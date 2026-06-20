@@ -190,6 +190,10 @@ File: docs\contrib.txt
 Size: 1779 bytes
 Description: Documentation file.
 --------------------------------------------------------------------------------
+File: docs\driver_tutorial.md
+Size: 7228 bytes
+Description: Documentation file.
+--------------------------------------------------------------------------------
 File: docs\exfat_tutorial.md
 Size: 8179 bytes
 Description: Documentation file.
