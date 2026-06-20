@@ -83,7 +83,7 @@ Size: 1105 bytes
 Description: MS-DOS batch script to compile and organize release packages.
 --------------------------------------------------------------------------------
 File: SOURCE_TREE.txt
-Size: 58514 bytes
+Size: 59654 bytes
 Description: Documentation file.
 --------------------------------------------------------------------------------
 File: .github\workflows\ci-build.yml
@@ -174,10 +174,6 @@ File: docs\build.txt
 Size: 5542 bytes
 Description: Documentation file.
 --------------------------------------------------------------------------------
-File: docs\builders_guide.md
-Size: 5554 bytes
-Description: Documentation file.
---------------------------------------------------------------------------------
 File: docs\CNAME
 Size: 15 bytes
 Description: Repository asset.
@@ -216,6 +212,10 @@ Description: Documentation file.
 --------------------------------------------------------------------------------
 File: docs\kernel_architecture.md
 Size: 11897 bytes
+Description: Documentation file.
+--------------------------------------------------------------------------------
+File: docs\kernel_builders_guide.md
+Size: 5554 bytes
 Description: Documentation file.
 --------------------------------------------------------------------------------
 File: docs\lfnapi.txt
