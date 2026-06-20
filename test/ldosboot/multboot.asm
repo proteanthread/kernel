@@ -465,7 +465,7 @@ MULTIBOOT_ESI_AFTER equ MULTIBOOT_BASE + (payload.actual_end - $$ + 0 + 3) / 4 *
 	mov cx, (- (lsvCommandLine.signature + 2) + 512 + 3) / 4
 	xor eax, eax
 	rep stosd				; clear
-		; lsvFirstCluster = 0 (same as for FreeDOS entrypoint)
+		; lsvFirstCluster = 0 (same as for LibreDOS entrypoint)
 		; bsBPB + bpbHiddenSectors = 0 (invalid or unpartitioned)
 		; bsBPB + bpbCHSSectors = 0
 		; bsBPB + bpbCHSHeads = 0
@@ -497,7 +497,7 @@ __CPU__
 	mov dh, lsvefPartitionNumber
 	mov word [bp + lsvExtra], dx
 %endif
-	jmp freedos_entry.multiboot_entry
+	jmp libredos_entry.multiboot_entry
 
 
 %if _MULTIBOOT_DEBUG

@@ -2,7 +2,7 @@
 		          DOS-C Systems Calls
 
 The following table represents the industry standard kernel DOS calls
-currently supported by DOS-C. This list is for FreeDOS build 2036 (5/2006).
+currently supported by DOS-C. This list is for LibreDOS build 2036 (5/2006).
 
 int 20:	Terminated Current Process
 	Supported

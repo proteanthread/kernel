@@ -1171,13 +1171,13 @@ STATIC COUNT dos_extend(f_node_ptr fnp, BOOL emptywrite)
                                         // with average ~32K
     }                                        
 
-    FreeDOS 2025 is really slow. 
+    LibreDOS 2025 is really slow. 
     on a P200 with modern 30GB harddisk, doing above for a 14.5 MB file
     
     MSDOS 6.22 clustersize 8K  ~2.5 sec (accumulates over clusters, reads for 63 sectors seen),
     IBM PCDOS 7.0          8K  ~4.3 
     IBM PCDOS 7.0          16K ~2.8 
-    FreeDOS ke2025             ~17.5
+    LibreDOS ke2025             ~17.5
 
     with the read optimization (ke2025a),    
     
@@ -1940,7 +1940,7 @@ done:
  *      prevents mkdir, if disk is full (was creating crosslinked dirs)
  *   bugs detected, but NOT corrected
  *      on disk full, MSDOS will NOT write any byte, simply return SUCCESS, 0 bytes
- *      FreeDOS will write all possible bytes, then close file(BUG)
+ *      LibreDOS will write all possible bytes, then close file(BUG)
  *
  * the dos_mkdir/extenddir (with getblock() instead of getblockOver) was a real
  * performance killer on large drives. (~0.5 sec /dos_mkdir) TE 

@@ -1,12 +1,12 @@
-# FreeDOS Kernel Architecture & Design Guide
+# LibreDOS Kernel Architecture & Design Guide
 
-This document details the architecture, execution model, and memory segment layout of the FreeDOS (`DOS-C`) kernel. It also provides an integration plan for modernization, specifically focusing on **exFAT** filesystem support.
+This document details the architecture, execution model, and memory segment layout of the LibreDOS (`DOS-C`) kernel. It also provides an integration plan for modernization, specifically focusing on **exFAT** filesystem support.
 
 ---
 
 ## 1. Low-Level Startup Flow
 
-The boot sequence of the FreeDOS kernel is a carefully orchestrated transition from real-mode 16-bit assembly bootstrap code to structured C execution.
+The boot sequence of the LibreDOS kernel is a carefully orchestrated transition from real-mode 16-bit assembly bootstrap code to structured C execution.
 
 ```
 +--------------------------------------------------------+
@@ -31,7 +31,7 @@ The boot sequence of the FreeDOS kernel is a carefully orchestrated transition f
                             |
                             v
 +--------------------------------------------------------+
-|                 main.c: FreeDOSmain()                  |
+|                 main.c: LibreDOSmain()                  |
 |  - Call setup_int_vectors() to register DOS API hooks |
 |  - Call init_kernel() to mount disks and parse config |
 +---------------------------+----------------------------+
@@ -61,7 +61,7 @@ The boot sequence of the FreeDOS kernel is a carefully orchestrated transition f
 3. **Memory Relocation**: The kernel moves itself to higher segments in memory to prevent being overwritten by user executables.
    - If the High Memory Area (HMA) is available via A20 line enable, `HMA_TEXT` and resident data are moved above the 1MB boundary (`FFFF:0000`).
    - Non-resident initial startup logic (`INIT_TEXT`, `INIT_DATA`) is kept in high conventional memory and freed once the shell starts.
-4. **C Transition**: Segment registers are synchronized, and execution jumps via a far return (`retf`) to `_FreeDOSmain` in [main.c](file:///C:/Users/rtdos/GitHub/kernel/kernel/main.c).
+4. **C Transition**: Segment registers are synchronized, and execution jumps via a far return (`retf`) to `_LibreDOSmain` in [main.c](file:///C:/Users/rtdos/GitHub/kernel/kernel/main.c).
 5. **Interrupt Vector Setup**: `setup_int_vectors()` hooks the primary processor interrupts:
    - `Int 21h`: Primary DOS API Router.
    - `Int 25h` / `Int 26h`: Absolute disk read/write.
@@ -97,7 +97,7 @@ The kernel divides code and data into functional segments to maximize the availa
 
 ## 3. Drive Letter Assignment (DLA)
 
-DLA maps physical partitions onto drive letters (`A:` through `Z:`). The FreeDOS kernel handles this in [initdisk.c](file:///C:/Users/rtdos/GitHub/kernel/kernel/initdisk.c):
+DLA maps physical partitions onto drive letters (`A:` through `Z:`). The LibreDOS kernel handles this in [initdisk.c](file:///C:/Users/rtdos/GitHub/kernel/kernel/initdisk.c):
 
 1. **Floppy Disk Detection**: Query bios equipment lists to register floppy drives (assigned as `A:` and `B:`).
 2. **Hard Disk Partitions**:
@@ -111,7 +111,7 @@ DLA maps physical partitions onto drive letters (`A:` through `Z:`). The FreeDOS
 
 ## 4. FileSystem & exFAT Integration Design
 
-To support modern, high-capacity drives, the 16-bit FreeDOS kernel must be updated to support the **exFAT** filesystem. The existing filesystem layer is structured around the `FAT12`, `FAT16`, and `FAT32` structures.
+To support modern, high-capacity drives, the 16-bit LibreDOS kernel must be updated to support the **exFAT** filesystem. The existing filesystem layer is structured around the `FAT12`, `FAT16`, and `FAT32` structures.
 
 ### Current FAT Architecture:
 - **`next_cluster()`** in [fattab.c](file:///C:/Users/rtdos/GitHub/kernel/kernel/fattab.c): Walks the File Allocation Table sector-by-sector to find the next cluster index.

@@ -218,7 +218,7 @@ long DosMkTmp(BYTE FAR * pathname, UWORD attr)
 
     experimenting with NUL on MSDOS 7.0 (win95)
     
-                        WIN95           FREEDOS
+                        WIN95           LIBREDOS
     TRUENAME NUL        C:/NUL             OK
     TRUENAME .\NUL      C:\DOS\NUL         
     TRUENAME ..\NUL     C:\NUL

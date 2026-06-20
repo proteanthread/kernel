@@ -98,7 +98,7 @@ COUNT nUnits BSS_INIT(0);
  *
  *
  * Some thoughts about LBA vs. CHS. by Bart Oldeman 2001/Nov/11
- * Matthias Paul writes in www.freedos.org/freedos/news/technote/113.html:
+ * Matthias Paul writes in www.libredos.org/libredos/news/technote/113.html:
  * (...) MS-DOS 7.10+, which will always access logical drives in a type
  * 05h extended partition via CHS, even if the individual logical drives
  * in there are of LBA type, or go beyond 8 Gb... (Although this workaround
@@ -136,14 +136,14 @@ COUNT nUnits BSS_INIT(0);
  * as one of the LBA types, we can't use CHS and print a warning, using LBA
  * instead if possible, and otherwise refuse to use it.
  *
- * As for EXTENDED_LBA vs. EXTENDED, FreeDOS makes no difference. This is
+ * As for EXTENDED_LBA vs. EXTENDED, LibreDOS makes no difference. This is
  * boot time - there is no reason not to use LBA for reading partition tables,
  * and the MSDOS 7.10 behaviour is not desirable.
  *
  * Note: for floppies we need the boot sector values though and the boot sector
  * code does not use LBA addressing yet.
  *
- * Conclusion: with all this implemented, FreeDOS should be able to gracefully
+ * Conclusion: with all this implemented, LibreDOS should be able to gracefully
  * handle and read foreign hard disks moved across computers, whether using
  * CHS or LBA, strengthening its role as a rescue environment.
  */
@@ -403,7 +403,7 @@ VOID CalculateFATData(ddt * pddt, ULONG NumSectors, UBYTE FileSystem)
     /* Force maximal fatdata=32696 sectors since with our only possible sector
        size (512 bytes) this is the maximum for 4k clusters.
        #clus*secperclus+#fats*fatlength= 4077 * 8 + 2 * 12 = 32640.
-       max FAT12 size for FreeDOS = 16,728,064 bytes */
+       max FAT12 size for LibreDOS = 16,728,064 bytes */
     fatdat = (unsigned)fatdata;
     if (fatdata > 32640)
       fatdat = 32640;
@@ -470,7 +470,7 @@ VOID CalculateFATData(ddt * pddt, ULONG NumSectors, UBYTE FileSystem)
          since with our only possible sectorsize (512 bytes) this is the
          maximum we can address with 64k clusters
          #clus*secperclus+#fats*fatlength=65517 * 128 + 2 * 256=8386688.
-         max FAT16 size for FreeDOS = 4,293,984,256 bytes = 4GiB-983,040 */
+         max FAT16 size for LibreDOS = 4,293,984,256 bytes = 4GiB-983,040 */
       if (fatdata > 8386688ul)
         fatdata = 8386688ul;
       fatentpersec = FLOPPY_SEC_SIZE/2; /* how many 16bit FAT values fit in a default 512 byte sector */

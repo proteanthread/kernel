@@ -343,8 +343,8 @@ d3	test ax, "00"
 	mov cx, cs
 	cmp cx, 60h
 	jne @F
-.freedos_or_msdos1_com_entry:
-	jmp freedos_or_msdos1_com_entry
+.libredos_or_msdos1_com_entry:
+	jmp libredos_or_msdos1_com_entry
 @@:
 
 ;	xor cx, cx
@@ -360,7 +360,7 @@ d3	test ax, "00"
 @@:
 	pop cx
 	sub cx, @B	; cx == 0 iff entered at offset 0
-	jne .freedos_or_msdos1_com_entry
+	jne .libredos_or_msdos1_com_entry
 @@:
 			; cx = 0
 
@@ -975,7 +975,7 @@ finish_load:
 
 	mov bx, word [bp + lsvLoadSeg]
 	cmp bx, ax
-	jae short loaded_all_if_ae	; (for FreeDOS entrypoint) already loaded -->
+	jae short loaded_all_if_ae	; (for LibreDOS entrypoint) already loaded -->
 
 	mov word [bp + ldLoadingSeg], cs
 
@@ -1222,7 +1222,7 @@ ms6_continue1:
 			; two printable non-blank ASCII characters
 			; (ie both bytes in the range 21h..7Eh)
 			;  Rx = RxDOS kernel
-			;  FD = FreeDOS kernel
+			;  FD = LibreDOS kernel
 			;  TP = TestPL
 			;  (lD)eb = lDebug
 			;  (lD)Db = lDDebug
@@ -1238,14 +1238,14 @@ ldos_entry:
 		; dwo [ss:bp - 4] = first data sector (without hidden sectors)
 		; wo [ss:bp - 6] = load_seg, => after last loaded data
 		; wo [ss:bp - 8] = fat_seg, 0 if invalid
-		;  initialised to 0 by MS-DOS 6, 7, FreeDOS entrypoints
+		;  initialised to 0 by MS-DOS 6, 7, LibreDOS entrypoints
 		;  fat_sector is not used for FAT12 !
 		; wo [ss:bp - 12] = fat_sector, -1 if none (FAT16)
 		; dwo [ss:bp - 12] = fat_sector, -1 if none (FAT32)
-		;  initialised to -1 by MS-DOS 6, 7, FreeDOS entrypoints
+		;  initialised to -1 by MS-DOS 6, 7, LibreDOS entrypoints
 		; wo [ss:bp - 16] = first_cluster (FAT16, FAT12)
 		; dwo [ss:bp - 16] = first_cluster (FAT32)
-		;  initialised to 0 by FreeDOS entrypoint
+		;  initialised to 0 by LibreDOS entrypoint
 		;
 		; Extension 1:
 		; lsvExtra (word [ss:bp - 18]) may be set,
@@ -1802,15 +1802,15 @@ error_data_checksum_failed:
 %endif
 
 
-freedos_or_msdos1_com_entry:
+libredos_or_msdos1_com_entry:
 	call @F
 @@:
 	pop cx
 	cmp cx, @B
 	jne msdos1_com_entry
 
-freedos_entry:
-		; This is the FreeDOS compatible entry point.
+libredos_entry:
+		; This is the LibreDOS compatible entry point.
 		;  Supports FAT32 too.
 		; cs:ip = 60h:0
 		; whole load file loaded
@@ -1870,14 +1870,14 @@ d3	test ax, "F0"
 .multiboot_entry:
 	mov ax, cs
 	add ax, (payload.actual_end -$$+0 +15) >> 4
-				; Multiboot1/2 and FreeDOS have whole image
+				; Multiboot1/2 and LibreDOS have whole image
 	xor cx, cx		; cx = 0
 	jmp ms7_entry.continue2
 
 
 .error:
 	call error
-	asciz "Invalid base pointer in FreeDOS entrypoint."
+	asciz "Invalid base pointer in LibreDOS entrypoint."
 
 
 %if _LSVEXTRA

@@ -32,7 +32,7 @@ sys/*.H
 kernel/*.lnk
 kernel/*.LNK
 
-# FreeDOS build tools configuration
+# LibreDOS build tools configuration
 config.bat
 config.mak
 

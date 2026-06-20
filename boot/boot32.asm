@@ -1,5 +1,5 @@
 
-; Memory layout for the FreeDOS FAT32 single stage boot process:
+; Memory layout for the LibreDOS FAT32 single stage boot process:
 ;
 ;	...
 ;	|-------| 1FE0h:7E00h = 27C00h (159 KiB)
@@ -279,7 +279,7 @@ cn_exit:
 
 boot_success:
 		mov dl, [drive]			; for Enhanced DR-DOS load
-		mov bl, dl			; for FreeDOS load
+		mov bl, dl			; for LibreDOS load
 		jmp	far [loadsegoff_60]
 
 ; Convert cluster to the absolute sector

@@ -90,7 +90,7 @@ shift
   -o test.com &&
 "$NASM" "${LDOSBOOT_DIR%/}"/boot.asm -w-user \
   "$options_i_lmacros" \
-  -D_COMPAT_FREEDOS=1 \
+  -D_COMPAT_LIBREDOS=1 \
   -D_LBA=0 -D_USE_PART_INFO=0 -D_QUERY_GEOMETRY=0 \
   -D_MAP=boot.map \
   -D_FAT$bpe -D_UNIT=$unit \

@@ -4,7 +4,7 @@
 /*                      Disk access Header File                 */
 /*                                                              */
 /*                      Copyright (c) 2012                      */
-/*                      FreeDOS                                 */
+/*                      LibreDOS                                 */
 /*                      All Rights Reserved                     */
 /*                                                              */
 /* This file is part of DOS-C.                                  */

@@ -8,7 +8,7 @@
  *           AL = FFh if no drive letter present or drive letter invalid
  *           CF = 0 always (errors expressed via AL=FFh, not carry)
  *
- * Logic (from FreeDOS inthndlr.c case 0x1a):
+ * Logic (from LibreDOS inthndlr.c case 0x1a):
  *   Examine DS:SI[0] and DS:SI[1].
  *   If DS:SI[1] == ':':
  *     Uppercase DS:SI[0]; if in 'A'..'Z', return AL = char - 'A'.

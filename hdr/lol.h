@@ -74,7 +74,7 @@ struct lol {
   unsigned short uppermem_root;/* 66 Start of umb chain (usually 9fff)    */
   unsigned short last_para;    /* 68 para: start scanning during memalloc */
   /* ANY ITEM BELOW THIS POINT MAY CHANGE */
-  /* FreeDOS specific entries */
+  /* LibreDOS specific entries */
   unsigned char os_setver_minor;/*6a settable minor DOS version           */
   unsigned char os_setver_major;/*6b settable major DOS version           */
   unsigned char os_minor;      /* 6c minor DOS version                    */

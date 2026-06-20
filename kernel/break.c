@@ -1,7 +1,7 @@
 /****************************************************************/
 /*                                                              */
 /*                            break.c                           */
-/*                            FreeDOS                           */
+/*                            LibreDOS                           */
 /*                                                              */
 /*   Control Break detection and handling                       */
 /*                                                              */

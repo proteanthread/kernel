@@ -1,7 +1,7 @@
 /****************************************************************/
 /*                                                              */
 /*                            nls.c                             */
-/*                           FreeDOS                            */
+/*                           LibreDOS                            */
 /*                                                              */
 /*    National Languge Support functions and data structures    */
 /*                                                              */
@@ -9,7 +9,7 @@
 /*                         Steffen Kaiser                       */
 /*                      All Rights Reserved                     */
 /*                                                              */
-/* This file is part of FreeDOS.                                */
+/* This file is part of LibreDOS.                                */
 /*                                                              */
 /* DOS-C is free software; you can redistribute it and/or       */
 /* modify it under the terms of the GNU General Public License  */
@@ -127,19 +127,19 @@ STATIC COUNT muxLoadPkg(int subfct, UWORD cp, UWORD cntry)
   /*          0x1401 == not installed, not ok to install          */
   /*          0x14FF == installed                                 */
 
-#if NLS_FREEDOS_NLSFUNC_VERSION == NLS_FREEDOS_NLSFUNC_ID
+#if NLS_LIBREDOS_NLSFUNC_VERSION == NLS_LIBREDOS_NLSFUNC_ID
   /* make sure the NLSFUNC ID is updated */
-#error "NLS_FREEDOS_NLSFUNC_VERSION == NLS_FREEDOS_NLSFUNC_ID"
+#error "NLS_LIBREDOS_NLSFUNC_VERSION == NLS_LIBREDOS_NLSFUNC_ID"
 #endif
-  /* Install check must pass the FreeDOS NLSFUNC version as codepage (cp) and
-     the FreeDOS NLSFUNC ID as buffer size (bufsize).  If they match the
-     version in NLSFUNC, on return it will set BX (cp on entry) to FreeDOS
+  /* Install check must pass the LibreDOS NLSFUNC version as codepage (cp) and
+     the LibreDOS NLSFUNC ID as buffer size (bufsize).  If they match the
+     version in NLSFUNC, on return it will set BX (cp on entry) to LibreDOS
      NLSFUNC ID.  call_nls will set the high word = BX on return.
   */
-  ret = muxGo(0, 0, NLS_FREEDOS_NLSFUNC_VERSION, 0, NLS_FREEDOS_NLSFUNC_ID, 0);
+  ret = muxGo(0, 0, NLS_LIBREDOS_NLSFUNC_VERSION, 0, NLS_LIBREDOS_NLSFUNC_ID, 0);
   if ((int)ret != 0x14ff)
     return DE_FILENOTFND;       /* No NLSFUNC --> no load */
-  if ((int)(ret >> 16) != NLS_FREEDOS_NLSFUNC_ID) /* FreeDOS NLSFUNC will return */
+  if ((int)(ret >> 16) != NLS_LIBREDOS_NLSFUNC_ID) /* LibreDOS NLSFUNC will return */
     return DE_INVLDACC;         /* This magic number */
 
   /* OK, the correct NLSFUNC is available --> load pkg */
@@ -687,7 +687,7 @@ UWORD ASMCFUNC syscall_MUX14(iregs FAR *pr)
   switch (pr->AL)
   {
     case NLSFUNC_INSTALL_CHECK:
-      pr->BX = NLS_FREEDOS_NLSFUNC_ID;
+      pr->BX = NLS_LIBREDOS_NLSFUNC_ID;
       return SUCCESS;           /* kernel just simulates default functions */
     case NLSFUNC_DOS38:
       return nlsGetData(nls, NLS_DOS_38, MK_FP(pr->ES, pr->DI), 34);

@@ -250,7 +250,7 @@ typedef struct ddtstruct {
 #define DF_DPCHANGED  0x080     /* device parameters changed */
 #define DF_REFORMAT   0x100     /* disk formatted so BPB has changed */
 #define DF_NOACCESS   0x200     /* don't allow access (read or write) to fixed media */
-/* freedos specific flag bits */
+/* libredos specific flag bits */
 #define DF_LBA        0x400
 #define DF_WRTVERIFY  0x800
 #define DF_DMA_TRANSPARENT   0x1000 /* DMA boundary errors are handled transparently */

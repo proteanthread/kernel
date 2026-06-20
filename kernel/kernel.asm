@@ -166,7 +166,7 @@ segment INIT_TEXT
  %endrep
 %endif
 
-                extern  _FreeDOSmain
+                extern  _LibreDOSmain
                 extern  _query_cpu
                 
                 ;
@@ -352,7 +352,7 @@ extern _debugger_present
 .skip_ints_00_06:
 	mov byte [_debugger_present], al
 
-           jmp     _FreeDOSmain
+           jmp     _LibreDOSmain
 
 %if XCPU != 86
         cpu 8086
@@ -363,7 +363,7 @@ cpu_abort:
 
         call .first             ; print string that follows (address pushed by call)
 
-%define LOADNAME "FreeDOS"
+%define LOADNAME "LibreDOS"
         db 13,10                ; (to emit a blank line after the tracecodes)
         db 13,10
         db LOADNAME, " load error: An 80", '0'+(XCPU / 100)
@@ -593,7 +593,7 @@ _uppermem_root  dw      0ffffh          ; 0066 dmd_upper_root (usually 9fff)
 _last_para      dw      0               ; 0068 para of last mem search
 SysVarEnd:
 
-;; FreeDOS specific entries
+;; LibreDOS specific entries
 ;; all variables below this point are subject to relocation.
 ;; programs should not rely on any values below this point!!!
 
@@ -897,7 +897,7 @@ _current_filepos times 2 dw 0       ;2AE - current offset in file
                 times (2cah - ($ - _internal_data)) db 0
                 ;global _save_BX
                 ;global _save_DS
-save_BX                 dw      0       ;2CA - unused by FreeDOS, for Win3.x
+save_BX                 dw      0       ;2CA - unused by LibreDOS, for Win3.x
 save_DS                 dw      0       ;      compatibility, match MS's positions
                         dw      0       ;      store DS,BX on entry to int21h (ie caller's values)
                 global  _prev_user_r

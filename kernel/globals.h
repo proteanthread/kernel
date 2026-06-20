@@ -201,7 +201,7 @@ GLOBAL WORD bDumpRdWrParms
 #if 0                           /* defined in MAIN.C now to save low memory */
 
 GLOBAL BYTE copyright[] =
-    "(C) Copyright 1995-2006 Pasquale J. Villani and The FreeDOS Project.\n"
+    "(C) Copyright 1995-2006 Pasquale J. Villani and The LibreDOS Project.\n"
     "All Rights Reserved. This is free software and comes with ABSOLUTELY NO\n"
     "WARRANTY; you can redistribute it and/or modify it under the terms of the\n"
     "GNU General Public License as published by the Free Software Foundation;\n"
@@ -214,7 +214,7 @@ GLOBAL const BYTE ASM os_release[]
     = KERNEL_VERSION_STRING
 #if 0
     "For technical information and description of the DOS-C operating system\n\
-consult \"FreeDOS Kernel\" by Pat Villani, published by Miller\n\
+consult \"LibreDOS Kernel\" by Pat Villani, published by Miller\n\
 Freeman Publishing, Lawrence KS, USA (ISBN 0-87930-436-7).\n\
 \n"
 #endif

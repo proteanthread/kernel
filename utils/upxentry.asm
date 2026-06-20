@@ -1,7 +1,7 @@
 
 %if 0
 
-UPX preparation stub for DOS/EXE format compressed FreeDOS kernel
+UPX preparation stub for DOS/EXE format compressed LibreDOS kernel
  Public Domain by C. Masloch, 2022
 
 %endif

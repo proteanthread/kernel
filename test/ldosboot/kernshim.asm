@@ -1,7 +1,7 @@
 
 %if 0
 
-FreeDOS kernel executable MZ header shim
+LibreDOS kernel executable MZ header shim
  by C. Masloch, 2022
 
 Usage of the works is permitted provided that this

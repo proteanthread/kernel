@@ -12,14 +12,14 @@ available and take better advantage of installed hardware
 without wasting resources on computers lacking it.  This
 software is generally loaded during the kernel initialization
 phase, with details describing what to load expressed in the
-file CONFIG.SYS.  The FreeDOS kernel will first look for a
+file CONFIG.SYS.  The LibreDOS kernel will first look for a
 file named FDCONFIG.SYS, should it exist, it will will be used
-instead of CONFIG.SYS; this allows the FreeDOS kernel to coexist
+instead of CONFIG.SYS; this allows the LibreDOS kernel to coexist
 and be configured differently than another DOS kernel.  There
 are additional options available to adjust other aspects of the
-kernel's behaviour.  Note: some options listed below are FreeDOS
+kernel's behaviour.  Note: some options listed below are LibreDOS
 specific and will not work when using other/older DOS kernels.
-Below is list of all documented FreeDOS config.sys supported
+Below is list of all documented LibreDOS config.sys supported
 options; additional undocumented options may exist but are not
 meant for normal usage.
 
@@ -37,9 +37,9 @@ BUFFERSHIGH
 Usage:  buffers=nn[,m] where nn is in range 1-99 & m is in range 1-8
 Memory buffers used by the kernel; primary[,secondary]
 The secondary buffer option is available for compatibility with
-other DOS kernels, but is ignored by the FreeDOS kernel. In MS DOS,
-a secondary buffer can used to read-ahead data. FreeDOS does not do
-this. Buffers are stored in HMA by FreeDOS, unless you select nn to
+other DOS kernels, but is ignored by the LibreDOS kernel. In MS DOS,
+a secondary buffer can used to read-ahead data. LibreDOS does not do
+this. Buffers are stored in HMA by LibreDOS, unless you select nn to
 allocate more buffers than fit in HMA. If nn is smaller, unused HMA
 space will be used for further buffers until something else allocates
 the HMA space for something else. Even then, at least nn buffers will
@@ -129,8 +129,8 @@ Usage:  fcbs=nnn
 where nnn is in range 1-255
 Sets the number of File Control Blocks to reserve room for.
 As file control blocks have been replaced by file handles
-(see files) and FreeDOS dynamically simulates FCBS from the
-handle data as needed, nnn is simply ignored by FreeDOS.
+(see files) and LibreDOS dynamically simulates FCBS from the
+handle data as needed, nnn is simply ignored by LibreDOS.
 Example:  fcbs=4
 
 FILES
@@ -323,7 +323,7 @@ Adjusts boot time processing behaviour.
    F5 (skip config) and F8 (single step config.sys) key presses
    are ignored (note: with /F a well timed F5/F8 still works, whereas
    /N completely disables).
-/W is NOT supported in FreeDOS. This option in MS DOS would set a flag
+/W is NOT supported in LibreDOS. This option in MS DOS would set a flag
    for Windows 3.0 to skip loading wina20.386 from the root directory,
    used when \WINA20.386 is moved into a subdirectory, a device line
    with proper path must be added to Microsoft (R) Windows SYSTEM.INI 
@@ -331,15 +331,15 @@ Adjusts boot time processing behaviour.
 
 VERSION
 Usage:  version=x.y
-FreeDOS specific command to specify what DOS version to report. For
+LibreDOS specific command to specify what DOS version to report. For
 a kernel with FAT32 support, 7.10 is a good choice. Otherwise, 5.0
 and 6.22 are common values. FreeCOM command.com "ver /r" displays
-both the reported and the FreeDOS internal version numbers.
+both the reported and the LibreDOS internal version numbers.
 Example:  version=6.22
 
 
 
-Advanced - FreeDOS specific CONFIG.SYS menu processing:
+Advanced - LibreDOS specific CONFIG.SYS menu processing:
 -------------------------------------------------------
 
 normal
@@ -440,7 +440,7 @@ Use MENUCOLOR=foreground[,background] to obtain a full screen menu
 where you can use the arrow keys. Example (note that box drawing
 characters are used that look strange in other character sets):
 
-REM *** This is the FreeDos Config.sys ***
+REM *** This is the LibreDos Config.sys ***
 REM *** executed before autoexec.bat   ***
 
 REM *** Set white foreground, red background ***
@@ -452,7 +452,7 @@ buffers=20
 REM *** The Menu ***
 MENU
 MENU  *-------------------------------------------------------*
-MENU  ! My Menu - FreeDOS rules!                              !
+MENU  ! My Menu - LibreDOS rules!                              !
 MENU  *-------------------------------------------------------*
 MENU  !                                                       !
 MENU  !   1. Test with border                                 !

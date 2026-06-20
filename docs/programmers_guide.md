@@ -1,6 +1,6 @@
-# FreeDOS Kernel Programmer's Guide & Modernization Manual
+# LibreDOS Kernel Programmer's Guide & Modernization Manual
 
-This document is a technical reference guide for programming the FreeDOS (`DOS-C`) kernel. It covers internal interfaces, core data structures, driver hooking mechanism, and the roadmap for modernizing the kernel into a 64-bit system and a portable embedded micro-kernel without losing MS-DOS/PC-DOS compatibility.
+This document is a technical reference guide for programming the LibreDOS (`DOS-C`) kernel. It covers internal interfaces, core data structures, driver hooking mechanism, and the roadmap for modernizing the kernel into a 64-bit system and a portable embedded micro-kernel without losing MS-DOS/PC-DOS compatibility.
 
 ---
 

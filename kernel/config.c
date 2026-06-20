@@ -617,7 +617,7 @@ struct memdiskopt {
 /* preprocesses memdisk command line to allow simpler handling
   { is replaced by unsigned offset to start of next config line
   e.g.  "{{HI{HI}{HI{HI" --> "13HI4HI}3HI3HI"
-  FreeDOS supports max 256 length config lines, memdisk 4 max command length 2047
+  LibreDOS supports max 256 length config lines, memdisk 4 max command length 2047
 */
 BYTE FAR * ProcessMemdiskLine(BYTE FAR *cLine)
 {

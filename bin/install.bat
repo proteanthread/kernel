@@ -25,7 +25,7 @@ echo copying config.sys..
 copy config.sys %D%
 echo copying sys.com..
 copy sys.com %D%
-label %D% freedos
+label %D% libredos
 
 rem exit methods
 goto done

@@ -1,7 +1,7 @@
 
 %if 0
 
-Loader adjustment to load FreeDOS kernel
+Loader adjustment to load LibreDOS kernel
  by C. Masloch, 2017
 
 Usage of the works is permitted provided that this

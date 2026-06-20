@@ -1,12 +1,12 @@
-# FreeDOS Kernel User's Guide
+# LibreDOS Kernel User's Guide
 
-This document describes how to configure, deploy, and adjust parameters for the FreeDOS (`DOS-C`) kernel.
+This document describes how to configure, deploy, and adjust parameters for the LibreDOS (`DOS-C`) kernel.
 
 ---
 
 ## 1. SYS CONFIG Command Tool
 
-The FreeDOS kernel embeds configuration parameters inside its executable binary (mapped to the `_LowKernelConfig` struct in [kernel.asm](file:///C:/Users/rtdos/GitHub/kernel/kernel/kernel.asm)). Users can inspect and modify these parameters directly without recompiling, using the `SYS CONFIG` command of [SYS.COM](file:///C:/Users/rtdos/GitHub/kernel/sys/sys.c).
+The LibreDOS kernel embeds configuration parameters inside its executable binary (mapped to the `_LowKernelConfig` struct in [kernel.asm](file:///C:/Users/rtdos/GitHub/kernel/kernel/kernel.asm)). Users can inspect and modify these parameters directly without recompiling, using the `SYS CONFIG` command of [SYS.COM](file:///C:/Users/rtdos/GitHub/kernel/sys/sys.c).
 
 ### Core Syntax:
 - **Inspect Default**: `SYS CONFIG` (looks for `KERNEL.SYS` in current directory).

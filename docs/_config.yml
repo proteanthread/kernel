@@ -1,4 +1,4 @@
 theme: jekyll-theme-tactile
-title: "FreeDOS kernel"
-description: "Implementation of the core DOS API for FreeDOS, kernel.sys"
+title: "LibreDOS kernel"
+description: "Implementation of the core DOS API for LibreDOS, kernel.sys"
 show_downloads: "true"

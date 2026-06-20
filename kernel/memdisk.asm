@@ -5,7 +5,7 @@
 ;
 ;                            DOS-C
 ;                   Copyright (c) 2011
-;                        FreeDOS
+;                        LibreDOS
 ;                      All Rights Reserved
 ;
 ; This file is part of DOS-C.

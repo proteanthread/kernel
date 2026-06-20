@@ -1,3 +1,3 @@
 @echo off
-echo Welcome to FreeDOS (http://www.freedos.org)!
+echo Welcome to LibreDOS (http://www.libredos.org)!
 path=a:\

@@ -145,7 +145,7 @@ _spawn_int23:
 ;      spawn_int() assumes a stack layout at
 ;      usr_ss:usr:sp. but usr:ss currently contains 0
 ;      
-;      this patch helps FreeDos to survive CtrlC,
+;      this patch helps LibreDos to survive CtrlC,
 ;      but should clearly be done somehow else.
                 mov     ss, [_user_r+2]
                 RestoreSP

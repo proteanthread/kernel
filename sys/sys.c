@@ -422,9 +422,9 @@ struct VerifyBootSectorSize {
 int FDKrnConfigMain(int argc, char **argv);
 #endif
 
-/* FreeDOS sys, we default to our kernel and load segment, but
+/* LibreDOS sys, we default to our kernel and load segment, but
    if not found (or explicitly given) support OEM DOS variants
-   (such as DR-DOS or a FreeDOS kernel mimicing other DOSes).
+   (such as DR-DOS or a LibreDOS kernel mimicing other DOSes).
    Note: other (especially older) DOS versions expect the boot
    loader to perform particular steps, which we may not do;
    older PC/MS DOS variants may work with the OEM compatible
@@ -438,10 +438,10 @@ typedef struct DOSBootFiles {
   BOOL         stdbs;    /* use FD boot sector (T) or oem compat one (F) */
   LONG         minsize;  /* smallest dos file can be and be valid, 0=existance optional */
 } DOSBootFiles;
-#define FREEDOS_FILES      { "KERNEL.SYS", NULL, 0x60/*:0*/, 1, 0 },
+#define LIBREDOS_FILES      { "KERNEL.SYS", NULL, 0x60/*:0*/, 1, 0 },
 DOSBootFiles bootFiles[] = {
   /* Note: This order is the order OEM:AUTO uses to determine DOS flavor. */
-  /* FreeDOS */   FREEDOS_FILES
+  /* LibreDOS */   LIBREDOS_FILES
   /* EDR-DOS  */ { "DRBIO.SYS", "DRDOS.SYS", 0x70, 1, 1 },
   /* EDR-DOS  */ { "EDRPACK.SYS", NULL, 0x60, 1, 0 },
   /* EDR-DOS  */ { "EDRDOS.COM", NULL, 0x60, 1, 0 },
@@ -459,7 +459,7 @@ DOSBootFiles bootFiles[] = {
 
 /* associate friendly name with index into bootFiles array */
 #define OEM_AUTO (-1) /* attempt to guess DOS on source drive */
-#define OEM_FD     0  /* standard FreeDOS mode */
+#define OEM_FD     0  /* standard LibreDOS mode */
 #define OEM_EDR    1  /* DRBIO, DRDOS version of EDR kernel  */
 #define OEM_LEDRPACK 2 /* lDOS drload version of EDR kernel */
 #define OEM_LEDR   3  /* lDOS iniload version of EDR kernel */
@@ -474,7 +474,7 @@ DOSBootFiles bootFiles[] = {
 #endif
 
 CONST char * msgDOS[DOSFLAVORS] = {  /* order should match above items */
-  "\n",  /* In standard FreeDOS mode, don't print anything special */
+  "\n",  /* In standard LibreDOS mode, don't print anything special */
   "Enhanced DR-DOS 7.01.07+ mode (DRBIO.SYS and DRDOS.SYS)\n",
   "Enhanced DR-DOS mode (EDRPACK.SYS, lDOS drload)\n",
   "Enhanced DR-DOS mode (EDRDOS.COM, lDOS iniload)\n",
@@ -527,7 +527,7 @@ void showHelpAndExit(void)
       "  /BOOTONLY: do *not* copy kernel / shell, only update boot sector or image\n"
       "  /UPDATE  : copy kernel and update boot sector (do *not* copy shell)\n"
       "  /OEM     : indicates boot sector, filenames, and load segment to use\n"
-      "             /OEM:FD       FreeDOS settings\n"
+      "             /OEM:FD       LibreDOS settings\n"
       "             /OEM:EDR      Enhanced DR-DOS (DRBIO.SYS and DRDOS.SYS)\n"
       "             /OEM:LEDRPACK Enhanced DR-DOS (EDRPACK.SYS, lDOS drload)\n"
       "             /OEM:LEDR     Enhanced DR-DOS (EDRDOS.COM, lDOS iniload)\n"
@@ -906,7 +906,7 @@ void initOptions(int argc, char *argv[], SYSOptions *opts)
     }
   }
 
-  /* if unable to determine DOS, assume FreeDOS */
+  /* if unable to determine DOS, assume LibreDOS */
   if (opts->flavor == OEM_AUTO) opts->flavor = OEM_FD;
 
   /* set compatibility settings not explicitly set */
@@ -1651,7 +1651,7 @@ void put_boot(SYSOptions *opts)
 
   bs = (struct bootsectortype *)newboot;
 
-  /* originally OemName was "FreeDOS", changed for better compatibility */
+  /* originally OemName was "LibreDOS", changed for better compatibility */
   memcpy(bs->OemName, "FRDOS5.1", 8); /* Win9x seems to require
                                          5 uppercase letters,
                                          digit(4 or 5) dot digit */

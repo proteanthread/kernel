@@ -23,7 +23,7 @@
         	  if no key hit, boot from HD
 
 	Version_: only in kernel 2042 or higher, offline version identification
-		OemID: 0xFD for FreeDOS kernel, 0xDC for DosC kernel
+		OemID: 0xFD for LibreDOS kernel, 0xDC for DosC kernel
 		Major: actual kernel version (not MS-DOS compatibility version), e.g. 2
 		Revision: revision sequence, e.g. 42 for kernel 2042
 		Release: 0 if released version, >0 for svn builds (e.g. svn revision #)

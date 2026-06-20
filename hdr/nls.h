@@ -1,7 +1,7 @@
 /****************************************************************/
 /*                                                              */
 /*                            NLS.H                             */
-/*                           FreeDOS                            */
+/*                           LibreDOS                            */
 /*                                                              */
 /*    National Language Support data structures                 */
 /*                                                              */
@@ -9,7 +9,7 @@
 /*                         Steffen Kaiser                       */
 /*                      All Rights Reserved                     */
 /*                                                              */
-/* This file is part of FreeDOS.                                */
+/* This file is part of LibreDOS.                                */
 /*                                                              */
 /* DOS-C is free software; you can redistribute it and/or       */
 /* modify it under the terms of the GNU General Public License  */
@@ -287,11 +287,11 @@
  *	How the kernel and NLSFUNC communicate with each other
  */
         /* Must be pased to and returned by NLSFUNC upon MUX-14-00 */
-#define NLS_FREEDOS_NLSFUNC_ID	0x534b
+#define NLS_LIBREDOS_NLSFUNC_ID	0x534b
 		/* What version of nlsInfo and accompanying associations
 		   Must be passed to NLSFUNC upon MUX-14-00 to identify the
 		   correct kernel to the tools. */
-#define NLS_FREEDOS_NLSFUNC_VERSION 0xFD02
+#define NLS_LIBREDOS_NLSFUNC_VERSION 0xFD02
         /* Represents a call to DOS-38 within DOS-65 handlers.
            Current implementation relys on 0x101! */
 #define NLS_DOS_38 0x101
@@ -506,7 +506,7 @@ extern BYTE FAR hcTablesStart[], hcTablesEnd[];
 /* File structure:
 	S0: Base (Primary) structure -- file header
 	Offset	Size	Meaning
-	0		array	ID string "FreeDOS COUNTRY.SYS v1.0\r\n"
+	0		array	ID string "LibreDOS COUNTRY.SYS v1.0\r\n"
 	26		array	Copyright etc. (plain 7bit ASCII text)
 	26+N	2byte	\x1a\0
 	26+N+2	array	padded with \0 upto next offset
@@ -551,7 +551,7 @@ extern BYTE FAR hcTablesStart[], hcTablesEnd[];
 	COUNTRY.SYS into other files.
 */
 
-#define CSYS_FD_IDSTRING "FreeDOS COUNTRY.SYS v1.0\r\n\x1a"
+#define CSYS_FD_IDSTRING "LibreDOS COUNTRY.SYS v1.0\r\n\x1a"
 
 #if 0
 struct csys_function {       /* S3: function definition */

@@ -140,7 +140,7 @@ VOID ASMCFUNC int21_syscall(iregs FAR * irp)
           irp->AL = 0xff;
           break;
 
-        /* the remaining are FreeDOS extensions */
+        /* the remaining are LibreDOS extensions */
 
                         /* return CPU family */
         case 0xfa:
@@ -152,7 +152,7 @@ VOID ASMCFUNC int21_syscall(iregs FAR * irp)
 #endif
 
 #if 1      /* duplicates DOS 4 int 2F/122Fh, but used by CALLVER */
-           /* set FreeDOS returned version for int 21.30 from BX */
+           /* set LibreDOS returned version for int 21.30 from BX */
         case 0xfc:
           os_setver_major = irp->BL;
           os_setver_minor = irp->BH;
@@ -1688,7 +1688,7 @@ lfn_findclose:
 #endif
 
 #ifdef WITHLFNAPI
-      /* FreeDOS LFN helper API functions */
+      /* LibreDOS LFN helper API functions */
     case 0x74:
       {
         switch (lr.AL)
@@ -2299,7 +2299,7 @@ VOID ASMCFUNC int2F_12_handler(struct int2f12regs FAR *pr)
        * No state is modified. Equivalent to INT 21h/AH=35h but callable
        * from within the kernel without re-entering INT 21h.
        *
-       * Note: not used by FreeDOS kernel
+       * Note: not used by LibreDOS kernel
        */
       {
         UBYTE FAR * p = (UBYTE FAR *)getvec(r.CL);
@@ -2336,7 +2336,7 @@ VOID ASMCFUNC int2F_12_handler(struct int2f12regs FAR *pr)
        * two-byte character as a path separator. Check DBCS lead-byte
        * ranges from the DBCS table (see INT 21h/AH=63h / DBCS_TAB).
        *
-       * Note: not used by FreeDOS kernel
+       * Note: not used by LibreDOS kernel
        */
       {
         unsigned char c = r.callerARG1 & 0xFF;
@@ -2370,7 +2370,7 @@ VOID ASMCFUNC int2F_12_handler(struct int2f12regs FAR *pr)
        * making it safe to call from within the kernel. May trap to
        * INT 23h on break. Modifies: flags; AL preserved.
        *
-       * Note: not used by FreeDOS kernel
+       * Note: not used by LibreDOS kernel
        */
       {
         check_handle_break(&syscon);
@@ -2670,7 +2670,7 @@ VOID ASMCFUNC int2F_12_handler(struct int2f12regs FAR *pr)
        * Output: ZF=1 if DS==ES and SI==DI (equal); ZF=0 otherwise.
        *         CF=0. No other registers modified.
        *
-       * Note: not used by FreeDOS kernel; may be used by MSDOS
+       * Note: not used by LibreDOS kernel; may be used by MSDOS
        *       used by Lantastic
        */
       {
@@ -2790,7 +2790,7 @@ VOID ASMCFUNC int2F_12_handler(struct int2f12regs FAR *pr)
        * media check / DPB build for the new drive. Return the total 
        * number of valid drives in AL.
        *
-       * Note: not used by FreeDOS kernel
+       * Note: not used by LibreDOS kernel
        */
       {
         UBYTE drv = r.AL;
@@ -2902,7 +2902,7 @@ VOID ASMCFUNC int2F_12_handler(struct int2f12regs FAR *pr)
        *         SI advanced by CX; CX = 0.
        *
        * Differs from 0x1C which uses a 16-bit carry-folded sum.
-       * Note: not used by FreeDOS kernel
+       * Note: not used by LibreDOS kernel
        */
       {
         UBYTE FAR *p = MK_FP(r.DS, r.SI);
@@ -2926,7 +2926,7 @@ VOID ASMCFUNC int2F_12_handler(struct int2f12regs FAR *pr)
        *         ES:DI -> second ASCIIZ filename
        * Output: ZF=1 if filenames equivalent; ZF=0 if not equivalent.
        *
-       * Note: not used by FreeDOS kernel
+       * Note: not used by LibreDOS kernel
        */
       {
         const char FAR *s1 = MK_FP(r.DS, r.SI);
@@ -3183,7 +3183,7 @@ VOID ASMCFUNC int2F_12_handler(struct int2f12regs FAR *pr)
        * Calls DosSeek() with handle BX, offset MK_ULONG(CX,DX), and method
        * BP & 0xFF. On success, splits the returned position into DX (high) and
        * AX (low). NOTE: RBIL documents that MS-DOS sets a dummy stack frame
-       * pointer and moves BP to AX before calling; FreeDOS does not replicate
+       * pointer and moves BP to AX before calling; LibreDOS does not replicate
        * that internal mechanism but achieves the same observable result.
        * Modifies: AX, DX, FLAGS, CritErrCode.
        */
@@ -3231,7 +3231,7 @@ VOID ASMCFUNC int2F_12_handler(struct int2f12regs FAR *pr)
        * In a full implementation, stores ES:DI into the DOS-internal
        * FastOpen_Entry FAR pointer (or zeros it if BX != 0), enabling the
        * DOS name-lookup path to call through to a FASTOPEN directory cache
-       * before going to disk. FreeDOS currently does nothing here; the
+       * before going to disk. LibreDOS currently does nothing here; the
        * function simply clears CF and returns, making FASTOPEN installs
        * silently succeed without effect.
        */
@@ -3319,7 +3319,7 @@ VOID ASMCFUNC int2F_12_handler(struct int2f12regs FAR *pr)
        * In a full implementation, reads or writes entries in the DOS-internal
        * error-message table-pointer array (four FAR pointers used by the
        * message-retrieval code that formats INT 21h/AH=59h descriptions).
-       * FreeDOS currently ignores all subfunctions and returns immediately.
+       * LibreDOS currently ignores all subfunctions and returns immediately.
        * NOTE: MS DEBUG calls this with DS != DOSDS
        */
       break;

@@ -34,7 +34,7 @@
 
 
 static char copyright[] =
-    "(C) Copyright 1995-2023 Pasquale J. Villani and The FreeDOS Project.\n"
+    "(C) Copyright 1995-2023 Pasquale J. Villani and The LibreDOS Project.\n"
     "All Rights Reserved. This is free software and comes with ABSOLUTELY NO\n"
     "WARRANTY; you can redistribute it and/or modify it under the terms of the\n"
     "GNU General Public License as published by the Free Software Foundation;\n"
@@ -71,7 +71,7 @@ UBYTE ASM debugger_present = 0xFF;	/* initialised in kernel.asm
 				   do NOT set 0 here or compiler may
 				   move it into bss that we zero out */
 
-VOID ASMCFUNC FreeDOSmain(void)
+VOID ASMCFUNC LibreDOSmain(void)
 {
   unsigned char drv;
   unsigned char FAR *p;

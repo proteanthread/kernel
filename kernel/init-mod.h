@@ -229,7 +229,7 @@ VOID ASMCFUNC FAR init_call_p_0(struct config FAR *Config); /* P_0, actually */
 #endif
 
 /* main.c */
-VOID ASMCFUNC FreeDOSmain(void);
+VOID ASMCFUNC LibreDOSmain(void);
 BOOL init_device(struct dhdr FAR * dhp, char * cmdLine,
                       COUNT mode, char FAR **top);
 VOID init_fatal(BYTE * err_msg);

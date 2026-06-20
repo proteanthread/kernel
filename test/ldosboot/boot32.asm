@@ -107,16 +107,16 @@ Public domain by C. Masloch, 2012
 	numdef NUMFATS, 0		; number of FATs
 	numdef NUMRESERVED, 0		; number of reserved sectors
 
-	numdef COMPAT_FREEDOS,	0	; partial FreeDOS load compatibility
+	numdef COMPAT_LIBREDOS,	0	; partial LibreDOS load compatibility
 	numdef COMPAT_IBM,	0	; partial IBMDOS load compatibility
 	numdef COMPAT_MS7,	0	; partial MS-DOS 7 load compatibility
 	numdef COMPAT_LDOS,	0	; lDOS load compatibility
 
-%if (!!_COMPAT_FREEDOS + !!_COMPAT_IBM + !!_COMPAT_MS7 + !!_COMPAT_LDOS) > 1
+%if (!!_COMPAT_LIBREDOS + !!_COMPAT_IBM + !!_COMPAT_MS7 + !!_COMPAT_LDOS) > 1
  %error At most one set must be selected.
 %endif
 
-%if _COMPAT_FREEDOS
+%if _COMPAT_LIBREDOS
 	strdef LOAD_NAME,	"KERNEL"
 	strdef LOAD_EXT,	"SYS"
 	numdef LOAD_ADR,	00600h
@@ -128,7 +128,7 @@ Public domain by C. Masloch, 2012
 	numdef SET_BL_UNIT,	1
 	numdef MEMORY_CONTINUE,	0
 	numdef RELOCATE,	1
-	; The FreeDOS load protocol mandates that the entire file be loaded.
+	; The LibreDOS load protocol mandates that the entire file be loaded.
 %endif
 
 %if _COMPAT_IBM
@@ -199,7 +199,7 @@ Public domain by C. Masloch, 2012
 
 Notes about partial load compatibilities
 
-* FreeDOS:
+* LibreDOS:
  * Relocates to an address other than 27A00h (1FE0h:7C00h)
 * IBMDOS:
  * Does not actually relocate DPT, just provide its address

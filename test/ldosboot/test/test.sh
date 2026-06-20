@@ -130,7 +130,7 @@ then
   then
     shift
     # output of the following command is either:
-    # 1. "CPU set to 486", followed by the sign ons for dosemu, FreeDOS,
+    # 1. "CPU set to 486", followed by the sign ons for dosemu, LibreDOS,
     #     and config.sys and autoexec.bat output, then executing "exitemu"
     #     (if -C4 switch is not supported, parsed as -C -4).
     # 2. Only the dosemu sign on with the error message as follows:

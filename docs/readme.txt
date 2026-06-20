@@ -1,17 +1,17 @@
 INTRODUCTION
 ------------
 
-This archive contains the current FreeDOS Kernel, also
+This archive contains the current LibreDOS Kernel, also
 known as DOS-C, originally written by Pasquale J. Villani.
 
-The FreeDOS Kernel is available from http://freedos.sourceforge.net/
+The LibreDOS Kernel is available from http://libredos.sourceforge.net/
 It's also available from http://www.dosemu.org/ (somewhere on there).
 
-The FreeDOS Kernel is also available through the FreeDOS Project at
-http://www.freedos.org/
+The LibreDOS Kernel is also available through the LibreDOS Project at
+http://www.libredos.org/
 
 See the DOCS directory for more documentation and information about
-the FreeDOS Kernel.
+the LibreDOS Kernel.
 
 Contents of release zip files:
 ke20xx_16.zip : binaries for 8086, FAT16
@@ -31,7 +31,7 @@ web page http://sourceforge.net/tracker/?group_id=5109&atid=105109
 and http://sourceforge.net/tracker/?atid=355109&group_id=5109&func=browse
 will still be reviewed, but not actively.
 
-An archive of old (Bugzilla) items is at www.freedos.org/bugzilla/
+An archive of old (Bugzilla) items is at www.libredos.org/bugzilla/
 
 
 Copyright
@@ -40,4 +40,4 @@ Copyright
 DOS-C is (c) Copyright 1995, 1996 by Pasquale J. Villani
 All Rights Reserved.
 
-Portions of FreeDOS kernel copyright others, 199?-2024
+Portions of LibreDOS kernel copyright others, 199?-2024

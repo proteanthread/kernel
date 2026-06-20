@@ -1,9 +1,9 @@
 /***************************************************************************
 *                                                                          *
-*  FDKRNCFG.C - FreeDOS Kernel Configuration                               *
+*  FDKRNCFG.C - LibreDOS Kernel Configuration                               *
 *  This is a simple little program that merely displays and/or changes     *
 *  the configuration options specified within the CONFIG section of        *
-*  the FreeDOS Kernel (if supported)                                       *
+*  the LibreDOS Kernel (if supported)                                       *
 *                                                                          *
 *  Initially Written by Kenneth J. Davis Oct 11, 2001 (public domain)      *
 *  Future versions may contain copyrighted portions, if so the             *
@@ -130,7 +130,7 @@ int readConfigSettings(int kfile, char *kfilename, KernelConfig * cfg)
   {
     printf("Error: no CONFIG section found in kernel file <%s>\n",
            kfilename);
-    printf("Only FreeDOS kernels after 2025 contain a CONFIG section!\n");
+    printf("Only LibreDOS kernels after 2025 contain a CONFIG section!\n");
     exit(1);
   }
 
@@ -180,7 +180,7 @@ void displayConfigSettings(KernelConfig * cfg)
   {
     printf
         ("%s kernel %s (build %d.%d OEM:%02X)\n", 
-        (cfg->Version_OemID == 0xFD)?"FreeDOS":"DOS-C",
+        (cfg->Version_OemID == 0xFD)?"LibreDOS":"DOS-C",
         cfg->Version_Release?"Nightly":"Release",
         cfg->Version_Major,
         cfg->Version_Revision,
@@ -414,7 +414,7 @@ int FDKrnConfigMain(int argc, char **argv)
   char *cptr;
   char *argptr;
 
-  printf("FreeDOS Kernel Configuration %s\n", VERSION);
+  printf("LibreDOS Kernel Configuration %s\n", VERSION);
 
   /* 1st go through and just process arguments (help/filename/etc) */
   for (i = 1; i < argc; i++)

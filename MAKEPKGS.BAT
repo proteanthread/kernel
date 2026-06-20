@@ -34,7 +34,7 @@ IF EXIST SOURCE\ke%1\CONFIG.BAT DEL SOURCE\ke%1\CONFIG.BAT > NUL
 ECHO zipping source
 %ZIPIT% ke%1s.zip SOURCE\*
 ECHO gathering source and creating APPINFO and expected packaging dir structure
-REM FreeDOS package format, has APPINFO, BIN, DOC\KERNEL, SOURCE\KERNEL\
+REM LibreDOS package format, has APPINFO, BIN, DOC\KERNEL, SOURCE\KERNEL\
 IF EXIST PACKAGE ECHO PACKAGE directory exists, break now to avoid deleting it!
 IF EXIST PACKAGE pause
 IF EXIST PACKAGE RMDIR /S PACKAGE
@@ -65,7 +65,7 @@ SET CPU=386
 SET BZKRET=F32
 GOTO BZK
 :F32
-ECHO building FreeDOS package
+ECHO building LibreDOS package
 CD ..\..\PACKAGE
 %ZIPIT% ..\kernel.zip APPINFO BIN DOC SOURCE
 ECHO clean up
@@ -88,7 +88,7 @@ GOTO LSM
 SET LSMRET=
 ECHO zipping FAT%FAT% release version
 %ZIPIT% ..\..\ke%1_%CPU%f%FAT%.zip BIN\* DOCS\*
-ECHO storing binaries for FreeDOS package
+ECHO storing binaries for LibreDOS package
 COPY BIN\KERNEL.SYS ..\..\PACKAGE\BIN\KERNL%CPU%.SYS
 COPY /B /Y BIN\country.sys  ..\..\PACKAGE\BIN\COUNTRY.SYS
 COPY /B /Y BIN\setver.sys  ..\..\PACKAGE\BIN\SETVER.SYS
@@ -100,18 +100,18 @@ GOTO %BZKRET%
 
 :LSM
 ECHO Begin3>%LSMFILE%
-ECHO Title:          The FreeDOS Kernel>>%LSMFILE%
+ECHO Title:          The LibreDOS Kernel>>%LSMFILE%
 ECHO Version:        %VERSION%>>%LSMFILE%
 ECHO Entered-date:   %DATE%>>%LSMFILE%
-ECHO Description:    The FreeDOS Kernel>>%LSMFILE%
-ECHO Keywords:       kernel, FreeDOS, DOS, MSDOS>>%LSMFILE%
-ECHO Author:         (developers: can be reached on the freedos-kernel mailing list)>>%LSMFILE%
-ECHO Maintained-by:  freedos-kernel@lists.sourceforge.net>>%LSMFILE%
+ECHO Description:    The LibreDOS Kernel>>%LSMFILE%
+ECHO Keywords:       kernel, LibreDOS, DOS, MSDOS>>%LSMFILE%
+ECHO Author:         (developers: can be reached on the libredos-kernel mailing list)>>%LSMFILE%
+ECHO Maintained-by:  libredos-kernel@lists.sourceforge.net>>%LSMFILE%
 ECHO Primary-site:   http://github.com/fdos/kernel>>%LSMFILE%
 ECHO Alternate-site: http://www.fdos.org/kernel/>>%LSMFILE%
-ECHO Alternate-site: http://freedos.sourceforge.net/kernel/>>%LSMFILE%
-ECHO Original-site:  http://www.gcfl.net/pub/FreeDOS/kernel>>%LSMFILE%
-ECHO Platforms:      DOS, FreeDOS, DOSEMU (OpenWatcom/Borland/GCC-ia16, NASM, UPX)>>%LSMFILE%
+ECHO Alternate-site: http://libredos.sourceforge.net/kernel/>>%LSMFILE%
+ECHO Original-site:  http://www.gcfl.net/pub/LibreDOS/kernel>>%LSMFILE%
+ECHO Platforms:      DOS, LibreDOS, DOSEMU (OpenWatcom/Borland/GCC-ia16, NASM, UPX)>>%LSMFILE%
 ECHO Copying-policy: GPL2>>%LSMFILE%
 ECHO End>>%LSMFILE%
 SET LSMFILE=

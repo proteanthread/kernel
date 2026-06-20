@@ -493,7 +493,7 @@ extended open codes
 0001 0001 create if not exists, open if exists O_CREAT | O_OPEN
 0001 0010 create O_CREAT | O_TRUNC
 
-bits for flags (bits 11-8 are internal FreeDOS bits only)
+bits for flags (bits 11-8 are internal LibreDOS bits only)
 15 O_FCB  called from FCB open
 14 O_SYNC commit for each write (not implemented yet)
 13 O_NOCRIT do not invoke int23 (not implemented yet)

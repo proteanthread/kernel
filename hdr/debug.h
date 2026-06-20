@@ -7,7 +7,7 @@
 /*                       January, 2005                          */
 /*                                                              */
 /*                      Copyright (c) 2005                      */
-/*                      FreeDOS kernel dev.                     */
+/*                      LibreDOS kernel dev.                     */
 /*                      All Rights Reserved                     */
 /*                                                              */
 /* This file is part of DOS-C.                                  */

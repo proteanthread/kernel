@@ -1,16 +1,16 @@
 /****************************************************************/
 /*                                                              */
 /*                            nls_load.c                        */
-/*                           FreeDOS                            */
+/*                           LibreDOS                            */
 /*                                                              */
 /*    National Languge Support functions and data structures    */
-/*    Load an entry from FreeDOS COUNTRY.SYS file.				*/
+/*    Load an entry from LibreDOS COUNTRY.SYS file.				*/
 /*                                                              */
 /*                   Copyright (c) 2000                         */
 /*                         Steffen Kaiser                       */
 /*                      All Rights Reserved                     */
 /*                                                              */
-/* This file is part of FreeDOS.                                */
+/* This file is part of LibreDOS.                                */
 /*                                                              */
 /* DOS-C is free software; you can redistribute it and/or       */
 /* modify it under the terms of the GNU General Public License  */

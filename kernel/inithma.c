@@ -30,7 +30,7 @@
 /*
     current status:
     
-    load FreeDOS high, if DOS=HIGH detected
+    load LibreDOS high, if DOS=HIGH detected
     
     suppress High Loading, if any SHIFT status detected (for debugging)
     

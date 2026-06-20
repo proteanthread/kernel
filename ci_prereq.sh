@@ -23,11 +23,11 @@ HERE=$(pwd)
 [ -f ow-snapshot.tar.xz ] || wget --no-verbose https://github.com/open-watcom/open-watcom-v2/releases/download/Current-build/ow-snapshot.tar.xz
 tar -C ../_watcom -xf ow-snapshot.tar.xz
 
-IBIBLIO_PATH='https://www.ibiblio.org/pub/micro/pc-stuff/freedos/files/repositories/1.4'
+IBIBLIO_PATH='https://www.ibiblio.org/pub/micro/pc-stuff/libredos/files/repositories/1.4'
 
 BASE=${IBIBLIO_PATH}/base
 
-#    get FreeDOS kernel
+#    get LibreDOS kernel
 [ -f kernel.zip ] || wget --no-verbose ${BASE}/kernel.zip
 
 #    get FreeCOM

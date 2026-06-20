@@ -37,7 +37,7 @@
 
 /* The actual kernel revision, 2000+REVISION_SEQ = 2.REVISION_SEQ */
 #define REVISION_SEQ    45      /* returned in BL by int 21 function 30 */
-#define OEM_ID          0xfd    /* FreeDOS, returned in BH by int 21 30 */
+#define OEM_ID          0xfd    /* LibreDOS, returned in BH by int 21 30 */
 
 /* Used for version information displayed to user at boot (& stored in os_release string) */
 #ifndef KERNEL_VERSION
@@ -45,7 +45,7 @@
 #endif
 
 /* actual version string */
-#define KVS(v,s,o) "FreeDOS kernel " v "(build 20" #s " OEM:" #o ") [compiled " __DATE__ "]\n"
+#define KVS(v,s,o) "LibreDOS kernel " v "(build 20" #s " OEM:" #o ") [compiled " __DATE__ "]\n"
 #define xKVS(v,s,o) KVS(v,s,o)
 #define KERNEL_VERSION_STRING xKVS(KERNEL_VERSION, REVISION_SEQ, OEM_ID)
 

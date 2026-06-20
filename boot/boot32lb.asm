@@ -1,18 +1,18 @@
-; This is an LBA-enabled FreeDOS FAT32 boot sector (single sector!).
+; This is an LBA-enabled LibreDOS FAT32 boot sector (single sector!).
 ; You can use and copy source code and binaries under the terms of the
 ; GNU Public License (GPL), version 2 or newer. See www.gnu.org for more.
 
-; Based on earlier work by FreeDOS kernel hackers, modified heavily by
+; Based on earlier work by LibreDOS kernel hackers, modified heavily by
 ; Eric Auer and Jon Gentle in 7 / 2003.
 ;
 ; Features: Uses LBA and calculates all variables from BPB/EBPB data,
-; thus making partition move / resize / image-restore easier. FreeDOS
+; thus making partition move / resize / image-restore easier. LibreDOS
 ; can boot from FAT32 partitions which start > 8 GB boundary with this
 ; boot sector. Disk geometry knowledge is not needed for booting.
 ;
 ; Windows uses 2-3 sectors for booting (sector stage, statistics sector,
-; filesystem stage). Only using 1 sector for FreeDOS makes multi-booting
-; of FreeDOS and Windows on the same filesystem easier.
+; filesystem stage). Only using 1 sector for LibreDOS makes multi-booting
+; of LibreDOS and Windows on the same filesystem easier.
 ;
 ; Requirements: LBA BIOS and 386 or better CPU. Use the older CHS-only
 ; boot sector if you want FAT32 on really old PCs (problems: you cannot
@@ -26,7 +26,7 @@
 ; support would be good for use on LBA harddisks.
 
 
-; Memory layout for the FreeDOS FAT32 single stage boot process:
+; Memory layout for the LibreDOS FAT32 single stage boot process:
 ;
 ;	...
 ;	|-------| 1FE0h:7E00h = 27C00h (159 KiB)
@@ -114,7 +114,7 @@ Entry:		jmp	short real_start
 		; [0x43] = dword serial
 		; [0x47] = label (padded with 00, 11 bytes)
 		; [0x52] = "FAT32",32,32,32 (not used by Windows)
-		; ([0x5a] is where FreeDOS parts start)
+		; ([0x5a] is where LibreDOS parts start)
 
 ;-----------------------------------------------------------------------
 ; ENTRY
@@ -148,7 +148,7 @@ cont:		mov	ds, ax
 		mov	[drive], dl	; BIOS passes drive number in DL
 
 %ifndef QUIET
-		mov	si, msg_LoadFreeDOS
+		mov	si, msg_LoadLibreDOS
 		call	print		; modifies AX BX SI
 %else ; ensure code after this still at same location
 		times 6 nop
@@ -256,7 +256,7 @@ rk_walk_fat:	pop	eax
 
 boot_success:
 		mov dl, [drive]			; for Enhanced DR-DOS load
-		mov bl, dl			; for FreeDOS load
+		mov bl, dl			; for LibreDOS load
 		jmp	far [loadsegoff_60]
 
 ;-----------------------------------------------------------------------
@@ -413,7 +413,7 @@ no_incr_es:	pop	di
 
 ;-----------------------------------------------------------------------
 
-msg_LoadFreeDOS db "Loading FreeDOS ",0
+msg_LoadLibreDOS db "Loading LibreDOS ",0
 
        times 0x01ee-$+$$ db 0
 

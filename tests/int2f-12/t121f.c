@@ -1,7 +1,7 @@
 /*
  * t121f.c  --  INT 2Fh / AX=121Fh  BUILD TEMPORARY CDS FOR DRIVE LETTER
  *
- * FreeDOS inthndlr.c case 0x1f:
+ * LibreDOS inthndlr.c case 0x1f:
  *   Input:  callerARG1 low byte = drive letter ASCII ('A'..'Z' or 'a'..'z')
  *           pushed on the stack by the caller (p->value).
  *   Output: On success:

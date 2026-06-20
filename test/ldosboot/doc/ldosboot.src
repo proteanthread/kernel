@@ -91,7 +91,7 @@ Currently the following signatures are defined:
 
 \dt \cq{lDFD}
 
-\dd FreeDOS kernel wrapped in iniload (fdkernpl.asm)
+\dd LibreDOS kernel wrapped in iniload (fdkernpl.asm)
 
 \dt \cq{lDeb}
 
@@ -454,6 +454,6 @@ that is there is an empty command line
 the terminator of which is followed by a byte with the value 0FFh,
 then no command line was passed to iniload.
 Currently lDebug can pass a command line to iniload when
-loading with its lDOS, RxDOS.2, RxDOS.3, or FreeDOS protocols.
+loading with its lDOS, RxDOS.2, RxDOS.3, or LibreDOS protocols.
 When iniload is loaded as a Multiboot1 or Multiboot2 specification kernel,
 it is also assumed that a command line can be passed.

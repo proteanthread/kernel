@@ -26,7 +26,7 @@
 ; Cambridge, MA 02139, USA.
 
 
-; Memory layout for the FreeDOS FAT12/FAT16 boot process:
+; Memory layout for the LibreDOS FAT12/FAT16 boot process:
 ;
 ;	...
 ;	|-------| 1FE0h:7E00h = 27C00h (159 KiB)

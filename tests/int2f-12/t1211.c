@@ -11,7 +11,7 @@
  *   No register return value (AX, BX, CX, DX, SI, DI, DS, ES, FLAGS
  *   are all don't-cares).
  *
- * FreeDOS inthndlr.c case 0x11:
+ * LibreDOS inthndlr.c case 0x11:
  *   Copies DS:SI -> ES:DI, converting a-z -> A-Z and '/' -> '\',
  *   until and including the NUL terminator.
  *
@@ -322,7 +322,7 @@ TEST test_alignment(void)
 
 /*
  * Source == destination (in-place normalization).
- * RBIL does not forbid src==dst; FreeDOS reads one byte then writes it,
+ * RBIL does not forbid src==dst; LibreDOS reads one byte then writes it,
  * so in-place is safe.
  */
 TEST test_inplace(void)

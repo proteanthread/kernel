@@ -4,9 +4,9 @@
 ;                      2004, Kenneth J. Davis
 ;                Copyright (c) 200?, <add name here>
 ; Description:
-; OEM boot sector for FreeDOS compatible with IBM's (R) PC-DOS,
+; OEM boot sector for LibreDOS compatible with IBM's (R) PC-DOS,
 ; and Microsoft's (R) MS-DOS.  It may work with older OpenDOS/DR-DOS,
-; although the standard FreeDOS boot sector is needed with ver 7+
+; although the standard LibreDOS boot sector is needed with ver 7+
 ; releases.  May work with other versions of DOS that use
 ; IBMBIO.COM/IBMDOS.COM pair.  This boot sector loads only up
 ; to 58 sectors (29KB) of the kernel (IBMBIO.COM) to 0x70:0 then
@@ -51,7 +51,7 @@
 ; This boot sector only supports FAT12/FAT16 as PC-DOS
 ; does not support FAT32 and newer FAT32 capable DOSes
 ; probably have different boot requirements; also do NOT
-; use it to boot the FreeDOS kernel as it expects to be
+; use it to boot the LibreDOS kernel as it expects to be
 ; fully loaded by boot sector (> 29KB & usually to 0x60:0).
 ;
 ; WARNING: PC-DOS has additional requirements, in particular,
@@ -74,7 +74,7 @@
 ;             and Michal H. Tyc (DR-DOS adaptation, boot26dr.asm)
 ;                      All Rights Reserved
 ;
-; This file is part of FreeDOS.
+; This file is part of LibreDOS.
 ;
 ; DOS-C is free software; you can redistribute it and/or
 ; modify it under the terms of the GNU General Public License
