@@ -83,7 +83,7 @@ Size: 1105 bytes
 Description: MS-DOS batch script to compile and organize release packages.
 --------------------------------------------------------------------------------
 File: SOURCE_TREE.txt
-Size: 65093 bytes
+Size: 65098 bytes
 Description: Documentation file.
 --------------------------------------------------------------------------------
 File: .github\workflows\ci-build.yml
@@ -182,8 +182,12 @@ File: country\.github\workflows\ci-build.yml
 Size: 857 bytes
 Description: GitHub Actions pipeline definition for automated builds and testing.
 --------------------------------------------------------------------------------
+File: docs\API.md
+Size: 6944 bytes
+Description: LibreDOS core API reference and emulator (86Box)/IoT platform integration manual.
+--------------------------------------------------------------------------------
 File: docs\architecture.md
-Size: 6261 bytes
+Size: 10338 bytes
 Description: Documentation file.
 --------------------------------------------------------------------------------
 File: docs\bugs.txt
@@ -263,7 +267,7 @@ Size: 8489 bytes
 Description: Documentation file.
 --------------------------------------------------------------------------------
 File: docs\programmers_guide.md
-Size: 10353 bytes
+Size: 10350 bytes
 Description: Documentation file.
 --------------------------------------------------------------------------------
 File: docs\readme.txt
@@ -531,7 +535,7 @@ Size: 25438 bytes
 Description: System interrupt handlers (Int 21h, 20h, 25h, 26h, 27h) and stack switching.
 --------------------------------------------------------------------------------
 File: kernel\entry.c
-Size: 1080 bytes
+Size: 12701 bytes
 Description: C source code file.
 --------------------------------------------------------------------------------
 File: kernel\error.c
@@ -647,7 +651,7 @@ Size: 49156 bytes
 Description: Kernel startup startup code, segment definitions, and List of Lists variables.
 --------------------------------------------------------------------------------
 File: kernel\kernel.c
-Size: 781 bytes
+Size: 2675 bytes
 Description: C source code file.
 --------------------------------------------------------------------------------
 File: kernel\kernel.cfg

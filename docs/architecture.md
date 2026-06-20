@@ -1,6 +1,6 @@
 # LibreDOS C Abstraction Architecture & Porting Guide (`ld`)
 
-This document defines the architecture, design, and porting specifications for the **LibreDOS C Core** (`ld`). This subsystem ports legacy 16-bit assembly routines to standard C, introducing a 1MB hybrid memory segmentation model and hybrid drive redirection to support native boots on UEFI motherboards and IoT platforms (ESP32, Arduino, Raspberry Pi).
+This document defines the architecture, design, and porting specifications for the **LibreDOS C Core** (`ld`). This subsystem ports legacy 16-bit assembly routines to standard C, introducing the **1MB Hybrid Memory Model** (governed by the overall **LibreDOS Memory Specification - LMS**) and hybrid drive redirection to support native boots on UEFI motherboards and IoT platforms (ESP32, Arduino, Raspberry Pi).
 
 ---
 
@@ -46,23 +46,26 @@ Standardized optimization is achieved by replacing low-level assembly string sca
 
 ---
 
-## 2. The 1MB Hybrid Memory Model
+## 2. LibreDOS Memory Specification (LMS) & The 1MB Hybrid Memory Model
 
-To maintain 100% PC-DOS and MS-DOS application compatibility in a flat 64-bit environment, the physical or host virtual memory is organized into **1MB segment chunks**.
+To maintain 100% PC-DOS and MS-DOS application compatibility in a flat 64-bit environment, the physical or host virtual memory is organized under the **LibreDOS Memory Specification (LMS)** using the **1MB Hybrid Memory Model** to partition RAM into 1MB segment chunks. 
+
+At the same time, native application layers and the core kernel can access the entire available physical RAM (from 1GB up to 64GB or more) directly through flat 64-bit pointers. Legacy real-mode compatibility is achieved by encapsulating the traditional 16-bit real-mode address spaces inside logical segment mappings, while modern drivers and native applications execute without these constraints.
 
 ```
-       +---------------------------------------------+
-       |           64-bit Flat Memory Space          |
-       |               (UEFI / Host RAM)             |
-       +----------------------+----------------------+
-                              |
-                              v  Mapped into 1MB Chunks
-       +---------------------------------------------+
-       |   Chunk 0 (0 to 1MB)   |   Chunk 1 (1 to 2MB) |
-       |   Conventional Memory  |   Extended Space     |
-       +---------------------------------------------+
-                              |
-                              v  Segment translation
+       +-------------------------------------------------------------+
+       |                  64-bit Flat Memory Space                   |
+       |                (Host RAM Pool: 1GB to 64GB+)                |
+       +------------------------------+------------------------------+
+                                      |
+              +-----------------------+-----------------------+
+              v (Dynamic Page Pager)                          v (Native Direct Mode)
+       +-----------------------------+                  +----------------------------+
+       |   Mapped into 1MB Chunks    |                  |  Full Flat Physical RAM    |
+       |     for Legacy Guests       |                  |  (For 64-bit Kernel/Apps)  |
+       +--------------+--------------+                  +----------------------------+
+                      |
+                      v Segment translation
        +---------------------------------------------+
        |  Conventional RAM (0 - 640KB)               |
        |  Upper Memory Blocks (640KB - 1MB)          |
@@ -70,13 +73,45 @@ To maintain 100% PC-DOS and MS-DOS application compatibility in a flat 64-bit en
        +---------------------------------------------+
 ```
 
-### Segmentation Translation:
+### A. Dynamic Physical Allocator (DLA)
+The host C core implements a dynamic allocator inspired by the BSD virtual memory (VM) pager and slab system:
+1. **Dynamic Page Pager**: Allocates and maps physical memory in standard 4KB pages.
+2. **Slab Allocator**: Optimizes small kernel memory footprint for structures such as System File Tables (SFT), Current Directory Structures (CDS), and Memory Control Blocks (MCB).
+3. **Chunk Pager**: Allocates contiguous 256-page pools (1MB) as logical sandbox contexts for guest runs.
+
+### B. Segment Translation Layer
 Legacy binaries read and write segment-offset references. The C memory translator maps these references into the active 1MB chunk base:
 
 ```c
+#define CHUNK_SIZE_1MB 1048576
+#define XMS_MAX_HANDLES 128
+#define EMS_MAX_PAGES 2048
+
+typedef struct {
+    uint8_t *handle_address;
+    uint16_t size_pages;
+    uint16_t physical_page;
+} ems_handle_t;
+
 typedef struct {
     uint8_t *base_address;    /* Flat 64-bit physical address pointer */
-    uint32_t chunk_size;      /* Fixed at 1MB (1048576 bytes) */
+    uint32_t chunk_id;        /* Unique virtual system ID */
+    
+    /* Memory specifications state */
+    uint16_t umb_start_seg;
+    uint16_t umb_size_paras;
+    
+    struct {
+        uint8_t *ptr;
+        uint32_t size_bytes;
+        uint8_t  in_use;
+    } xms_handles[XMS_MAX_HANDLES];
+    
+    struct {
+        ems_handle_t handles[XMS_MAX_HANDLES];
+        uint8_t *page_frame;
+        uint8_t *page_pool;
+    } ems;
 } dos_chunk_t;
 
 /* Translate 16-bit Segment:Offset pointer to 64-bit Flat Address */
@@ -86,10 +121,33 @@ inline void* ld_translate_address(uint16_t segment, uint16_t offset, dos_chunk_t
 }
 ```
 
-This ensures that tables like the **List of Lists (LoL)** and **Swappable Data Area (SDA)** reside at correct relative boundaries inside Chunk 0, preventing legacy applications from encountering memory faults.
+This ensures that critical DOS structures like the **List of Lists (LoL)** and **Swappable Data Area (SDA)** reside at correct relative offsets inside Chunk 0.
 
-### Virtualization & System Extensibility:
-By partitioning memory into logical 1MB virtual segment boundaries, this hybrid model serves as the baseline for future integrations of **virtual consoles, virtual machines, virtual terminals, and virtual systems**. It enables running isolated virtual guest instances directly inside independent 1MB segment spaces mapped by the central 64-bit kernel memory manager.
+### C. Classic Memory Specifications Mapping
+
+#### 1. Upper Memory Blocks (UMB)
+When configuration requests `DOS=UMB` or drivers call `DosUmbLink()`, the memory manager registers the unused region of the Upper Memory Area (UMA) between `A0000h` and `FFFFFh` as a UMB pool inside the current `dos_chunk_t`. The allocator creates a standard MCB at `uppermem_root` within that block, which links directly to the end of the conventional memory MCB list, preserving standard DOS FIRST_FIT/BEST_FIT/LAST_FIT UMB allocations.
+
+#### 2. eXtended Memory Specification (XMS)
+The XMS interface is virtualized by registering a handler at `Int 2Fh AX=4310h`:
+- **Extended Memory Allocation**: Requests for XMS blocks (XMS function `09h`) are routed directly to the host's Dynamic Page Pager, which allocates memory pages from the full 64-bit host RAM pool.
+- **Move Block Function**: Emulated via C-level `memcpy` rather than legacy BIOS real-to-protected mode transition wrappers, avoiding virtualization overhead.
+- **Capacity**: Enables legacy programs to allocate up to 4GB of memory per handle (using XMS 3.0 API), while native modules access the full 64-bit physical host RAM.
+
+#### 3. Expanded Memory Specification (EMS)
+EMS (LIM EMS 4.0) is emulated via `Int 67h`:
+- **Page Frame**: A 64KB block within the chunk's UMA (typically segment `D000h` or `E000h`) is registered as the EMS page frame.
+- **Bank-Switching**: When the application requests mapping logical page `N` to physical page `P` (EMS function `44h`), the page frame mapping logic dynamically adjusts the internal pointer address for page `P` inside the `dos_chunk_t` state to target the host EMS page pool memory block.
+
+---
+
+### D. Virtualization & Extensibility: Consoles, Terminals, VMs, and Systems
+By dividing host RAM into discrete `dos_chunk_t` descriptors, the LMS **1MB Hybrid Memory Mode** functions as a virtualization manager:
+1. **Virtual Machines & Virtual Systems**: 
+   - Multiple separate `dos_chunk_t` instances can run concurrently. A lightweight core context scheduler executes time-sliced switching between the different chunk registers, allowing multi-instance DOS systems to execute in parallel.
+2. **Virtual Consoles & Virtual Terminals**:
+   - The screen framebuffer (`0xB8000` text or `0xA0000` graphics) within a chunk is virtualized. 
+   - An active virtual console maps its buffer directly to the physical display (via UEFI GOP or a serial console). Switching consoles redirects keyboard event queues to the target chunk's input queue and copies its video cache to the active output device.
 
 ---
 

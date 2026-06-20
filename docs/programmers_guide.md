@@ -153,5 +153,5 @@ Modernizing the system must not compromise compatibility with legacy application
      - The output parameters are written back into the emulator registers.
 3. **Compatibility Data Wrappers**:
    - The kernel maintains virtual representations of the **List of Lists (LoL)**, **System File Tables (SFT)**, and **Memory Control Blocks (MCB)** within the lower 1MB execution block of the emulator, allowing legacy TSRs and utilities that directly scan DOS memory to read correct segment offsets without thrashed signatures.
-4. **Mapped 1MB Hybrid Memory Mode**:
+4. **LMS 1MB Hybrid Memory Mode**:
    - Mappings divide the 64-bit flat physical workspace into virtual 1MB segment boundaries. This hybrid layout provides the architectural base for future implementations of **virtual consoles, virtual machines, virtual terminals, and virtual systems** by isolating multiple concurrent DOS program instances inside independent 1MB sandboxes.
