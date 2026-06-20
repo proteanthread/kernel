@@ -22,7 +22,7 @@
 
 #include <stdint.h>
 
-/* Registers structure used by call_intr (equivalent to REGPACK in intr.asm) */
+// Registers structure used by call_intr (equivalent to REGPACK in intr.asm)
 typedef struct {
     uint16_t ax, bx, cx, dx;
     uint16_t si, di, bp, ds;

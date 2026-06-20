@@ -67,3 +67,23 @@ The build pipeline is controlled by standard configuration files and driver batc
 To reduce disk space requirements, the kernel and utilities can be post-processed using the UPX packer:
 - **Command**: `upx --8086 --best bin\sys.com` or `upx --8086 KERNEL.SYS`.
 - **Loader support**: When the kernel is compressed via UPX, it can no longer boot directly using standard binary entry. A custom decompressor header (assembled from [upxentry.asm](file:///C:/Users/rtdos/GitHub/kernel/utils/upxentry.asm) and [upxdevic.asm](file:///C:/Users/rtdos/GitHub/kernel/utils/upxdevic.asm)) is prepended to the binary. During boot, this header executes first, decompresses the main kernel code block in memory, and jumps to the original execution offset.
+
+---
+
+## 4. Compilation Maintenance Guidelines
+
+### A. What We Can Change
+- **Compiler Flags**: Optimization levels (e.g. changing `-ot` or `-ox` in Watcom flags) or debugging symbol generation choices.
+- **Optimizer Targets**: Processor optimizations (targeting `-0`, `-1`, `-2`, or `-3` instruction sets) can be switched depending on performance and target CPU level requirements.
+
+### B. What We Cannot Change
+- **WATCOM/MSVC Segment Class Linkage Models**: The naming, ordering, and mapping of linker segment classes (like `INIT_TEXT` and `DGROUP`) are strictly coupled. Changing these linkage classes will corrupt segment offsets.
+- **Bootload Segment Alignment**: Segment offsets defined in linker scripts (`kernel.ld` or `kernel.lnk`) must remain paragraph aligned to keep assembly caller offsets valid.
+
+### C. What to Expect
+- **16-bit Real Mode Target Limits**: Traditional memory model rules are absolute (e.g., Small model limited to 64KB code and 64KB data). Overstepping these allocations triggers linker overflow errors.
+- **Segmented Memory Classes**: Code and data cannot cross 64KB segment boundaries without using far pointer modifiers (`far` or `__far`).
+
+### D. What to Do If Something Breaks / Troubleshooting
+- **Compilation Errors**: Review `serial.err` or compiler console error outputs; check that `#include <stdint.h>` is present and compiler path configurations in `config.bat` are correct.
+- **Segment Class Misalignments**: Inspect the output map file (`kernel.map`) to verify segment layout. Look for segments placed out of order or overlapping groups.

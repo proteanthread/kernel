@@ -21,13 +21,13 @@
 
 #include <stdint.h>
 
-/* MEMDISK Info Block Structure (returned by syslinux MEMDISK bootloader) */
+// MEMDISK Info Block Structure (returned by syslinux MEMDISK bootloader)
 struct memdiskinfo {
     uint32_t disk_size_sectors;
     uint16_t cylinder_count;
     uint8_t  head_count;
     uint8_t  sectors_per_track;
-    /* ... additional fields ... */
+    // ... additional fields ...
 } __attribute__((packed));
 
 struct memdiskinfo* query_memdisk(uint8_t drive) {

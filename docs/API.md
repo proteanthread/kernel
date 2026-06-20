@@ -139,3 +139,25 @@ When running LibreDOS on 86Box:
   - This instruction maps UMBs between `C8000h` and `EFFFFh`, reserving `D0000h - DFFFFh` for the EMS Page Frame.
 - **SYS CONFIG Configuration**:
   - Customize the compiled kernel file using `ldkrncfg.c` settings to verify load-high configurations inside 86Box.
+
+---
+
+## 5. Architectural Guide and Maintenance
+
+### A. What We Can Change
+- **API Routing**: The internal routing logic inside function dispatchers (e.g., matching sub-functions in `ld_int21_service`).
+- **Parameter Check Rules**: Adding extra safety assertions or validating limits before executing allocations.
+- **Logging & Diagnostics**: Code inside C wrappers (like serial ports or screen print logs) can be extended to print debug traces.
+
+### B. What We Cannot Change
+- **Segment Base Addresses**: Standard segmented memory models (e.g., VGA buffer starting at `0xB800` or page frame mapping base like `D000h`) must remain fixed to prevent breaking binary compatibility with existing drivers.
+- **Registers Layout Structs**: The exact order and byte offsets of fields inside the register contexts (`regs_context_t`, `regpack_t`) must match the hardware or emulator expectations.
+
+### C. What to Expect
+- **LMS Memory Constraints**: Real-mode segmentation limit (640KB conventional limit) restricts stack sizes and code offsets. Segment boundaries are absolute.
+- **Handle Counts**: Maximum XMS/EMS handles are bounded by internal lookup tables; exceeding allocations returns standard error statuses.
+
+### D. What to Do If Something Breaks / Troubleshooting
+- **Verify Map Files**: Inspect compiler generated `.map` and assembly listing files (`.lst`) to verify that variable offsets and segment sizes are within expected boundaries.
+- **Register State Audit**: If a callback or routine causes a crash, audit the registers struct passed into the handler, ensuring no segment register was corrupted.
+

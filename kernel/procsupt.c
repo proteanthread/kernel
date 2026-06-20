@@ -25,7 +25,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-/* Task context structures matching stack layouts */
+// Task context structures matching stack layouts
 typedef struct {
     uint16_t es, ds;
     uint16_t di, si, bp, bx, dx, cx, ax;

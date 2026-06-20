@@ -158,3 +158,24 @@ The directory structures must be updated:
 #### C. API and Offset Modernization
 - **64-bit File Offsets**: Traditional DOS APIs pass file offsets via `DX:AX` (32-bit offset). exFAT requires supporting 64-bit offsets. This means updating `DosRWSft()` and `DosSeek()` to process 64-bit positions when accessed by newer system call variants (or emulated internally using segmented offsets).
 - **Contiguous File Optimization**: When the stream extension entry indicates a file is contiguous (no FAT chain), the read/write pipeline should calculate the physical sector offset directly via simple arithmetic (`start_sector + (offset / sector_size)`) rather than querying a cluster mapping chain, bypassing `next_cluster()` lookup overhead completely.
+
+---
+
+## 5. Kernel Maintenance and Architectural Guidelines
+
+### A. What We Can Change
+- **Allocator Slabs Size**: Constants defining memory allocation block sizes for SFTs, CDS, and MCB lists.
+- **Buffer Pool Configuration**: The number and sizes of disk sector buffers managed inside [kernel\blockio.c](file:///C:/Users/rtdos/GitHub/kernel/kernel/blockio.c).
+
+### B. What We Cannot Change
+- **List of Lists Anchors**: The relative segment position and access offsets of the primary List of Lists (LoL) anchor.
+- **SDA Parameters Order**: The ordering and byte alignments of variables within the Swappable Data Area (SDA).
+
+### C. What to Expect
+- **Segment Isolation**: The kernel segregates code execution into `INIT_TEXT` (discarded) and `HMA_TEXT` (resident in HMA).
+- **Guest VM Memory Page Translations**: Logical addresses mapped inside guest contexts are translated dynamically by the LMS segment routing layer.
+
+### D. What to Do If Something Breaks / Troubleshooting
+- **Structural Offsets Validation**: If kernel structs are corrupted at runtime, compile with assembly listing files enabled (`.lst`) and compare field offsets between C headers and assembly equates.
+- **Boot Relocation Check**: Verify segment values inside `kernel.map` to ensure HMA relocations did not overlap reserved system segments.
+

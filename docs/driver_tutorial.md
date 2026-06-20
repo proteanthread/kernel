@@ -126,3 +126,24 @@ For microcontroller and single-board computer integration:
    - It registers itself as a block device.
    - When the kernel requests sector transfers (`dskxfer`), the driver serializes commands across the SPI pins to fetch data blocks from the SD card.
    - It copies the blocks to the bounce buffer, allowing the DOS filesystem layer to read partition sectors seamlessly.
+
+---
+
+## 6. Driver Integration Maintenance Guidelines
+
+### A. What We Can Change
+- **UART Driver Mappings**: Pin assignments and register configuration offsets for serial redirection on various microcontrollers.
+- **GOP Bitmap Plotting Helpers**: Character colors, font glyph bitmaps, and screen drawing logic within the UEFI console driver.
+
+### B. What We Cannot Change
+- **Trampoline Structure Layout**: The layout of the 32-byte legacy stub mapping (attribute word, strategy pointer, interrupt pointer) must not change to preserve assembly compatibilities.
+- **Driver Signatures**: The `strategy` and `interrupt` routine calling interface expected by the DOS kernel dispatch loops is immutable.
+
+### C. What to Expect
+- **Bounce Buffers for DMA**: Sector buffers must lie in conventional memory if standard controllers cannot access addresses above 1MB or 4GB boundaries.
+- **Flat High Memory Redirects**: Driver code execution is routed to protected/flat spaces, requiring stack preservation when jumping back to real-mode callers.
+
+### D. What to Do If Something Breaks / Troubleshooting
+- **Driver Load Corruption**: If dynamic loading hangs, inspect the trampoline register preservation and verify if segment boundaries were violated.
+- **Screen Rendering Issues**: For UEFI console issues, verify that GOP framebuffer physical base addresses match UEFI runtime boot block parameter values.
+

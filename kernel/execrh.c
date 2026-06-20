@@ -22,11 +22,11 @@
 #include <stdint.h>
 
 struct request_header {
-    uint8_t  length;       /* 00h - length of request block */
-    uint8_t  unit;         /* 01h - unit number */
-    uint8_t  command;      /* 02h - command code */
-    uint16_t status;       /* 03h - status field */
-    uint8_t  reserved[8];  /* 05h - reserved/pad bytes */
+    uint8_t  length;       // 00h - length of request block
+    uint8_t  unit;         // 01h - unit number
+    uint8_t  command;      // 02h - command code
+    uint16_t status;       // 03h - status field
+    uint8_t  reserved[8];  // 05h - reserved/pad bytes
 } __attribute__((packed));
 
 void execute_request_header(struct request_header *req, void *strategy_proc) {

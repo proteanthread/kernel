@@ -107,4 +107,24 @@ graph TD
     K -->|No| M[Split block: Create new MCB header for remaining memory]
     M --> L
     L --> N[Return segment address of allocated block]
+
+---
+
+## 5. Flowchart Maintenance and Documentation Guidelines
+
+### A. What We Can Change
+- **Flow Diagram Visual Formatting**: The styling, shape nodes, and colors used in the Mermaid diagram configurations.
+- **Step Groupings**: Adding or grouping sub-steps within blocks (e.g. detailing config passes) to match source code changes.
+
+### B. What We Cannot Change
+- **Logical Interrupt Flow Sequences**: The fundamental hardware routing paths (e.g., how the CPU checks flags and transitions from `entry.asm` to stack switches).
+
+### C. What to Expect
+- **Clear Transitions**: Every flowchart matches structural entry/exit points defined in C and ASM routines.
+- **Hardware Dispatch Paths**: Software multiplex loops (like `Int 2Fh`) always branch through standard registers mapping vectors.
+
+### D. What to Do If Something Breaks / Troubleshooting
+- **Flow Mismatch**: If runtime execution path deviates from the chart, check listing files (`.lst`) to verify if stack swap target addresses were changed.
+- **Interrupt Routing Anomalies**: If stack pointers corrupt, check the registers stack alignment against the stack swap sequence layout.
+
 ```

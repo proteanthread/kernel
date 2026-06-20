@@ -64,3 +64,24 @@ To make the best use of memory, the kernel supports relocation configurations:
 
 - **HMA Routing**: Relocating code to the High Memory Area (HMA) clears approximately 40KB to 50KB of conventional space. If `DOS=HIGH` is specified, the startup code enables the A20 line and copies the resident kernel segments `HMA_TEXT` and cache buffers directly to the `FFFFh` segment.
 - **UMB Routing**: By using memory managers to map physical ROM gaps between 640KB and 1MB (e.g. `D000:0000`), the DOS allocator hooks these regions into the MCB chain. Programs loaded using `LH` (LoadHigh) or drivers loaded via `DEVICEHIGH` are allocated inside these UMBs.
+
+---
+
+## 4. User and Deployment Guidelines
+
+### A. What We Can Change
+- **Command Shell Setup**: The path and argument parameters for the startup command shell (defined via the `SHELL=` statement in `CONFIG.SYS`).
+- **Environment Defaults**: Standard environment variable configurations (like path mappings and system variables).
+
+### B. What We Cannot Change
+- **Drive Configuration Parameters**: Internal partition geometries, partition sectors sizes, and partition boundaries layout expected by the BIOS.
+- **Memory Spec Allocations Limits**: Physical conventional memory layout boundaries (640KB limit) and HMA segment targets (`FFFF:0010h`).
+
+### C. What to Expect
+- **DOS Commands Support**: Standard compatibility with classic DOS commands and drivers.
+- **Conventional Memory Sizing Limits**: Allocations inside UMBs or HMA are restricted to physically mapped memory sizes.
+
+### D. What to Do If Something Breaks / Troubleshooting
+- **Config Chain Debug**: If a driver lockup happens during boot, press `F8` during startup to single-step trace each `CONFIG.SYS` command.
+- **Boot Load Recovery Methods**: If boot partition records get thrashed, boot using a floppy disk utility recovery tool or reinitialize the partition sectors.
+

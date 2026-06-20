@@ -20,9 +20,9 @@
 
 #include <stdint.h>
 
-/* Mapped tables from nls_hc.asm (Prerequisites: tables 1, 2, 4, 5 constant) */
+// Mapped tables from nls_hc.asm (Prerequisites: tables 1, 2, 4, 5 constant)
 
-/* nlsUpcaseHardcoded (table 2) & nlsFUpcaseHardcoded (table 4) mapping */
+// nlsUpcaseHardcoded (table 2) & nlsFUpcaseHardcoded (table 4) mapping
 const uint8_t default_uppercase_table[128] = {
     0x80, 0x00, 0x80, 0x9a, 0x45, 0x41, 0x8e, 0x41,
     0x8f, 0x80, 0x45, 0x45, 0x45, 0x49, 0x49, 0x49,
@@ -43,7 +43,7 @@ const uint8_t default_uppercase_table[128] = {
     0xfe, 0xff
 };
 
-/* nlsFnameTermHardcoded (table 5) filename terminators mapping */
+// nlsFnameTermHardcoded (table 5) filename terminators mapping
 const uint8_t default_filename_terminators[24] = {
     0x16, 0x00, 0x8e, 0x00, 0xff, 0x41, 0x00, 0x20,
     0xee, 0x0e, 0x2e, 0x22, 0x2f, 0x5c, 0x5b, 0x5d,

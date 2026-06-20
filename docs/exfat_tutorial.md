@@ -132,3 +132,24 @@ When implementing this tutorial into code, you are allowed to make the following
 - **Cluster Heap Cache**: exFAT allocation bitmaps can grow large (e.g. 128KB for a large drive). Since the real-mode kernel operates with small buffer segments, do not load the entire bitmap in memory. Instead, implement a **Sliding Window Cache** in [kernel\blockio.c](file:///C:/Users/rtdos/GitHub/kernel/kernel/blockio.c) that loads only the active sector of the allocation bitmap.
 - **Short Name Emulation**: Legacy applications require an 8.3 filename structure. When listing directories, if a file has a long exFAT Unicode name, automatically generate a virtual short name alias (e.g., `MYTEXT~1.TXT`) to pass back to `FindFirst`/`FindNext` API calls, maintaining compatibility with older programs.
 - **Customizing Maximum Drive Size Limits**: While the exFAT specification physically supports drive sizes up to **128 PiB**, the allocation bitmap required for such sizes (up to 512 MiB of RAM) is far too large for a 16-bit real-mode address space or low-footprint embedded devices. Under LibreDOS, we are allowed to impose artificial limits on the maximum drive size (e.g., capping support at **2 TiB** or **8 TiB**) or enforce a minimum cluster size configuration during mount verification. This significantly decreases cache memory boundaries and ensures system stability.
+
+---
+
+## 7. exFAT Implementation Guidelines
+
+### A. What We Can Change
+- **exFAT Cache Sizes**: Sliding window cache sizes and maximum buffer limits loaded inside [kernel\blockio.c](file:///C:/Users/rtdos/GitHub/kernel/kernel/blockio.c).
+- **Directory Traverse Speedups**: Internal search indexes or caching structures used to accelerate matching of names in `dir_read`.
+
+### B. What We Cannot Change
+- **Disk Sector Sizing**: Standard sector configuration constraints (e.g. 512 bytes or 4096 bytes) and boot sector offsets.
+- **Directory Entries Layout**: The structure and byte offsets of the standard 32-byte exFAT directory entry types (`0x85`, `0xC0`, `0xC1`).
+
+### C. What to Expect
+- **Cluster Allocation Tables**: Non-contiguous files will traverse the FAT sector-by-sector; contiguous files will bypass the FAT lookup completely using direct offset calculations.
+- **Streams Checks**: The stream entry flags must be analyzed for every file open or search request to determine if FAT chaining is required.
+
+### D. What to Do If Something Breaks / Troubleshooting
+- **Disk Corruption Recovery**: If file contents return garbage, check if the contiguous flag (`No FAT Chain` bit) in the Stream Extension is set correctly.
+- **Directory Traversal Hangs**: Inspect UTF-16LE conversion logic for infinite loops when scanning long names that extend across sector boundaries.
+

@@ -155,3 +155,23 @@ Modernizing the system must not compromise compatibility with legacy application
    - The kernel maintains virtual representations of the **List of Lists (LoL)**, **System File Tables (SFT)**, and **Memory Control Blocks (MCB)** within the lower 1MB execution block of the emulator, allowing legacy TSRs and utilities that directly scan DOS memory to read correct segment offsets without thrashed signatures.
 4. **LMS 1MB Hybrid Memory Mode**:
    - Mappings divide the 64-bit flat physical workspace into virtual 1MB segment boundaries. This hybrid layout provides the architectural base for future implementations of **virtual consoles, virtual machines, virtual terminals, and virtual systems** by isolating multiple concurrent DOS program instances inside independent 1MB sandboxes.
+
+---
+
+## 5. Programming and Extension Guidelines
+
+### A. What We Can Change
+- **Application Hooks**: Custom extensions, debugging callbacks, or system wrapper hooks inside C handlers.
+- **API Wrappers**: Adding extra check validations around standard file or memory parameters in the C routing layer.
+
+### B. What We Cannot Change
+- **MS-DOS Interrupt Vector Mappings**: Standard interrupt numbers (e.g. `Int 21h` for syscalls, `Int 2Fh` for multiplex) and their specific registers mapping.
+- **Registers Layout Structs**: The exact field structures representing CPU state during interrupts are mapped directly to memory layouts and must remain unchanged.
+
+### C. What to Expect
+- **Strict 1MB Conventional Boundaries**: Conventional memory layouts are restricted by historical segment limits. Program execution context switches must respect segment wrapping.
+- **Memory Protection**: Segmented addressing limits direct boundary crossings unless explicitly translated by the LMS layer.
+
+### D. What to Do If Something Breaks / Troubleshooting
+- **Check Program Segment Prefix (PSP)**: Verify that the parent and child PSP values are correct and that the command tail buffer size doesn't overflow.
+- **Examine IVT Maps**: If interrupt routing fails, print the Interrupt Vector Table (IVT) values at segment `0000h` to verify that vectors point to active handlers.

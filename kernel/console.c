@@ -21,9 +21,9 @@
 
 #include <stdint.h>
 
-/* Global variables mapped from console.asm */
+// Global variables mapped from console.asm
 extern uint8_t uScanCode;
-extern uint8_t _kbdType; /* 00 for 84key, 10h for 102key */
+extern uint8_t _kbdType; // 00 for 84key, 10h for 102key
 
 void console_write_char(char c, uint8_t attribute) {
     /* 

@@ -23,11 +23,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-/* EFI Status Codes */
+// EFI Status Codes
 typedef size_t efi_status_t;
 #define EFI_SUCCESS 0
 
-/* EFI Memory Descriptor */
+// EFI Memory Descriptor
 typedef struct {
     uint32_t type;
     uint32_t pad;
@@ -37,7 +37,7 @@ typedef struct {
     uint64_t attribute;
 } efi_memory_desc_t;
 
-/* EFI Graphics Output Protocol Mode Information */
+// EFI Graphics Output Protocol Mode Information
 typedef struct {
     uint32_t version;
     uint32_t horizontal_resolution;
@@ -47,7 +47,7 @@ typedef struct {
     uint32_t pixels_per_scan_line;
 } efi_gop_mode_info_t;
 
-/* EFI Graphics Output Protocol */
+// EFI Graphics Output Protocol
 typedef struct {
     uint32_t             max_mode;
     uint32_t             mode;
@@ -57,22 +57,22 @@ typedef struct {
     size_t               frame_buffer_size;
 } efi_gop_t;
 
-/* Boot Block passed from BOOTX64.EFI to KERNEL.SYS */
+// Boot Block passed from BOOTX64.EFI to KERNEL.SYS
 typedef struct {
-    uint32_t   magic;               /* 0x1EADA000 (LibreDOS UEFI Magic) */
-    uint32_t   boot_drive_id;       /* UEFI Bios drive id mapping */
-    uint64_t   system_table_ptr;    /* Pointer to EFI System Table */
-    uint64_t   mmap_ptr;            /* Pointer to EFI memory map */
+    uint32_t   magic;               // 0x1EADA000 (LibreDOS UEFI Magic)
+    uint32_t   boot_drive_id;       // UEFI Bios drive id mapping
+    uint64_t   system_table_ptr;    // Pointer to EFI System Table
+    uint64_t   mmap_ptr;            // Pointer to EFI memory map
     uint32_t   mmap_size;
     uint32_t   descriptor_size;
-    efi_gop_t  gop_info;            /* GOP video parameters */
+    efi_gop_t  gop_info;            // GOP video parameters
 } uefi_boot_block_t;
 
-/* Global state for UEFI graphics console */
+// Global state for UEFI graphics console
 static uefi_boot_block_t g_uefi_boot_data;
 static bool              g_uefi_active = false;
 
-/* Initialize UEFI system parameters */
+// Initialize UEFI system parameters
 void uefi_init(uefi_boot_block_t *boot_block) {
     if (boot_block == NULL || boot_block->magic != 0x1EADA000) {
         g_uefi_active = false;
@@ -82,14 +82,14 @@ void uefi_init(uefi_boot_block_t *boot_block) {
     g_uefi_active = true;
 }
 
-/* GOP Font structure layout (8x16 font glyph bitmap) */
+// GOP Font structure layout (8x16 font glyph bitmap)
 typedef struct {
     uint8_t glyph[16];
 } gop_font_glyph_t;
 
 extern const gop_font_glyph_t g_vga_font_data[256];
 
-/* Plots a character pixel-by-pixel to GOP Framebuffer */
+// Plots a character pixel-by-pixel to GOP Framebuffer
 void uefi_draw_char(int x, int y, char c, uint32_t color) {
     if (!g_uefi_active || g_uefi_boot_data.gop_info.frame_buffer_base == 0) {
         return;
@@ -109,7 +109,7 @@ void uefi_draw_char(int x, int y, char c, uint32_t color) {
     }
 }
 
-/* UEFI Block IO sector read hook */
+// UEFI Block IO sector read hook
 efi_status_t uefi_read_sectors(uint32_t start_sector, uint32_t sector_count, uint8_t *buffer) {
     /* 
      * In an active UEFI environment, this routine calls the BlockIO protocol 

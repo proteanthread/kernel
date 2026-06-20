@@ -173,3 +173,24 @@ For IoT devices that lack traditional BIOS or operating system wrappers:
 - The C kernel is compiled directly into the device's firmware binary.
 - Character console routines in [chario.c](file:///C:/Users/rtdos/GitHub/kernel/kernel/chario.c) are mapped directly to hardware UART pins.
 - Disk accesses (`dsk.c`) translate sector requests directly into SD card reads or Flash offset writes.
+
+---
+
+## 5. Architectural Maintenance Guidelines
+
+### A. What We Can Change
+- **Allocator Logic**: You can customize or tune the dynamic physical page pager or slab allocators (e.g. changing slab size constants or optimization policies).
+- **Consoles & Terminals Mapping**: The active video redirect routing (how the screen buffer is copied to UEFI GOP or hardware UART pins) can be modified.
+
+### B. What We Cannot Change
+- **1MB Boundary Translation**: The math used in `ld_translate_address` and the strict 1MB size limit (`CHUNK_SIZE_1MB`) are fixed; shifting these boundary layouts will corrupt memory segment accesses.
+- **List of Lists Segment Layout**: The standard structures (LoL, Swappable Data Area (SDA), MCBs) must remain at their expected offset positions inside conventional segment limits.
+
+### C. What to Expect
+- **Thread Stacks Context**: Stacks are segmented and managed context-by-context; switching contexts switches both register descriptors and active stack frames.
+- **Dynamic Physical Allocation Paging**: Memory is paged via standard 4KB blocks. Dynamic allocations outside the 1MB sandbox chunks are mapped directly using host pointers.
+
+### D. What to Do If Something Breaks / Troubleshooting
+- **Memory Leak Inspections**: If the system runs out of pages under intense load, trace allocate and free balances in `lms_allocate_pages` and `lms_free_pages`.
+- **Context Isolation Audit**: Check that segment references inside a chunk never access memory outside its allocated base plus 1MB boundary limit.
+

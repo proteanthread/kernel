@@ -21,20 +21,20 @@
 
 #include <stdint.h>
 
-/* Mapped device header layout from io.asm */
+// Mapped device header layout from io.asm
 struct device_header {
-    uint32_t next_driver;       /* offset+segment chain pointer */
-    uint16_t attributes;        /* device attributes word */
-    uint16_t strategy_offset;   /* strategy entry pointer */
-    uint16_t interrupt_offset;  /* interrupt entry pointer */
-    uint8_t  name[8];           /* device identifier name */
+    uint32_t next_driver;       // offset+segment chain pointer
+    uint16_t attributes;        // device attributes word
+    uint16_t strategy_offset;   // strategy entry pointer
+    uint16_t interrupt_offset;  // interrupt entry pointer
+    uint8_t  name[8];           // device identifier name
 } __attribute__((packed));
 
 uint8_t in_byte(uint16_t port) {
-    /* Reads a byte from hardware port (inb instruction wrapper) */
+    // Reads a byte from hardware port (inb instruction wrapper)
     return 0;
 }
 
 void out_byte(uint16_t port, uint8_t val) {
-    /* Writes a byte to hardware port (outb instruction wrapper) */
+    // Writes a byte to hardware port (outb instruction wrapper)
 }

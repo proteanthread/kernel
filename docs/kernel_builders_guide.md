@@ -101,3 +101,22 @@ For booting on modern UEFI motherboards and IoT processors:
   ```
   *(Compiles the flat C entry router without 16-bit assembly constraints).*
 
+---
+
+## 6. Build Customization Guidelines
+
+### A. What We Can Change
+- **Kernel Target CPU Level**: The optimized compiler instruction sets targeted (e.g. changing CPU level variable defaults to target `386` vs `86` or `186`).
+- **Config Templates Definitions**: Environment variables and paths defined in custom batch configurations (`config.bat`).
+
+### B. What We Cannot Change
+- **Kernel Bootload Segment Alignment**: The linking offset segments of binary components must align with paragraph boundaries. Shifting alignment breaks structural jumps.
+
+### C. What to Expect
+- **Relocations to Upper Memory Limits**: The kernel binaries are relocated during the initial bootstrap process; parts of code move to the HMA, while INIT sections are discarded.
+
+### D. What to Do If Something Breaks / Troubleshooting
+- **Failed Linker Mappings**: If linking fails with segment boundary errors, check `kernel.map` or `kernel.lnk` definitions to confirm code size limits were not exceeded.
+- **UPX Compression Boot Failure**: If compressed binaries fail to boot, check target configuration switches and ensure the decompressor stub in `upxentry.asm` matches CPU target levels.
+
+
