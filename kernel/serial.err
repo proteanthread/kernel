@@ -1,0 +1,5 @@
+serial.c(24): Error! E1055: Unable to open 'stdint.h'
+serial.c(26): Error! E1127: Type required in parameter list
+serial.c(26): Error! E1022: Missing or misspelled data type near 'uint8_t'
+serial.c(35): Error! E1022: Missing or misspelled data type near 'uint8_t'
+serial.c(35): Error! E1009: Expecting ',' but found 'port_id'
