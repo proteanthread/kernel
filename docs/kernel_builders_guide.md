@@ -87,3 +87,17 @@ To compile and verify modifications:
 3. **Clobber/Clean**:
    - To clean intermediary files: `clean.bat`.
    - To force a full rebuild: `clobber.bat`.
+
+---
+
+## 5. Compiling for C 64-bit Hybrid Core
+
+For booting on modern UEFI motherboards and IoT processors:
+- The newly converted C files are written in **standard C** and are placed alongside the corresponding assembly files within the same directories (e.g. `kernel/entry.c` alongside `kernel/entry.asm`).
+- **`LDPP_C` Macro**: Define this compiler switch to bypass the traditional 16-bit real-mode assembly boot blocks, enable the hybrid 1MB memory mapping layout, and activate direct register/GPIO accessing.
+- To compile the C hybrid core files using modern GCC or Clang on Linux/Windows:
+  ```bash
+  gcc -DLDPP_C -O2 -I./hdr -c kernel/entry.c
+  ```
+  *(Compiles the flat C entry router without 16-bit assembly constraints).*
+

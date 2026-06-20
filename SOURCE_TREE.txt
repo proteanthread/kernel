@@ -1,7 +1,7 @@
 ================================================================================
-FreeDOS Kernel Workspace Source Tree
+LibreDOS Kernel Workspace Source Tree
 ================================================================================
-This document lists all files in the FreeDOS (DOS-C) kernel repository
+This document lists all files in the LibreDOS (DOS-C) kernel repository
 including their path, size, and a brief description of their functionality.
 This mapping serves as a structural overview for modernization and refactoring.
 ================================================================================
@@ -83,7 +83,7 @@ Size: 1105 bytes
 Description: MS-DOS batch script to compile and organize release packages.
 --------------------------------------------------------------------------------
 File: SOURCE_TREE.txt
-Size: 59825 bytes
+Size: 65093 bytes
 Description: Documentation file.
 --------------------------------------------------------------------------------
 File: .github\workflows\ci-build.yml
@@ -92,7 +92,7 @@ Description: GitHub Actions pipeline definition for automated builds and testing
 --------------------------------------------------------------------------------
 File: bin\autoexec.bat
 Size: 74 bytes
-Description: Sample automated command execution script for FreeDOS startup.
+Description: Sample automated command execution script for LibreDOS startup.
 --------------------------------------------------------------------------------
 File: bin\config.sys
 Size: 90 bytes
@@ -106,13 +106,25 @@ File: boot\boot.asm
 Size: 23193 bytes
 Description: Assembly source for the 16-bit FAT12/FAT16 floppy and hard disk MBR boot sector.
 --------------------------------------------------------------------------------
+File: boot\boot.c
+Size: 636 bytes
+Description: C source code file.
+--------------------------------------------------------------------------------
 File: boot\boot32.asm
 Size: 13987 bytes
 Description: Assembly source for the FAT32 boot sector with CHS/LBA auto-switching.
 --------------------------------------------------------------------------------
+File: boot\boot32.c
+Size: 842 bytes
+Description: C source code file.
+--------------------------------------------------------------------------------
 File: boot\boot32lb.asm
 Size: 13011 bytes
 Description: Assembly source for the FAT32 LBA-only boot sector.
+--------------------------------------------------------------------------------
+File: boot\boot32lb.c
+Size: 225 bytes
+Description: C source code file.
 --------------------------------------------------------------------------------
 File: boot\magic.mac
 Size: 2092 bytes
@@ -125,6 +137,10 @@ Description: Makefile to build boot sector binaries.
 File: boot\oemboot.asm
 Size: 28314 bytes
 Description: Custom bootloader source featuring OEM loading specifications.
+--------------------------------------------------------------------------------
+File: boot\oemboot.c
+Size: 214 bytes
+Description: C source code file.
 --------------------------------------------------------------------------------
 File: country\.git
 Size: 32 bytes
@@ -144,7 +160,7 @@ Description: National Language Support assembly source with date formats, sortin
 --------------------------------------------------------------------------------
 File: country\country.lsm
 Size: 403 bytes
-Description: LSM metadata file for FreeDOS country files.
+Description: LSM metadata file for LibreDOS country files.
 --------------------------------------------------------------------------------
 File: country\kernel.tb1
 Size: 4622 bytes
@@ -165,6 +181,10 @@ Description: Documentation for the country database structure and compilation.
 File: country\.github\workflows\ci-build.yml
 Size: 857 bytes
 Description: GitHub Actions pipeline definition for automated builds and testing.
+--------------------------------------------------------------------------------
+File: docs\architecture.md
+Size: 6261 bytes
+Description: Documentation file.
 --------------------------------------------------------------------------------
 File: docs\bugs.txt
 Size: 400 bytes
@@ -223,7 +243,7 @@ Size: 11897 bytes
 Description: Documentation file.
 --------------------------------------------------------------------------------
 File: docs\kernel_builders_guide.md
-Size: 5554 bytes
+Size: 6286 bytes
 Description: Documentation file.
 --------------------------------------------------------------------------------
 File: docs\lfnapi.txt
@@ -243,7 +263,7 @@ Size: 8489 bytes
 Description: Documentation file.
 --------------------------------------------------------------------------------
 File: docs\programmers_guide.md
-Size: 9973 bytes
+Size: 10353 bytes
 Description: Documentation file.
 --------------------------------------------------------------------------------
 File: docs\readme.txt
@@ -266,6 +286,10 @@ File: drivers\floppy.asm
 Size: 7020 bytes
 Description: Low-level floppy disk controller BIOS parameter table initialization driver.
 --------------------------------------------------------------------------------
+File: drivers\floppy.c
+Size: 571 bytes
+Description: C source code file.
+--------------------------------------------------------------------------------
 File: drivers\makefile
 Size: 965 bytes
 Description: Makefile for low-level BIOS drivers.
@@ -274,13 +298,25 @@ File: drivers\rdpcclk.asm
 Size: 1614 bytes
 Description: Real-time clock reading driver for standard PC BIOS.
 --------------------------------------------------------------------------------
+File: drivers\rdpcclk.c
+Size: 230 bytes
+Description: C source code file.
+--------------------------------------------------------------------------------
 File: drivers\wratclk.asm
 Size: 2035 bytes
 Description: Real-time clock writing driver for AT BIOS.
 --------------------------------------------------------------------------------
+File: drivers\wratclk.c
+Size: 227 bytes
+Description: C source code file.
+--------------------------------------------------------------------------------
 File: drivers\wrpcclk.asm
 Size: 1404 bytes
 Description: Real-time clock writing driver for standard PC BIOS.
+--------------------------------------------------------------------------------
+File: drivers\wrpcclk.c
+Size: 221 bytes
+Description: C source code file.
 --------------------------------------------------------------------------------
 File: hdr\algnbyte.h
 Size: 308 bytes
@@ -418,9 +454,17 @@ File: kernel\apisupt.asm
 Size: 4005 bytes
 Description: Assembly routines supporting DOS API stack preparation and return values.
 --------------------------------------------------------------------------------
+File: kernel\apisupt.c
+Size: 305 bytes
+Description: C source code file.
+--------------------------------------------------------------------------------
 File: kernel\asmsupt.asm
 Size: 15304 bytes
 Description: Highly optimized assembly string and block memory handling (memcpy, memset, strcmp).
+--------------------------------------------------------------------------------
+File: kernel\asmsupt.c
+Size: 421 bytes
+Description: C source code file.
 --------------------------------------------------------------------------------
 File: kernel\blockio.c
 Size: 15983 bytes
@@ -446,9 +490,17 @@ File: kernel\console.asm
 Size: 10846 bytes
 Description: Assembly character writer using BIOS Int 10h calls.
 --------------------------------------------------------------------------------
+File: kernel\console.c
+Size: 242 bytes
+Description: C source code file.
+--------------------------------------------------------------------------------
 File: kernel\cpu.asm
 Size: 3306 bytes
 Description: Detects host CPU model and flags using a assembly sequence.
+--------------------------------------------------------------------------------
+File: kernel\cpu.c
+Size: 330 bytes
+Description: C source code file.
 --------------------------------------------------------------------------------
 File: kernel\dosfns.c
 Size: 43847 bytes
@@ -457,6 +509,10 @@ Description: Core DOS API actions (Open, Close, Read, Write, Lseek, Lock).
 File: kernel\dosidle.asm
 Size: 2979 bytes
 Description: Provides idle CPU release loops (HLT/Int 28h) during waits.
+--------------------------------------------------------------------------------
+File: kernel\dosidle.c
+Size: 202 bytes
+Description: C source code file.
 --------------------------------------------------------------------------------
 File: kernel\dsk.c
 Size: 36166 bytes
@@ -474,6 +530,10 @@ File: kernel\entry.asm
 Size: 25438 bytes
 Description: System interrupt handlers (Int 21h, 20h, 25h, 26h, 27h) and stack switching.
 --------------------------------------------------------------------------------
+File: kernel\entry.c
+Size: 1080 bytes
+Description: C source code file.
+--------------------------------------------------------------------------------
 File: kernel\error.c
 Size: 3737 bytes
 Description: Kernel panic and fatal halting routines.
@@ -481,6 +541,14 @@ Description: Kernel panic and fatal halting routines.
 File: kernel\execrh.asm
 Size: 2966 bytes
 Description: Assembly wrapper to call device driver strategy and interrupt procedures.
+--------------------------------------------------------------------------------
+File: kernel\execrh.c
+Size: 410 bytes
+Description: C source code file.
+--------------------------------------------------------------------------------
+File: kernel\exfat.c
+Size: 2590 bytes
+Description: exFAT filesystem handler implementing partition mounts, directory sets parser, and contiguous sector maps.
 --------------------------------------------------------------------------------
 File: kernel\fatdir.c
 Size: 15924 bytes
@@ -530,6 +598,10 @@ File: kernel\int2f.asm
 Size: 20352 bytes
 Description: Multiplex Interrupt (Int 2Fh) dispatcher (supporting DOS extensions, SHARE, dynamic drivers).
 --------------------------------------------------------------------------------
+File: kernel\int2f.c
+Size: 249 bytes
+Description: C source code file.
+--------------------------------------------------------------------------------
 File: kernel\inthndlr.c
 Size: 116090 bytes
 Description: C-level router for Int 21h API calls.
@@ -538,9 +610,17 @@ File: kernel\intr.asm
 Size: 8291 bytes
 Description: Assembly functions to invoke user-defined software interrupts.
 --------------------------------------------------------------------------------
+File: kernel\intr.c
+Size: 231 bytes
+Description: C source code file.
+--------------------------------------------------------------------------------
 File: kernel\io.asm
 Size: 19243 bytes
 Description: Assembly procedures for reading/writing hardware I/O ports.
+--------------------------------------------------------------------------------
+File: kernel\io.c
+Size: 269 bytes
+Description: C source code file.
 --------------------------------------------------------------------------------
 File: kernel\io.inc
 Size: 1878 bytes
@@ -558,9 +638,17 @@ File: kernel\irqstack.asm
 Size: 7744 bytes
 Description: Manages hardware interrupts execution stacks.
 --------------------------------------------------------------------------------
+File: kernel\irqstack.c
+Size: 227 bytes
+Description: C source code file.
+--------------------------------------------------------------------------------
 File: kernel\kernel.asm
 Size: 49156 bytes
 Description: Kernel startup startup code, segment definitions, and List of Lists variables.
+--------------------------------------------------------------------------------
+File: kernel\kernel.c
+Size: 781 bytes
+Description: C source code file.
 --------------------------------------------------------------------------------
 File: kernel\kernel.cfg
 Size: 153 bytes
@@ -580,7 +668,7 @@ Description: Long division and multiplication assembly optimization.
 --------------------------------------------------------------------------------
 File: kernel\main.c
 Size: 25227 bytes
-Description: FreeDOS entry logic executing initial setup and loading the user shell.
+Description: LibreDOS entry logic executing initial setup and loading the user shell.
 --------------------------------------------------------------------------------
 File: kernel\makefile
 Size: 6805 bytes
@@ -589,6 +677,10 @@ Description: Makefile for kernel compilation.
 File: kernel\memdisk.asm
 Size: 2675 bytes
 Description: Virtual disk drive operating from RAM sector storage.
+--------------------------------------------------------------------------------
+File: kernel\memdisk.c
+Size: 219 bytes
+Description: C source code file.
 --------------------------------------------------------------------------------
 File: kernel\memmgr.c
 Size: 15016 bytes
@@ -614,9 +706,17 @@ File: kernel\nlssupt.asm
 Size: 2230 bytes
 Description: Assembly NLS support helper functions.
 --------------------------------------------------------------------------------
+File: kernel\nlssupt.c
+Size: 221 bytes
+Description: C source code file.
+--------------------------------------------------------------------------------
 File: kernel\nls_hc.asm
 Size: 5064 bytes
 Description: Assembly data containing default hardcoded US-ASCII NLS tables.
+--------------------------------------------------------------------------------
+File: kernel\nls_hc.c
+Size: 249 bytes
+Description: C source code file.
 --------------------------------------------------------------------------------
 File: kernel\nls_load.c
 Size: 2779 bytes
@@ -630,9 +730,17 @@ File: kernel\printer.asm
 Size: 7230 bytes
 Description: Low-level parallel port driver using BIOS Int 17h.
 --------------------------------------------------------------------------------
+File: kernel\printer.c
+Size: 245 bytes
+Description: C source code file.
+--------------------------------------------------------------------------------
 File: kernel\procsupt.asm
 Size: 9544 bytes
 Description: Assembly procedures for switching CPU task context.
+--------------------------------------------------------------------------------
+File: kernel\procsupt.c
+Size: 254 bytes
+Description: C source code file.
 --------------------------------------------------------------------------------
 File: kernel\proto.h
 Size: 17043 bytes
@@ -645,6 +753,10 @@ Description: Assembly segments grouping configuration.
 File: kernel\serial.asm
 Size: 4795 bytes
 Description: Low-level serial port driver using BIOS Int 14h.
+--------------------------------------------------------------------------------
+File: kernel\serial.c
+Size: 228 bytes
+Description: C source code file.
 --------------------------------------------------------------------------------
 File: kernel\strings.c
 Size: 3608 bytes
@@ -660,7 +772,7 @@ Description: Directory entry compression and decompression mapping.
 --------------------------------------------------------------------------------
 File: kernel\systime.c
 Size: 5464 bytes
-Description: System clock get/set functions.
+Description: System date and time getters/setters.
 --------------------------------------------------------------------------------
 File: kernel\task.c
 Size: 28508 bytes
@@ -753,6 +865,10 @@ Description: Makefile to compile SETVER.EXE.
 File: setver\setver.asm
 Size: 1644 bytes
 Description: Dynamic version report driver hook (returns specific DOS version based on program name).
+--------------------------------------------------------------------------------
+File: setver\setver.c
+Size: 256 bytes
+Description: C source code file.
 --------------------------------------------------------------------------------
 File: share\.git
 Size: 30 bytes
@@ -873,6 +989,10 @@ Description: Assembly source code or macro definition.
 File: share\src\gcc_help.asm
 Size: 32066 bytes
 Description: Assembly source code or macro definition.
+--------------------------------------------------------------------------------
+File: share\src\gcc_help.c
+Size: 806 bytes
+Description: C source code file.
 --------------------------------------------------------------------------------
 File: share\src\Makefile
 Size: 635 bytes
@@ -1266,9 +1386,17 @@ File: utils\upxdevic.asm
 Size: 871 bytes
 Description: Assembly driver loader wrapper supporting UPX compressed kernels.
 --------------------------------------------------------------------------------
+File: utils\upxdevic.c
+Size: 278 bytes
+Description: C source code file.
+--------------------------------------------------------------------------------
 File: utils\upxentry.asm
 Size: 1006 bytes
 Description: Assembly decompression entry point for UPX compressed kernels.
+--------------------------------------------------------------------------------
+File: utils\upxentry.c
+Size: 278 bytes
+Description: C source code file.
 --------------------------------------------------------------------------------
 File: utils\wlinker.bat
 Size: 133 bytes
