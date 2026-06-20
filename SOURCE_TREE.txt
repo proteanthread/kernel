@@ -83,7 +83,7 @@ Size: 1105 bytes
 Description: MS-DOS batch script to compile and organize release packages.
 --------------------------------------------------------------------------------
 File: SOURCE_TREE.txt
-Size: 59654 bytes
+Size: 59825 bytes
 Description: Documentation file.
 --------------------------------------------------------------------------------
 File: .github\workflows\ci-build.yml
@@ -188,6 +188,10 @@ Description: Documentation file.
 --------------------------------------------------------------------------------
 File: docs\contrib.txt
 Size: 1779 bytes
+Description: Documentation file.
+--------------------------------------------------------------------------------
+File: docs\exfat_tutorial.md
+Size: 8179 bytes
 Description: Documentation file.
 --------------------------------------------------------------------------------
 File: docs\fdkernel.lsm
