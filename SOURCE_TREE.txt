@@ -1,0 +1,1240 @@
+================================================================================
+FreeDOS Kernel Workspace Source Tree
+================================================================================
+This document lists all files in the FreeDOS (DOS-C) kernel repository
+including their path, size, and a brief description of their functionality.
+This mapping serves as a structural overview for modernization and refactoring.
+================================================================================
+
+File: .gitattributes
+Size: 120 bytes
+Description: Git repository attribute settings for line endings and merge strategies.
+--------------------------------------------------------------------------------
+File: .gitignore
+Size: 625 bytes
+Description: Specifies intentionally untracked files that Git should ignore.
+--------------------------------------------------------------------------------
+File: .gitmodules
+Size: 183 bytes
+Description: Defines submodules used within the Git repository.
+--------------------------------------------------------------------------------
+File: build.bat
+Size: 6056 bytes
+Description: Core MS-DOS/Windows build orchestrator accepting compiler and architecture options.
+--------------------------------------------------------------------------------
+File: buildall.bat
+Size: 2748 bytes
+Description: Compiles all target configurations and compiler combinations consecutively.
+--------------------------------------------------------------------------------
+File: ci_build.sh
+Size: 2632 bytes
+Description: Continuous Integration build execution script for Unix/Linux hosts.
+--------------------------------------------------------------------------------
+File: ci_prereq.sh
+Size: 3209 bytes
+Description: CI prerequisite setup script to fetch compiler dependencies (OpenWatcom, NASM, gcc-ia16).
+--------------------------------------------------------------------------------
+File: ci_test.sh
+Size: 1099 bytes
+Description: Runs CI tests using DOS emulators or other testing tools.
+--------------------------------------------------------------------------------
+File: clean.bat
+Size: 580 bytes
+Description: Cleans build intermediate files (*.obj, *.o, etc.) from all subdirectories.
+--------------------------------------------------------------------------------
+File: clobber.bat
+Size: 715 bytes
+Description: Aggressively deletes all compiler build output, binaries, and generated files.
+--------------------------------------------------------------------------------
+File: config.b
+Size: 4149 bytes
+Description: Default batch file configuration template defining toolchain paths on DOS/Windows.
+--------------------------------------------------------------------------------
+File: config.m
+Size: 2132 bytes
+Description: Default GNU Make configuration template defining toolchain paths on Linux.
+--------------------------------------------------------------------------------
+File: COPYING
+Size: 18330 bytes
+Description: GNU General Public License Version 2, under which this kernel is distributed.
+--------------------------------------------------------------------------------
+File: default.bat
+Size: 2447 bytes
+Description: Helper batch script to set compiler paths and reset environment parameters.
+--------------------------------------------------------------------------------
+File: filelist
+Size: 3143 bytes
+Description: Text file containing the explicit list of files packaged in a kernel release.
+--------------------------------------------------------------------------------
+File: makefile
+Size: 3704 bytes
+Description: Top-level GNU makefile for Unix/Linux cross-compilers.
+--------------------------------------------------------------------------------
+File: MAKEPKGS.BAT
+Size: 3943 bytes
+Description: MS-DOS batch script to compile and package various kernel flavors.
+--------------------------------------------------------------------------------
+File: README.md
+Size: 1362 bytes
+Description: Markdown documentation explaining the repository contents and basic build status.
+--------------------------------------------------------------------------------
+File: RELEASE.BAT
+Size: 1105 bytes
+Description: MS-DOS batch script to compile and organize release packages.
+--------------------------------------------------------------------------------
+File: .github\workflows\ci-build.yml
+Size: 1306 bytes
+Description: GitHub Actions pipeline definition for automated builds and testing.
+--------------------------------------------------------------------------------
+File: bin\autoexec.bat
+Size: 72 bytes
+Description: Sample automated command execution script for FreeDOS startup.
+--------------------------------------------------------------------------------
+File: bin\config.sys
+Size: 90 bytes
+Description: Sample operating system configuration file containing directives for drivers and memory.
+--------------------------------------------------------------------------------
+File: bin\install.bat
+Size: 671 bytes
+Description: Batch installation utility script to deploy compiled kernel files.
+--------------------------------------------------------------------------------
+File: boot\boot.asm
+Size: 23192 bytes
+Description: Assembly source for the 16-bit FAT12/FAT16 floppy and hard disk MBR boot sector.
+--------------------------------------------------------------------------------
+File: boot\boot32.asm
+Size: 13985 bytes
+Description: Assembly source for the FAT32 boot sector with CHS/LBA auto-switching.
+--------------------------------------------------------------------------------
+File: boot\boot32lb.asm
+Size: 13000 bytes
+Description: Assembly source for the FAT32 LBA-only boot sector.
+--------------------------------------------------------------------------------
+File: boot\magic.mac
+Size: 2092 bytes
+Description: NASM bootloader compilation helper macro file.
+--------------------------------------------------------------------------------
+File: boot\makefile
+Size: 964 bytes
+Description: Makefile to build boot sector binaries.
+--------------------------------------------------------------------------------
+File: boot\oemboot.asm
+Size: 28310 bytes
+Description: Custom bootloader source featuring OEM loading specifications.
+--------------------------------------------------------------------------------
+File: country\.git
+Size: 32 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: country\ci_validate.py
+Size: 8633 bytes
+Description: Script to validate National Language Support (NLS) country file integrity.
+--------------------------------------------------------------------------------
+File: country\cntrydump.py
+Size: 100263 bytes
+Description: Script to extract and print tables from compiled country files.
+--------------------------------------------------------------------------------
+File: country\country.asm
+Size: 167499 bytes
+Description: National Language Support assembly source with date formats, sorting, and uppercase tables.
+--------------------------------------------------------------------------------
+File: country\country.lsm
+Size: 401 bytes
+Description: LSM metadata file for FreeDOS country files.
+--------------------------------------------------------------------------------
+File: country\kernel.tb1
+Size: 4620 bytes
+Description: NLS country mapping resource file.
+--------------------------------------------------------------------------------
+File: country\LICENSE
+Size: 18431 bytes
+Description: Licensing statement for country files.
+--------------------------------------------------------------------------------
+File: country\Makefile
+Size: 198 bytes
+Description: Makefile to compile NLS country databases.
+--------------------------------------------------------------------------------
+File: country\README.MD
+Size: 4332 bytes
+Description: Documentation for the country database structure and compilation.
+--------------------------------------------------------------------------------
+File: country\.github\workflows\ci-build.yml
+Size: 857 bytes
+Description: GitHub Actions pipeline definition for automated builds and testing.
+--------------------------------------------------------------------------------
+File: docs\bugs.txt
+Size: 399 bytes
+Description: Documentation file.
+--------------------------------------------------------------------------------
+File: docs\build.txt
+Size: 5541 bytes
+Description: Documentation file.
+--------------------------------------------------------------------------------
+File: docs\CNAME
+Size: 15 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: docs\config.txt
+Size: 19270 bytes
+Description: Documentation file.
+--------------------------------------------------------------------------------
+File: docs\contrib.txt
+Size: 1775 bytes
+Description: Documentation file.
+--------------------------------------------------------------------------------
+File: docs\fdkernel.lsm
+Size: 612 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: docs\history.txt
+Size: 181357 bytes
+Description: Documentation file.
+--------------------------------------------------------------------------------
+File: docs\index.md
+Size: 1419 bytes
+Description: Documentation file.
+--------------------------------------------------------------------------------
+File: docs\intfns.txt
+Size: 9189 bytes
+Description: Documentation file.
+--------------------------------------------------------------------------------
+File: docs\lfnapi.txt
+Size: 582 bytes
+Description: Documentation file.
+--------------------------------------------------------------------------------
+File: docs\memdisk.txt
+Size: 3460 bytes
+Description: Documentation file.
+--------------------------------------------------------------------------------
+File: docs\mkboot.txt
+Size: 373 bytes
+Description: Documentation file.
+--------------------------------------------------------------------------------
+File: docs\nls.txt
+Size: 8483 bytes
+Description: Documentation file.
+--------------------------------------------------------------------------------
+File: docs\readme.txt
+Size: 1367 bytes
+Description: Documentation file.
+--------------------------------------------------------------------------------
+File: docs\sys.txt
+Size: 9672 bytes
+Description: Documentation file.
+--------------------------------------------------------------------------------
+File: docs\_config.yml
+Size: 153 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: drivers\floppy.asm
+Size: 7020 bytes
+Description: Low-level floppy disk controller BIOS parameter table initialization driver.
+--------------------------------------------------------------------------------
+File: drivers\makefile
+Size: 965 bytes
+Description: Makefile for low-level BIOS drivers.
+--------------------------------------------------------------------------------
+File: drivers\rdpcclk.asm
+Size: 1614 bytes
+Description: Real-time clock reading driver for standard PC BIOS.
+--------------------------------------------------------------------------------
+File: drivers\wratclk.asm
+Size: 2035 bytes
+Description: Real-time clock writing driver for AT BIOS.
+--------------------------------------------------------------------------------
+File: drivers\wrpcclk.asm
+Size: 1404 bytes
+Description: Real-time clock writing driver for standard PC BIOS.
+--------------------------------------------------------------------------------
+File: hdr\algnbyte.h
+Size: 308 bytes
+Description: Forces 1-byte structural alignment in compiler headers.
+--------------------------------------------------------------------------------
+File: hdr\algndflt.h
+Size: 224 bytes
+Description: Restores default compiler structural alignment rules.
+--------------------------------------------------------------------------------
+File: hdr\buffer.h
+Size: 3419 bytes
+Description: Structure definition for the kernel's sector buffer cache.
+--------------------------------------------------------------------------------
+File: hdr\cds.h
+Size: 4281 bytes
+Description: Defines the Current Directory Structure (CDS) representing drive mount parameters.
+--------------------------------------------------------------------------------
+File: hdr\clock.h
+Size: 2662 bytes
+Description: Structures defining character-based clock device driver states.
+--------------------------------------------------------------------------------
+File: hdr\dcb.h
+Size: 4796 bytes
+Description: Defines Device Control Blocks used for block driver communication.
+--------------------------------------------------------------------------------
+File: hdr\ddate.h
+Size: 2772 bytes
+Description: Structure mapping the 16-bit bitfields of a DOS date.
+--------------------------------------------------------------------------------
+File: hdr\debug.h
+Size: 5068 bytes
+Description: Pre-processor settings and print logging macros for kernel debugging.
+--------------------------------------------------------------------------------
+File: hdr\device.h
+Size: 20986 bytes
+Description: Core structures for character and block device headers (struct dhdr).
+--------------------------------------------------------------------------------
+File: hdr\dirmatch.h
+Size: 2694 bytes
+Description: State structure for internal search directory tracking (FindFirst/FindNext).
+--------------------------------------------------------------------------------
+File: hdr\dsk.h
+Size: 1879 bytes
+Description: Structures mapping BIOS drive parameters, geometries, and absolute read/write.
+--------------------------------------------------------------------------------
+File: hdr\dtime.h
+Size: 2413 bytes
+Description: Structure mapping the 16-bit bitfields of a DOS time.
+--------------------------------------------------------------------------------
+File: hdr\error.h
+Size: 4926 bytes
+Description: List of standard DOS error codes and critical interrupt numbers.
+--------------------------------------------------------------------------------
+File: hdr\exe.h
+Size: 2490 bytes
+Description: Structure mapping the 16-bit MS-DOS MZ executable header.
+--------------------------------------------------------------------------------
+File: hdr\fat.h
+Size: 7144 bytes
+Description: Structures mapping FAT tables, boot records, BPB structure, and directory entries.
+--------------------------------------------------------------------------------
+File: hdr\fcb.h
+Size: 6145 bytes
+Description: File Control Block structure mapping old CP/M style files.
+--------------------------------------------------------------------------------
+File: hdr\file.h
+Size: 4003 bytes
+Description: Internal file structure mapping file open modes and flags.
+--------------------------------------------------------------------------------
+File: hdr\fnode.h
+Size: 3338 bytes
+Description: File node (fnode) structure containing open file positions and locks.
+--------------------------------------------------------------------------------
+File: hdr\kbd.h
+Size: 2603 bytes
+Description: Keyboard buffer and layout structure definitions.
+--------------------------------------------------------------------------------
+File: hdr\kconfig.h
+Size: 2704 bytes
+Description: Structure definitions matching kernel configuration block (LowKernelConfig).
+--------------------------------------------------------------------------------
+File: hdr\lol.h
+Size: 5989 bytes
+Description: The DOS List of Lists (LoL) struct containing system anchor pointers.
+--------------------------------------------------------------------------------
+File: hdr\mcb.h
+Size: 3076 bytes
+Description: Structure defining a Memory Control Block (MCB) used in arena allocations.
+--------------------------------------------------------------------------------
+File: hdr\network.h
+Size: 3434 bytes
+Description: Redirector structures for linking to network resources.
+--------------------------------------------------------------------------------
+File: hdr\nls.h
+Size: 30353 bytes
+Description: Data structures representing NLS sorting tables, upcase tables, and DBCS ranges.
+--------------------------------------------------------------------------------
+File: hdr\pcb.h
+Size: 7571 bytes
+Description: Process Control Block structure.
+--------------------------------------------------------------------------------
+File: hdr\portab.h
+Size: 12767 bytes
+Description: Data type portability definitions (BYTE, UWORD, far pointers).
+--------------------------------------------------------------------------------
+File: hdr\process.h
+Size: 5304 bytes
+Description: Structure defining process control blocks and environment vectors.
+--------------------------------------------------------------------------------
+File: hdr\sft.h
+Size: 7031 bytes
+Description: Structure defining System File Table (SFT) entry layout.
+--------------------------------------------------------------------------------
+File: hdr\stacks.inc
+Size: 5956 bytes
+Description: ASM include file defining interrupt stack structures.
+--------------------------------------------------------------------------------
+File: hdr\tail.h
+Size: 2330 bytes
+Description: Command line argument tail helper macros.
+--------------------------------------------------------------------------------
+File: hdr\version.h
+Size: 2658 bytes
+Description: Pre-processor version definitions.
+--------------------------------------------------------------------------------
+File: hdr\win.h
+Size: 1478 bytes
+Description: Structures mapping Windows 3.1 enhanced mode task switches and instance tables.
+--------------------------------------------------------------------------------
+File: hdr\xstructs.h
+Size: 3650 bytes
+Description: Helper structures.
+--------------------------------------------------------------------------------
+File: kernel\apisupt.asm
+Size: 4005 bytes
+Description: Assembly routines supporting DOS API stack preparation and return values.
+--------------------------------------------------------------------------------
+File: kernel\asmsupt.asm
+Size: 15304 bytes
+Description: Highly optimized assembly string and block memory handling (memcpy, memset, strcmp).
+--------------------------------------------------------------------------------
+File: kernel\blockio.c
+Size: 15983 bytes
+Description: Low-level block cache buffer reading, writing, and flushing logic.
+--------------------------------------------------------------------------------
+File: kernel\break.c
+Size: 3550 bytes
+Description: Handles Ctrl-Break checks, signal registration, and Int 23h execution.
+--------------------------------------------------------------------------------
+File: kernel\chario.c
+Size: 14642 bytes
+Description: Character device input/output operations (CON, AUX, PRN).
+--------------------------------------------------------------------------------
+File: kernel\config.c
+Size: 76732 bytes
+Description: CONFIG.SYS configuration file parser and memory layout initialization.
+--------------------------------------------------------------------------------
+File: kernel\config.h
+Size: 2712 bytes
+Description: Directives configuration definitions.
+--------------------------------------------------------------------------------
+File: kernel\console.asm
+Size: 10846 bytes
+Description: Assembly character writer using BIOS Int 10h calls.
+--------------------------------------------------------------------------------
+File: kernel\cpu.asm
+Size: 3305 bytes
+Description: Detects host CPU model and flags using a assembly sequence.
+--------------------------------------------------------------------------------
+File: kernel\dosfns.c
+Size: 43846 bytes
+Description: Core DOS API actions (Open, Close, Read, Write, Lseek, Lock).
+--------------------------------------------------------------------------------
+File: kernel\dosidle.asm
+Size: 2979 bytes
+Description: Provides idle CPU release loops (HLT/Int 28h) during waits.
+--------------------------------------------------------------------------------
+File: kernel\dsk.c
+Size: 36166 bytes
+Description: BIOS block drive parameter queries and geometry configuration.
+--------------------------------------------------------------------------------
+File: kernel\dyndata.h
+Size: 468 bytes
+Description: Declares structures for dynamically allocated kernel segments.
+--------------------------------------------------------------------------------
+File: kernel\dyninit.c
+Size: 2376 bytes
+Description: Dynamic memory layout calculations for starting kernel elements.
+--------------------------------------------------------------------------------
+File: kernel\entry.asm
+Size: 25438 bytes
+Description: System interrupt handlers (Int 21h, 20h, 25h, 26h, 27h) and stack switching.
+--------------------------------------------------------------------------------
+File: kernel\error.c
+Size: 3737 bytes
+Description: Kernel panic and fatal halting routines.
+--------------------------------------------------------------------------------
+File: kernel\execrh.asm
+Size: 2966 bytes
+Description: Assembly wrapper to call device driver strategy and interrupt procedures.
+--------------------------------------------------------------------------------
+File: kernel\fatdir.c
+Size: 15924 bytes
+Description: Directory sector parsing, directory search, and file match comparisons.
+--------------------------------------------------------------------------------
+File: kernel\fatfs.c
+Size: 64325 bytes
+Description: Filesystem interface implementing directory operations (Mkdir, Rmdir, Delete, Rename).
+--------------------------------------------------------------------------------
+File: kernel\fattab.c
+Size: 14091 bytes
+Description: FAT cluster chain lookup, allocation, and table updating.
+--------------------------------------------------------------------------------
+File: kernel\fcbfns.c
+Size: 22028 bytes
+Description: Old-style FCB compatibility functions.
+--------------------------------------------------------------------------------
+File: kernel\globals.h
+Size: 16997 bytes
+Description: Declaration of global kernel variables.
+--------------------------------------------------------------------------------
+File: kernel\init-dat.h
+Size: 837 bytes
+Description: Declaration of dynamic data elements utilized in the initialization phase.
+--------------------------------------------------------------------------------
+File: kernel\init-mod.h
+Size: 11730 bytes
+Description: Dynamic loading declarations.
+--------------------------------------------------------------------------------
+File: kernel\initclk.c
+Size: 3467 bytes
+Description: Registers and starts the system real-time clock driver.
+--------------------------------------------------------------------------------
+File: kernel\initdisk.c
+Size: 51134 bytes
+Description: Mounts partition tables, handles partition mappings, and validates geometries.
+--------------------------------------------------------------------------------
+File: kernel\inithma.c
+Size: 10807 bytes
+Description: Relocates the kernel execution code and data into the High Memory Area (HMA).
+--------------------------------------------------------------------------------
+File: kernel\initoem.c
+Size: 2932 bytes
+Description: OEM hook points for customize bios settings.
+--------------------------------------------------------------------------------
+File: kernel\int2f.asm
+Size: 20352 bytes
+Description: Multiplex Interrupt (Int 2Fh) dispatcher (supporting DOS extensions, SHARE, dynamic drivers).
+--------------------------------------------------------------------------------
+File: kernel\inthndlr.c
+Size: 116077 bytes
+Description: C-level router for Int 21h API calls.
+--------------------------------------------------------------------------------
+File: kernel\intr.asm
+Size: 8289 bytes
+Description: Assembly functions to invoke user-defined software interrupts.
+--------------------------------------------------------------------------------
+File: kernel\io.asm
+Size: 19243 bytes
+Description: Assembly procedures for reading/writing hardware I/O ports.
+--------------------------------------------------------------------------------
+File: kernel\io.inc
+Size: 1878 bytes
+Description: Assembly I/O helper macros.
+--------------------------------------------------------------------------------
+File: kernel\ioctl.c
+Size: 9221 bytes
+Description: Implements the DOS IOCTL functions.
+--------------------------------------------------------------------------------
+File: kernel\iprf.c
+Size: 187 bytes
+Description: Internal minimal formatting string printer.
+--------------------------------------------------------------------------------
+File: kernel\irqstack.asm
+Size: 7744 bytes
+Description: Manages hardware interrupts execution stacks.
+--------------------------------------------------------------------------------
+File: kernel\kernel.asm
+Size: 49151 bytes
+Description: Kernel startup startup code, segment definitions, and List of Lists variables.
+--------------------------------------------------------------------------------
+File: kernel\kernel.cfg
+Size: 153 bytes
+Description: Kernel compilation configuration parameters.
+--------------------------------------------------------------------------------
+File: kernel\kernel.ld
+Size: 6027 bytes
+Description: GNU linker template script.
+--------------------------------------------------------------------------------
+File: kernel\lfnapi.c
+Size: 11266 bytes
+Description: Long File Names (LFN) mapping layer.
+--------------------------------------------------------------------------------
+File: kernel\ludivmul.inc
+Size: 4696 bytes
+Description: Long division and multiplication assembly optimization.
+--------------------------------------------------------------------------------
+File: kernel\main.c
+Size: 25225 bytes
+Description: FreeDOS entry logic executing initial setup and loading the user shell.
+--------------------------------------------------------------------------------
+File: kernel\makefile
+Size: 6805 bytes
+Description: Makefile for kernel compilation.
+--------------------------------------------------------------------------------
+File: kernel\memdisk.asm
+Size: 2674 bytes
+Description: Virtual disk drive operating from RAM sector storage.
+--------------------------------------------------------------------------------
+File: kernel\memmgr.c
+Size: 15016 bytes
+Description: DOS Memory Arena allocator using MCB blocks.
+--------------------------------------------------------------------------------
+File: kernel\misc.c
+Size: 2688 bytes
+Description: Pointers manipulation and standard library wrapper helpers.
+--------------------------------------------------------------------------------
+File: kernel\network.c
+Size: 2616 bytes
+Description: Redirection calls interface to handle remote networking drives.
+--------------------------------------------------------------------------------
+File: kernel\newstuff.c
+Size: 25475 bytes
+Description: Miscellaneous features (handles allocation, temporary files).
+--------------------------------------------------------------------------------
+File: kernel\nls.c
+Size: 24486 bytes
+Description: Locale information, case conversion, and dynamic string translation support.
+--------------------------------------------------------------------------------
+File: kernel\nlssupt.asm
+Size: 2230 bytes
+Description: Assembly NLS support helper functions.
+--------------------------------------------------------------------------------
+File: kernel\nls_hc.asm
+Size: 5064 bytes
+Description: Assembly data containing default hardcoded US-ASCII NLS tables.
+--------------------------------------------------------------------------------
+File: kernel\nls_load.c
+Size: 2776 bytes
+Description: Dynamic country/NLS catalog loading routines.
+--------------------------------------------------------------------------------
+File: kernel\prf.c
+Size: 12830 bytes
+Description: C source code file.
+--------------------------------------------------------------------------------
+File: kernel\printer.asm
+Size: 7230 bytes
+Description: Low-level parallel port driver using BIOS Int 17h.
+--------------------------------------------------------------------------------
+File: kernel\procsupt.asm
+Size: 9543 bytes
+Description: Assembly procedures for switching CPU task context.
+--------------------------------------------------------------------------------
+File: kernel\proto.h
+Size: 17043 bytes
+Description: Global kernel function prototypes.
+--------------------------------------------------------------------------------
+File: kernel\segs.inc
+Size: 3956 bytes
+Description: Assembly segments grouping configuration.
+--------------------------------------------------------------------------------
+File: kernel\serial.asm
+Size: 4795 bytes
+Description: Low-level serial port driver using BIOS Int 14h.
+--------------------------------------------------------------------------------
+File: kernel\strings.c
+Size: 3608 bytes
+Description: Standard string processing functions.
+--------------------------------------------------------------------------------
+File: kernel\sysclk.c
+Size: 5831 bytes
+Description: Internal real-time clock driver.
+--------------------------------------------------------------------------------
+File: kernel\syspack.c
+Size: 4117 bytes
+Description: Directory entry compression and decompression mapping.
+--------------------------------------------------------------------------------
+File: kernel\systime.c
+Size: 5464 bytes
+Description: System clock get/set functions.
+--------------------------------------------------------------------------------
+File: kernel\task.c
+Size: 28508 bytes
+Description: Process manager (EXEC call, environment setup, PSP initialization, and exit handling).
+--------------------------------------------------------------------------------
+File: kernel\turboc.cfg
+Size: 133 bytes
+Description: Turbo C compilation options setup file.
+--------------------------------------------------------------------------------
+File: kernel\nls\001-437.hc
+Size: 4143 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: kernel\nls\001-437.unf
+Size: 5356 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: kernel\nls\001-437.up
+Size: 256 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: kernel\nls\049-850.hc
+Size: 4144 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: kernel\nls\049-850.unf
+Size: 5358 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: kernel\nls\049-850.up
+Size: 256 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: kernel\nls\files
+Size: 636 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: lib\makefile
+Size: 438 bytes
+Description: Top-level GNU makefile for Unix/Linux cross-compilers.
+--------------------------------------------------------------------------------
+File: mkfiles\bc3.mak
+Size: 1375 bytes
+Description: Compiler-specific configuration makefile.
+--------------------------------------------------------------------------------
+File: mkfiles\bc5.mak
+Size: 1373 bytes
+Description: Compiler-specific configuration makefile.
+--------------------------------------------------------------------------------
+File: mkfiles\gcc.mak
+Size: 3156 bytes
+Description: Compiler-specific configuration makefile.
+--------------------------------------------------------------------------------
+File: mkfiles\generic.mak
+Size: 1149 bytes
+Description: Compiler-specific configuration makefile.
+--------------------------------------------------------------------------------
+File: mkfiles\mscl8.mak
+Size: 1172 bytes
+Description: Compiler-specific configuration makefile.
+--------------------------------------------------------------------------------
+File: mkfiles\owlinux.mak
+Size: 533 bytes
+Description: Compiler-specific configuration makefile.
+--------------------------------------------------------------------------------
+File: mkfiles\owwin.mak
+Size: 635 bytes
+Description: Compiler-specific configuration makefile.
+--------------------------------------------------------------------------------
+File: mkfiles\tc2.mak
+Size: 1368 bytes
+Description: Compiler-specific configuration makefile.
+--------------------------------------------------------------------------------
+File: mkfiles\tc3.mak
+Size: 1373 bytes
+Description: Compiler-specific configuration makefile.
+--------------------------------------------------------------------------------
+File: mkfiles\turbocpp.mak
+Size: 1379 bytes
+Description: Compiler-specific configuration makefile.
+--------------------------------------------------------------------------------
+File: mkfiles\watcom.mak
+Size: 1734 bytes
+Description: Compiler-specific configuration makefile.
+--------------------------------------------------------------------------------
+File: setver\makefile
+Size: 255 bytes
+Description: Makefile to compile SETVER.EXE.
+--------------------------------------------------------------------------------
+File: setver\setver.asm
+Size: 1644 bytes
+Description: Dynamic version report driver hook (returns specific DOS version based on program name).
+--------------------------------------------------------------------------------
+File: share\.git
+Size: 30 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: share\.gitattributes
+Size: 1987 bytes
+Description: Git repository attribute settings for line endings and merge strategies.
+--------------------------------------------------------------------------------
+File: share\.gitmodules
+Size: 160 bytes
+Description: Defines submodules used within the Git repository.
+--------------------------------------------------------------------------------
+File: share\build.bat
+Size: 1575 bytes
+Description: Core MS-DOS/Windows build orchestrator accepting compiler and architecture options.
+--------------------------------------------------------------------------------
+File: share\build.sh
+Size: 1597 bytes
+Description: Shell script.
+--------------------------------------------------------------------------------
+File: share\README.md
+Size: 536 bytes
+Description: Markdown documentation explaining the repository contents and basic build status.
+--------------------------------------------------------------------------------
+File: share\.github\workflows\ci-build.yml
+Size: 671 bytes
+Description: GitHub Actions pipeline definition for automated builds and testing.
+--------------------------------------------------------------------------------
+File: share\help\share.de
+Size: 571 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: share\help\share.en
+Size: 524 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: share\help\share.fr
+Size: 587 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: share\help\share.tr
+Size: 542 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: share\kitten\.git
+Size: 48 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: share\kitten\.gitattributes
+Size: 56 bytes
+Description: Git repository attribute settings for line endings and merge strategies.
+--------------------------------------------------------------------------------
+File: share\kitten\build.bat
+Size: 1554 bytes
+Description: Core MS-DOS/Windows build orchestrator accepting compiler and architecture options.
+--------------------------------------------------------------------------------
+File: share\kitten\build.sh
+Size: 837 bytes
+Description: Shell script.
+--------------------------------------------------------------------------------
+File: share\kitten\kitten.c
+Size: 15422 bytes
+Description: C source code file.
+--------------------------------------------------------------------------------
+File: share\kitten\kitten.h
+Size: 2315 bytes
+Description: Header definition file.
+--------------------------------------------------------------------------------
+File: share\kitten\LICENSE
+Size: 27030 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: share\kitten\test\Makefile
+Size: 106 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: share\kitten\test\test.c
+Size: 2081 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: share\kitten\test\nls\test.es
+Size: 221 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: share\lmacros\lmacros1.mac
+Size: 32334 bytes
+Description: Assembly source code or macro definition.
+--------------------------------------------------------------------------------
+File: share\lmacros\lmacros2.mac
+Size: 33062 bytes
+Description: Assembly source code or macro definition.
+--------------------------------------------------------------------------------
+File: share\lmacros\lmacros3.mac
+Size: 3270 bytes
+Description: Assembly source code or macro definition.
+--------------------------------------------------------------------------------
+File: share\nls\share.de
+Size: 2248 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: share\nls\share.en
+Size: 1994 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: share\nls\share.fr
+Size: 2395 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: share\nls\share.tr
+Size: 2138 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: share\src\amis.mac
+Size: 2353 bytes
+Description: Assembly source code or macro definition.
+--------------------------------------------------------------------------------
+File: share\src\gcc_help.asm
+Size: 32065 bytes
+Description: Assembly source code or macro definition.
+--------------------------------------------------------------------------------
+File: share\src\Makefile
+Size: 635 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: share\src\share.c
+Size: 38153 bytes
+Description: C source code file.
+--------------------------------------------------------------------------------
+File: share\tnyprntf\.git
+Size: 50 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: share\tnyprntf\build.bat
+Size: 1554 bytes
+Description: Core MS-DOS/Windows build orchestrator accepting compiler and architecture options.
+--------------------------------------------------------------------------------
+File: share\tnyprntf\build.sh
+Size: 916 bytes
+Description: Shell script.
+--------------------------------------------------------------------------------
+File: share\tnyprntf\LICENSE
+Size: 18431 bytes
+Description: Repository asset.
+--------------------------------------------------------------------------------
+File: share\tnyprntf\README.md
+Size: 141 bytes
+Description: Markdown documentation explaining the repository contents and basic build status.
+--------------------------------------------------------------------------------
+File: share\tnyprntf\tnyprntf.c
+Size: 6343 bytes
+Description: C source code file.
+--------------------------------------------------------------------------------
+File: share\tnyprntf\tnyprntf.h
+Size: 257 bytes
+Description: Header definition file.
+--------------------------------------------------------------------------------
+File: share\tnyprntf\test\Makefile
+Size: 119 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: share\tnyprntf\test\test.c
+Size: 2239 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: sys\bin2c.c
+Size: 889 bytes
+Description: Utility to serialize binary files into C byte arrays.
+--------------------------------------------------------------------------------
+File: sys\fdkrncfg.c
+Size: 18189 bytes
+Description: Command-line tool to configure the LowKernelConfig block in compiled kernels.
+--------------------------------------------------------------------------------
+File: sys\makefile
+Size: 1754 bytes
+Description: Makefile to compile SYS.COM and tools.
+--------------------------------------------------------------------------------
+File: sys\sys.c
+Size: 66305 bytes
+Description: Core system installer (SYS.COM) writing boot sectors and copying system files.
+--------------------------------------------------------------------------------
+File: sys\talloc.c
+Size: 4180 bytes
+Description: Linear temporary memory allocator.
+--------------------------------------------------------------------------------
+File: test\cfg.sh
+Size: 875 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\test.asm
+Size: 2395 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\test.sh
+Size: 3340 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\bootimg\a.asm
+Size: 379 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\bootimg\bootimg.asm
+Size: 48141 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\ldosboot\boot.asm
+Size: 56090 bytes
+Description: Assembly source for the 16-bit FAT12/FAT16 floppy and hard disk MBR boot sector.
+--------------------------------------------------------------------------------
+File: test\ldosboot\boot32.asm
+Size: 48494 bytes
+Description: Assembly source for the FAT32 boot sector with CHS/LBA auto-switching.
+--------------------------------------------------------------------------------
+File: test\ldosboot\fdkernpl.asm
+Size: 5146 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\ldosboot\iniload.asm
+Size: 59090 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\ldosboot\kernshim.asm
+Size: 1018 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\ldosboot\multboot.asm
+Size: 13427 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\ldosboot\patch.sld
+Size: 4251 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\ldosboot\testpl.asm
+Size: 15943 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\ldosboot\testwrit.asm
+Size: 22155 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\ldosboot\doc\ldosboot.src
+Size: 14641 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\ldosboot\doc\mak.sh
+Size: 656 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\ldosboot\test\cfg.sh
+Size: 1668 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\ldosboot\test\quit.asm
+Size: 909 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\ldosboot\test\run.sh
+Size: 659 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\ldosboot\test\test.sh
+Size: 13596 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\jn_warn.mac
+Size: 5038 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\lmacros1.mac
+Size: 32640 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\lmacros2.mac
+Size: 34837 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\lmacros3.mac
+Size: 3415 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\tests\000.asm
+Size: 615 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\tests\001.asm
+Size: 362 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\tests\002.asm
+Size: 452 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\tests\003.asm
+Size: 476 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\tests\004.asm
+Size: 388 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\tests\005.asm
+Size: 384 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\tests\006.asm
+Size: 495 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\tests\007.asm
+Size: 521 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\tests\008.asm
+Size: 645 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\tests\009.asm
+Size: 664 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\tests\010.asm
+Size: 613 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\tests\011.asm
+Size: 627 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\tests\012.asm
+Size: 607 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\tests\013.asm
+Size: 618 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\tests\014.asm
+Size: 742 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\tests\015.asm
+Size: 829 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\tests\016.asm
+Size: 819 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\tests\017.asm
+Size: 969 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\tests\018.asm
+Size: 593 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\tests\019.asm
+Size: 163 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\tests\test.sh
+Size: 159 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\tests\test2.asm
+Size: 720 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\tests\testalig.asm
+Size: 1108 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\tests\testmap.sh
+Size: 158 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\tests\testpar.asm
+Size: 667 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: test\lmacros\tests\testsat.asm
+Size: 238 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: tests\greatest.h
+Size: 70136 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: tests\testlib.c
+Size: 28497 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: tests\testlib.h
+Size: 16252 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: tests\absread\absread.c
+Size: 4679 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: tests\absread\build.bat
+Size: 58 bytes
+Description: Core MS-DOS/Windows build orchestrator accepting compiler and architecture options.
+--------------------------------------------------------------------------------
+File: tests\fcb_rename\build.bat
+Size: 58 bytes
+Description: Core MS-DOS/Windows build orchestrator accepting compiler and architecture options.
+--------------------------------------------------------------------------------
+File: tests\fcb_rename\fcb_ren.c
+Size: 10619 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: tests\int2f-12\Makefile
+Size: 1792 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: tests\int2f-12\RUNTEST.BAT
+Size: 319 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: tests\int2f-12\t1203.c
+Size: 785 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: tests\int2f-12\t1204.c
+Size: 7646 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: tests\int2f-12\t1211.c
+Size: 12875 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: tests\int2f-12\t1212.c
+Size: 9373 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: tests\int2f-12\t1213.c
+Size: 7452 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: tests\int2f-12\t1214.c
+Size: 8288 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: tests\int2f-12\t121a.c
+Size: 11833 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: tests\int2f-12\t121c.c
+Size: 11192 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: tests\int2f-12\t121d.c
+Size: 10771 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: tests\int2f-12\t121f.c
+Size: 10812 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: tests\int2f-12\t1225.c
+Size: 8194 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: tests\opendev\build.bat
+Size: 91 bytes
+Description: Core MS-DOS/Windows build orchestrator accepting compiler and architecture options.
+--------------------------------------------------------------------------------
+File: tests\opendev\opendev.c
+Size: 4020 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: tests\opendev\DIREXIST\EMPTYDIR.txt
+Size: 0 bytes
+Description: Test suite code or verification utility.
+--------------------------------------------------------------------------------
+File: utils\echoto.bat
+Size: 159 bytes
+Description: Helper batch script to redirect text output.
+--------------------------------------------------------------------------------
+File: utils\exeflat.c
+Size: 22403 bytes
+Description: Utility to strip executable headers and generate flat binary KERNEL.SYS image.
+--------------------------------------------------------------------------------
+File: utils\indent.ini
+Size: 109 bytes
+Description: Code formatting settings file.
+--------------------------------------------------------------------------------
+File: utils\makefile
+Size: 571 bytes
+Description: Makefile for compilation utilities.
+--------------------------------------------------------------------------------
+File: utils\patchobj.c
+Size: 4990 bytes
+Description: Object file patch tool.
+--------------------------------------------------------------------------------
+File: utils\proto.bat
+Size: 69 bytes
+Description: Batch file generating prototypes.
+--------------------------------------------------------------------------------
+File: utils\relocinf.c
+Size: 3483 bytes
+Description: Utility processing relocation records for execution segments.
+--------------------------------------------------------------------------------
+File: utils\rmfiles.bat
+Size: 154 bytes
+Description: Batch script to delete unwanted files.
+--------------------------------------------------------------------------------
+File: utils\upxdevic.asm
+Size: 870 bytes
+Description: Assembly driver loader wrapper supporting UPX compressed kernels.
+--------------------------------------------------------------------------------
+File: utils\upxentry.asm
+Size: 1005 bytes
+Description: Assembly decompression entry point for UPX compressed kernels.
+--------------------------------------------------------------------------------
+File: utils\wlinker.bat
+Size: 133 bytes
+Description: Linker orchestrator script.
+--------------------------------------------------------------------------------
