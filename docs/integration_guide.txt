@@ -1,5 +1,5 @@
 ================================================================================
-  INCORPORATING XNU AND BSD KERNEL BENEFITS INTO THE LIBREDOS KERNEL
+  PROPOSED INTEGRATION GUIDE
   A Design and Integration Reference Guide
 ================================================================================
 
