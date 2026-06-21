@@ -1,4 +1,4 @@
-# Incorporating XNU and BSD Kernel Benefits into the LibreDOS Kernel
+# Proposed Integration Guide
 
 > A Design and Integration Reference Guide
 
