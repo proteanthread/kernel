@@ -1,0 +1,1346 @@
+================================================================================
+  INCORPORATING XNU AND BSD KERNEL BENEFITS INTO THE LIBREDOS KERNEL
+  A Design and Integration Reference Guide
+================================================================================
+
+  Document Version:  1.0
+  Date:              June 2026
+  Applies To:        LibreDOS Kernel (DOS-C / fd kernel branch)
+  Related Documents: architecture.md, kernel_architecture.md, LMS.md,
+                     driver_tutorial.md, programmers_guide.md, UEIF.md
+
+================================================================================
+  TABLE OF CONTENTS
+================================================================================
+
+  1.  Executive Summary
+  2.  Background: XNU vs BSD vs LibreDOS Today
+  3.  Driver Loading and Management
+      3.1  How XNU Handles Drivers (IOKit and DriverKit)
+      3.2  How BSD Handles Drivers (Autoconfiguration)
+      3.3  Proposed LibreDOS Driver Architecture
+      3.4  Integration with Existing LibreDOS Driver Chain
+  4.  Memory Management
+      4.1  XNU Mach Zone Allocator and Virtual Memory
+      4.2  BSD Slab and UVM Allocators
+      4.3  Proposed LibreDOS Memory Architecture
+      4.4  Integration with LMS 1MB Hybrid Memory Mode
+  5.  Redundancy and Resiliency
+      5.1  XNU Watchdog and Critical Process Monitoring
+      5.2  BSD Jail and Process Isolation
+      5.3  Proposed LibreDOS Redundancy Model
+  6.  Custom Micro-Kernel Architecture
+      6.1  XNU Mach Micro-Kernel Concepts
+      6.2  QNX and MINIX Self-Healing Microkernels
+      6.3  Proposed LibreDOS Micro-Kernel Split
+  7.  Transparent Live Service Updates (No Reboot Required)
+      7.1  How Microkernels Enable Live Updates
+      7.2  Proposed LibreDOS Live Update Protocol
+      7.3  State Transfer and Quiescence
+  8.  Built-In Lazarus Server (Automatic Service Restart)
+      8.1  macOS launchd and KeepAlive Services
+      8.2  MINIX 3 Reincarnation Server Model
+      8.3  Proposed LibreDOS Lazarus Server Design
+      8.4  Lazarus Policies and Health Check Protocol
+  9.  Self-Healing Subsystem
+      9.1  Failure Detection Mechanisms
+      9.2  Automatic Recovery Pipeline
+      9.3  Integration with Lazarus Server
+  10. User-Mode Isolation
+      10.1 macOS DriverKit User-Space Driver Model
+      10.2 BSD Process Separation and kqueue Monitoring
+      10.3 Proposed LibreDOS User-Mode Driver Framework
+      10.4 IPC Message-Passing Channel Design
+  11. Sandboxing
+      11.1 macOS App Sandbox and System Integrity Protection
+      11.2 FreeBSD Capsicum Capability-Based Sandboxing
+      11.3 OpenBSD pledge() System Call Restriction
+      11.4 Proposed LibreDOS Sandbox Architecture
+  12. Implementation Roadmap
+  13. Mapping to Existing LibreDOS Source Files
+  14. Architectural Maintenance Guidelines
+  15. References and Further Reading
+
+
+================================================================================
+  1. EXECUTIVE SUMMARY
+================================================================================
+
+This document describes how the LibreDOS kernel can adopt proven techniques
+from the macOS XNU kernel (which combines a Mach micro-kernel core with a
+BSD Unix personality layer and the IOKit/DriverKit driver framework) and from
+standalone BSD kernels (FreeBSD, NetBSD, OpenBSD) to achieve:
+
+  - Robust, hot-swappable driver loading with user-mode isolation
+  - Advanced memory management with zone-based and slab allocators
+  - Built-in redundancy through process duplication and failover
+  - System resiliency via watchdog monitoring and automatic recovery
+  - A clean micro-kernel / service split for embedded and IoT targets
+  - Transparent live updates of system services without rebooting
+  - A "Lazarus Server" that automatically restarts failed drivers/services
+  - Self-healing capabilities that detect, isolate, and repair faults
+  - User-mode driver isolation to prevent kernel crashes from driver bugs
+  - Sandboxing to confine processes to minimum necessary privileges
+
+All proposed changes maintain 100% backward compatibility with the existing
+MS-DOS/PC-DOS application interface (Int 21h, Int 2Fh, Int 25h/26h) and
+preserve the LibreDOS Memory Specification (LMS) 1MB Hybrid Memory Mode.
+
+
+================================================================================
+  2. BACKGROUND: XNU VS BSD VS LIBREDOS TODAY
+================================================================================
+
+  XNU (X is Not Unix):
+  --------------------
+  The macOS/iOS kernel is a hybrid design combining three components:
+
+    (a) MACH MICRO-KERNEL CORE
+        Handles virtual memory management, thread scheduling, and
+        inter-process communication (IPC) via Mach ports and messages.
+
+    (b) BSD UNIX PERSONALITY LAYER
+        Provides POSIX-compliant APIs, process management (PIDs, signals),
+        filesystem abstractions (APFS, HFS+), networking (TCP/IP sockets),
+        and the Unix security model (users, groups, permissions).
+
+    (c) IOKit / DriverKit DRIVER FRAMEWORK
+        IOKit is an object-oriented C++ framework for kernel-mode drivers.
+        DriverKit (introduced in macOS Catalina) moves drivers to user space,
+        improving stability and security by preventing driver faults from
+        crashing the kernel.
+
+  BSD Kernels (FreeBSD, NetBSD, OpenBSD):
+  ----------------------------------------
+  Traditional monolithic Unix kernels with strong security features:
+
+    - FreeBSD Capsicum: Capability-based sandboxing using file descriptors
+    - OpenBSD pledge(): Restricts process system call surface
+    - BSD kqueue: Scalable kernel event notification for process monitoring
+    - BSD jails (FreeBSD): Lightweight OS-level virtualization containers
+    - UVM (NetBSD/OpenBSD): Unified virtual memory system
+
+  LibreDOS Today:
+  ---------------
+  The LibreDOS kernel is a monolithic DOS-compatible kernel descended from
+  DOS-C. The existing architecture includes:
+
+    - Legacy driver chain (LoL->nul_dev linked list of device headers)
+    - Trampoline wrappers for routing legacy calls to high-memory drivers
+    - LMS 1MB Hybrid Memory Mode with dos_chunk_t isolation
+    - Dynamic Physical Allocator (page pager, slab allocator, chunk pager)
+    - BSD-inspired driver registration (probe/attach/detach/read/write/ioctl)
+    - UEFI and IoT platform support (GOP framebuffer, GPIO/SPI/I2C/UART)
+
+  The goal of this document is to extend this foundation with XNU and BSD
+  techniques to create a resilient, self-healing, modular operating system.
+
+
+================================================================================
+  3. DRIVER LOADING AND MANAGEMENT
+================================================================================
+
+  3.1  HOW XNU HANDLES DRIVERS (IOKit AND DriverKit)
+  ---------------------------------------------------
+
+  In macOS, driver loading follows this sequence:
+
+    1. DEVICE DISCOVERY: When hardware is connected or detected at boot,
+       the kernel creates a "nub" object representing the device in the
+       device tree (the I/O Registry).
+
+    2. MATCHING: The IOKit framework compares device properties (vendor ID,
+       product ID, class codes) against property tables declared in available
+       Kernel Extensions (KEXTs) or DriverKit extensions.
+
+    3. LOADING: When a match is found, the matching driver binary is loaded.
+       With DriverKit, this loading occurs in a separate user-space process
+       rather than inside the kernel address space.
+
+    4. LIFECYCLE MANAGEMENT: Drivers follow init -> probe -> start -> stop
+       lifecycle methods. The framework manages power state transitions,
+       device removal events, and driver unloading.
+
+    5. I/O REGISTRY: A live, queryable database tracks all device
+       relationships, states, and driver bindings at runtime.
+
+  Key Benefit: If a DriverKit (user-space) driver crashes, it can be
+  restarted without affecting the kernel or other drivers.
+
+
+  3.2  HOW BSD HANDLES DRIVERS (AUTOCONFIGURATION)
+  -------------------------------------------------
+
+  BSD kernels use an autoconfiguration ("autoconf") system:
+
+    1. BUS PROBING: During boot, the kernel walks the hardware bus
+       hierarchy (PCI, ISA, USB, etc.) and calls probe() on each
+       registered driver to check for matching hardware.
+
+    2. ATTACHMENT: When probe() succeeds, the kernel calls attach() to
+       initialize the driver and bind it to the device instance.
+
+    3. DETACHMENT: The kernel calls detach() when the device is removed
+       or the driver is being unloaded.
+
+    4. DEVICE SWITCH TABLE: Block and character devices are registered
+       in bdevsw[] and cdevsw[] arrays, indexed by major device number.
+
+  Key Benefit: Clean separation between probing and attachment allows
+  dynamic driver loading without fixed compile-time device tables.
+
+
+  3.3  PROPOSED LIBREDOS DRIVER ARCHITECTURE
+  -------------------------------------------
+
+  We propose a three-tier driver loading model that combines XNU and BSD
+  approaches:
+
+  TIER 1: MICRO-KERNEL CORE DRIVERS (Kernel Space)
+  -------------------------------------------------
+  Minimal set of drivers compiled directly into the kernel binary.
+  These are trusted, essential services that must never be unloaded:
+
+    - Memory manager (page allocator, slab allocator)
+    - IPC message router (Mach-style port/message passing)
+    - Interrupt dispatcher
+    - Timer and scheduler
+
+  TIER 2: SYSTEM SERVICE DRIVERS (Protected User Space)
+  -----------------------------------------------------
+  Drivers that run as isolated user-mode processes, communicating with
+  the micro-kernel via IPC messages:
+
+    - Filesystem drivers (FAT12/16/32, exFAT)
+    - Block device drivers (disk, SD card, NVMe)
+    - Network stack (if/when implemented)
+    - Console/display driver (GOP framebuffer, VGA text)
+    - Serial port driver (UART)
+
+  These drivers are loaded dynamically and can be stopped, updated, and
+  restarted without rebooting the system.
+
+  TIER 3: APPLICATION DRIVERS (Sandboxed User Space)
+  ---------------------------------------------------
+  Third-party or optional drivers loaded on demand via CONFIG.SYS
+  DEVICE= statements or at runtime via a new LOAD command:
+
+    - Printer drivers
+    - Sound card drivers
+    - Custom hardware interfaces
+    - GPIO/SPI/I2C drivers for IoT platforms
+
+  These run in sandboxed processes with restricted privileges.
+
+
+  3.4  INTEGRATION WITH EXISTING LIBREDOS DRIVER CHAIN
+  -----------------------------------------------------
+
+  The existing DOS device driver chain (LoL->nul_dev linked list) and
+  the BSD-inspired driver registration interface (struct driver with
+  probe/attach/detach/read/write/ioctl) are preserved as the public API.
+
+  The trampoline device wrapper mechanism documented in driver_tutorial.md
+  continues to function: a 32-byte stub in conventional memory (below
+  640KB) intercepts legacy Strategy/Interrupt calls and routes them
+  through IPC to the appropriate Tier 2 or Tier 3 user-space driver.
+
+  New additions:
+
+    - A DEVICE REGISTRY (inspired by IOKit's I/O Registry) maintains
+      a runtime database of all loaded drivers, their states, and their
+      device bindings.
+
+    - A MATCHING ENGINE compares bus-probed device descriptors (PCI
+      vendor/device IDs, USB class codes, UEFI device paths) against
+      driver manifest files to auto-load the correct driver.
+
+    - A DRIVER LIFECYCLE MANAGER tracks each driver's state through
+      LOADED -> PROBING -> ATTACHED -> RUNNING -> STOPPING -> DETACHED
+      transitions and coordinates with the Lazarus Server for restarts.
+
+
+================================================================================
+  4. MEMORY MANAGEMENT
+================================================================================
+
+  4.1  XNU MACH ZONE ALLOCATOR AND VIRTUAL MEMORY
+  ------------------------------------------------
+
+  The XNU kernel uses the Mach Virtual Memory (VM) system:
+
+    - VIRTUAL ADDRESS SPACES: Each process gets an isolated virtual
+      address space managed by vm_map structures (collections of
+      vm_map_entry records describing mapped regions).
+
+    - ZONE ALLOCATOR: A high-speed kernel allocator for fixed-size
+      objects (thread control blocks, VM map entries, IPC port
+      structures). Zones group same-sized objects contiguously to
+      minimize fragmentation and maximize cache locality.
+
+    - PURGEABLE MEMORY: Memory pages that can be reclaimed by the
+      kernel under pressure, without terminating the owning process.
+
+    - MEMORY PRESSURE NOTIFICATIONS: Processes can register for
+      memory-pressure callbacks and voluntarily release caches.
+
+  Key Benefit: Zone allocator eliminates fragmentation for high-frequency
+  kernel allocations; purgeable memory gracefully handles low-memory
+  conditions without forced process termination.
+
+
+  4.2  BSD SLAB AND UVM ALLOCATORS
+  --------------------------------
+
+  BSD kernels provide alternative memory management approaches:
+
+    - SLAB ALLOCATOR: Pre-allocates pools of same-sized objects
+      (similar to Mach zones). Used heavily in FreeBSD for network
+      buffers (mbufs), vnodes, and file descriptor tables.
+
+    - UVM (NetBSD/OpenBSD): Unified Virtual Memory system that
+      replaced Mach VM in those kernels. Uses a simplified pager
+      model with anonymous memory objects and shared file mappings.
+
+    - UMA (FreeBSD): Universal Memory Allocator combining slab
+      allocation with per-CPU caching for scalable SMP performance.
+
+  Key Benefit: Per-CPU caching (UMA) eliminates lock contention on
+  multi-processor systems.
+
+
+  4.3  PROPOSED LIBREDOS MEMORY ARCHITECTURE
+  -------------------------------------------
+
+  LibreDOS already implements a Dynamic Physical Allocator (DLA) with
+  a page pager, slab allocator, and chunk pager (documented in LMS.md
+  and architecture.md). We extend this with XNU/BSD concepts:
+
+  ZONE ALLOCATOR (NEW - inspired by Mach zones):
+  -----------------------------------------------
+  Create named memory zones for high-frequency kernel objects:
+
+    ld_zone_sft       - System File Table entries (struct sft)
+    ld_zone_cds       - Current Directory Structures (struct cds)
+    ld_zone_mcb       - Memory Control Blocks
+    ld_zone_dpb       - Drive Parameter Blocks (struct dpb)
+    ld_zone_ipc       - IPC message buffers
+    ld_zone_driver    - Driver descriptor structures
+    ld_zone_lazarus   - Lazarus health-check context blocks
+
+  Each zone pre-allocates a pool of same-sized objects. Allocations
+  within a zone are O(1) - simply pop from the free list. Deallocations
+  push back onto the free list. When a zone's pool is exhausted, the
+  page pager allocates a new 4KB page and carves it into zone objects.
+
+  PURGEABLE MEMORY SUPPORT (NEW - inspired by XNU):
+  --------------------------------------------------
+  Extend the dos_chunk_t context with a purgeable page list. When
+  the system runs low on physical pages, the page pager can reclaim
+  purgeable pages without terminating the owning process. This is
+  particularly useful for disk cache buffers (blockio.c) that can
+  be regenerated from disk reads.
+
+  MEMORY PRESSURE CALLBACKS (NEW - inspired by XNU):
+  ---------------------------------------------------
+  Tier 2 and Tier 3 drivers can register memory-pressure callback
+  functions. When the page pager detects that free pages have dropped
+  below a configurable threshold, it invokes these callbacks so that
+  drivers can voluntarily release cached data.
+
+
+  4.4  INTEGRATION WITH LMS 1MB HYBRID MEMORY MODE
+  --------------------------------------------------
+
+  All zone allocator and purgeable memory features operate within the
+  existing LMS framework:
+
+    - Zone pools for legacy structures (SFT, CDS, MCB) reside within
+      the Chunk 0 conventional memory space (0 - 640KB) or in the
+      High Memory Area (HMA) to preserve segment-offset compatibility.
+
+    - Zone pools for modern structures (IPC buffers, driver descriptors,
+      Lazarus contexts) are allocated from the flat 64-bit host RAM pool
+      outside the 1MB boundary.
+
+    - The ld_translate_address() function continues to handle all
+      segment:offset to flat address conversions. Zone allocations
+      do not modify the translation logic.
+
+    - Existing slab allocator constants in LMS.md Section 3 may be
+      tuned to reflect the new zone-based pools. This is permitted
+      under the "What We Can Change" guidelines.
+
+
+================================================================================
+  5. REDUNDANCY AND RESILIENCY
+================================================================================
+
+  5.1  XNU WATCHDOG AND CRITICAL PROCESS MONITORING
+  --------------------------------------------------
+
+  macOS uses two layers of supervision:
+
+    - launchd (PID 1): The system service manager. Services configured
+      with KeepAlive=true in their plist files are automatically
+      restarted when they crash or exit.
+
+    - watchdogd: A kernel-level daemon that monitors critical system
+      processes (WindowServer, logd, etc.). If a monitored process
+      fails to check in within a deadline, watchdogd triggers a kernel
+      panic to force a clean reboot rather than allowing the system
+      to operate in a degraded state.
+
+  Key Benefit: Two-tier monitoring ensures both user-space services
+  and critical system processes are supervised.
+
+
+  5.2  BSD JAIL AND PROCESS ISOLATION
+  ------------------------------------
+
+  FreeBSD jails provide lightweight virtualization:
+
+    - Each jail is an isolated environment with its own root filesystem,
+      process space, network interfaces, and user accounts.
+    - Processes inside a jail cannot see or signal processes outside it.
+    - Failed services inside a jail do not affect the host system.
+
+  Key Benefit: Isolation boundaries prevent cascading failures.
+
+
+  5.3  PROPOSED LIBREDOS REDUNDANCY MODEL
+  ----------------------------------------
+
+  PROCESS ISOLATION VIA dos_chunk_t:
+  -----------------------------------
+  LibreDOS already supports multi-instance DOS contexts via the
+  dos_chunk_t mechanism (LMS.md Section 2). Each chunk is a 1MB
+  sandbox with isolated memory, segment mappings, and virtual
+  console buffers.
+
+  We extend this to provide redundancy:
+
+    - CRITICAL SERVICE DUPLICATION: Essential Tier 2 drivers (filesystem,
+      block device) can optionally run as a primary/standby pair in
+      separate memory spaces. The Lazarus Server monitors both instances
+      and transparently fails over to the standby if the primary crashes.
+
+    - CHECKPOINT/RESTORE: Drivers can periodically checkpoint their
+      internal state (open file handles, pending I/O operations, device
+      register snapshots) to a reserved memory region. On restart, the
+      Lazarus Server loads the last checkpoint to resume operations.
+
+    - HEARTBEAT MONITORING: Each Tier 2 and Tier 3 driver must respond
+      to periodic heartbeat IPC messages from the Lazarus Server. A
+      missed heartbeat triggers the recovery pipeline (see Section 9).
+
+
+================================================================================
+  6. CUSTOM MICRO-KERNEL ARCHITECTURE
+================================================================================
+
+  6.1  XNU MACH MICRO-KERNEL CONCEPTS
+  ------------------------------------
+
+  The Mach micro-kernel provides three fundamental abstractions:
+
+    1. TASKS AND THREADS: A task is a container for resources (memory,
+       ports). Threads execute within tasks. The kernel schedules
+       threads; tasks are passive resource containers.
+
+    2. IPC PORTS AND MESSAGES: All communication between tasks uses
+       message-passing via ports. A port is a protected kernel object;
+       sending a message to a port enqueues it for the receiving task.
+
+    3. VIRTUAL MEMORY OBJECTS: Memory is represented as objects that
+       can be shared, copied-on-write, or paged in from external
+       sources (pagers).
+
+  Key Benefit: Clean separation of concerns. The micro-kernel only
+  handles scheduling, IPC, and memory. Everything else runs as a
+  service (potentially in user space).
+
+
+  6.2  QNX AND MINIX SELF-HEALING MICROKERNELS
+  ----------------------------------------------
+
+  QNX and MINIX 3 demonstrate practical micro-kernel designs:
+
+    - QNX: A commercial POSIX-compliant RTOS where all drivers,
+      filesystems, and network stacks run as user-space resource
+      managers. The kernel handles only IPC, scheduling, interrupt
+      routing, and timers (approximately 100KB of code).
+
+    - MINIX 3: An academic/research OS designed for extreme reliability.
+      Features include:
+        * Reincarnation Server: Monitors all system servers and drivers;
+          automatically restarts any that crash or become unresponsive.
+        * Live Update: Brings a service to quiescent state, transfers
+          its internal state to a new binary version, and swaps them
+          while the OS continues to run.
+        * Fault Isolation: Each driver runs in its own memory-protected
+          address space. A driver crash cannot corrupt kernel memory.
+
+  Key Benefit: The system can survive individual component failures
+  without rebooting. Services can be upgraded at runtime.
+
+
+  6.3  PROPOSED LIBREDOS MICRO-KERNEL SPLIT
+  -------------------------------------------
+
+  Building on the modernization roadmap in programmers_guide.md
+  Section 4, we define the following micro-kernel partition:
+
+  MICRO-KERNEL CORE (ld_core):
+  ----------------------------
+  Minimal kernel that remains in kernel address space. Responsible for:
+
+    - IPC message routing (Mach-style ports and messages)
+    - Thread/task scheduling (cooperative or preemptive)
+    - Interrupt dispatch and routing
+    - Timer management
+    - Memory page table management
+    - Lazarus Server integration (heartbeat monitoring)
+
+  Approximate target size: under 64KB (suitable for microcontrollers).
+
+  SYSTEM SERVERS (ld_servers):
+  ----------------------------
+  OS services that run as isolated user-space processes:
+
+    - VFS Server: Virtual filesystem routing (FAT, exFAT, future types)
+    - Block Server: Disk I/O and sector caching
+    - Console Server: Screen output and keyboard input
+    - Serial Server: UART communication
+    - Clock Server: System time and RTC
+    - Memory Server: Upper Memory, XMS, EMS emulation
+    - DOS API Server: Int 21h service dispatch
+    - Lazarus Server: Watchdog, health monitoring, auto-restart
+
+  CONDITIONAL COMPILATION:
+  -------------------------
+  Use the MICRO_KERNEL_CORE macro (already proposed in programmers_guide.md)
+  to select between:
+
+    - Full monolithic build (all services in kernel space, maximum
+      compatibility with legacy DOS drivers and CONFIG.SYS)
+    - Micro-kernel build (core + servers, maximum resiliency and
+      modularity, suitable for UEFI 64-bit and IoT targets)
+
+
+================================================================================
+  7. TRANSPARENT LIVE SERVICE UPDATES (NO REBOOT REQUIRED)
+================================================================================
+
+  7.1  HOW MICROKERNELS ENABLE LIVE UPDATES
+  -------------------------------------------
+
+  In a micro-kernel architecture, system services run as independent
+  user-space processes. This makes live updates possible because:
+
+    1. The service can be brought to a QUIESCENT state (all pending
+       requests completed, no in-flight operations).
+
+    2. The service's internal state is serialized (checkpointed).
+
+    3. A new version of the service binary is loaded into a fresh
+       process.
+
+    4. The checkpoint data is transferred to the new process.
+
+    5. The new process resumes operation. The old process is terminated.
+
+    6. Clients seamlessly reconnect to the new service via IPC ports.
+
+  This is how MINIX 3's live-update mechanism works. QNX achieves
+  similar results by stopping, replacing, and restarting individual
+  resource manager processes.
+
+
+  7.2  PROPOSED LIBREDOS LIVE UPDATE PROTOCOL
+  ---------------------------------------------
+
+  The LibreDOS live update protocol operates as follows:
+
+  Step 1: UPDATE REQUEST
+    The administrator issues a command:
+      SVCUPDATE <service_name> <new_binary_path>
+
+    Alternatively, the Lazarus Server can trigger an update
+    automatically if it detects a newer version of a service
+    binary on disk (auto-update mode).
+
+  Step 2: QUIESCENCE
+    The Lazarus Server sends a QUIESCE IPC message to the target
+    service. The service:
+      (a) Stops accepting new requests (returns EBUSY to callers)
+      (b) Completes all in-flight operations
+      (c) Flushes all dirty buffers and caches
+      (d) Responds with QUIESCED message
+
+  Step 3: STATE CAPTURE
+    The service serializes its internal state to a shared memory
+    region. For example, a filesystem driver would serialize:
+      - Open file handle table
+      - Current directory state
+      - Cached directory entries
+      - Pending write buffers (already flushed in step 2)
+
+  Step 4: SPAWN NEW VERSION
+    The Lazarus Server loads the new binary into a fresh process.
+    The new process receives the serialized state via IPC and
+    reconstructs its internal data structures.
+
+  Step 5: PORT TRANSFER
+    The micro-kernel transfers the old service's IPC port
+    registrations to the new process. Clients holding port
+    references are transparently redirected.
+
+  Step 6: TERMINATION
+    The old process is terminated and its memory is reclaimed.
+
+  Step 7: RESUMPTION
+    The new service begins accepting requests. The update is
+    complete. No reboot was required.
+
+
+  7.3  STATE TRANSFER AND QUIESCENCE
+  ------------------------------------
+
+  Challenges and mitigations:
+
+  HARDWARE STATE: Some drivers maintain hardware register state that
+  cannot be easily serialized (e.g., DMA controller configuration,
+  interrupt routing tables). For these, the new driver must re-probe
+  the hardware during its init phase and re-apply configuration.
+
+  TIMEOUT PROTECTION: If a service fails to reach quiescence within
+  a configurable timeout (default: 5 seconds), the Lazarus Server
+  forcibly terminates it and starts the new version with a clean
+  state (stateless restart). Pending operations are failed with
+  error codes returned to callers.
+
+  ROLLBACK: If the new version fails to start or crashes within
+  a configurable grace period (default: 10 seconds), the Lazarus
+  Server rolls back to the previous version binary.
+
+
+================================================================================
+  8. BUILT-IN LAZARUS SERVER (AUTOMATIC SERVICE RESTART)
+================================================================================
+
+  8.1  macOS launchd AND KEEPALIVE SERVICES
+  -------------------------------------------
+
+  macOS launchd (PID 1) is the system service manager. Services are
+  defined by property list (.plist) files containing:
+
+    - KeepAlive: true/false  (restart on crash)
+    - RunAtLoad: true/false  (start at boot)
+    - ThrottleInterval: N    (minimum seconds between restarts)
+    - WatchPaths: [...]      (restart when specified files change)
+
+  When a KeepAlive service exits, launchd immediately restarts it.
+  If the service crashes repeatedly, launchd applies backoff delays.
+
+
+  8.2  MINIX 3 REINCARNATION SERVER MODEL
+  ----------------------------------------
+
+  MINIX 3's Reincarnation Server (RS) provides stronger guarantees:
+
+    - HEARTBEAT PINGING: RS sends periodic pings to every system
+      server and driver. If a process fails to respond within
+      the timeout, RS declares it dead.
+
+    - AUTOMATIC RESTART: RS terminates the failed process, starts
+      a fresh instance from the on-disk binary, and re-registers
+      it with the kernel's IPC routing tables.
+
+    - RECOVERY SCRIPTS: RS can execute service-specific recovery
+      actions (e.g., reinitializing hardware, replaying state)
+      defined in a recovery configuration file.
+
+    - CASCADING FAILURE PREVENTION: RS limits the restart rate
+      for each service. If a service crashes more than N times
+      in M seconds, RS marks it as permanently failed and logs
+      a critical error rather than restart-looping.
+
+
+  8.3  PROPOSED LIBREDOS LAZARUS SERVER DESIGN
+  ----------------------------------------------
+
+  The Lazarus Server is a Tier 1 system service running inside the
+  micro-kernel address space (or as a highly privileged Tier 2
+  process in the monolithic build). It is named "Lazarus" because
+  it brings dead services back to life.
+
+  RESPONSIBILITIES:
+
+    1. SERVICE REGISTRATION
+       All Tier 2 and Tier 3 drivers register with the Lazarus
+       Server at startup, providing:
+         - Service name and version
+         - Binary path on disk
+         - Restart policy (always, on-crash, never)
+         - Maximum restart count and cooldown interval
+         - Health check function or IPC endpoint
+         - State checkpoint capability (yes/no)
+
+    2. HEARTBEAT MONITORING
+       The Lazarus Server sends periodic HEARTBEAT IPC messages
+       to every registered service. The default interval is
+       configurable (default: 2 seconds). Services must respond
+       with a HEARTBEAT_ACK within the timeout period (default:
+       1 second).
+
+    3. CRASH DETECTION
+       The micro-kernel notifies the Lazarus Server immediately
+       when any monitored process terminates unexpectedly (via
+       a death notification on the process's Mach-style port).
+
+    4. AUTOMATIC RESTART
+       When a crash or heartbeat timeout is detected:
+         (a) Log the failure (timestamp, service name, exit code
+             or signal, crash count)
+         (b) Reclaim the dead process's resources (memory, ports)
+         (c) Check restart policy (has max restart count been
+             exceeded? Is cooldown interval satisfied?)
+         (d) If restart is permitted, load the service binary
+             from disk, start a new process, transfer IPC ports
+         (e) If the service supports checkpointing, load the
+             last checkpoint into the new process
+         (f) Register the new process for heartbeat monitoring
+
+    5. ESCALATION
+       If a service exceeds its maximum restart count:
+         (a) Mark the service as PERMANENTLY_FAILED
+         (b) Log a critical error with diagnostic details
+         (c) Notify the console with a user-visible message
+         (d) Optionally attempt to load an alternative driver
+             if one is registered for the same device class
+
+    6. LIVE UPDATE COORDINATION
+       The Lazarus Server orchestrates the live update protocol
+       described in Section 7.2 above.
+
+
+  8.4  LAZARUS POLICIES AND HEALTH CHECK PROTOCOL
+  -------------------------------------------------
+
+  Each service declares a Lazarus Policy in its registration:
+
+    Policy Name        Behavior
+    ---------------------------------------------------------------
+    RESTART_ALWAYS     Always restart on crash or heartbeat timeout
+    RESTART_ON_CRASH   Restart only on crash, not heartbeat timeout
+    RESTART_NEVER      Do not restart (log and notify only)
+    RESTART_WITH_STATE Restart and restore last checkpoint
+    RESTART_CLEAN      Restart with fresh state (no checkpoint)
+
+  Health Check Protocol:
+
+    -> LAZARUS sends:  HEARTBEAT { seq=N, timestamp=T }
+    <- SERVICE replies: HEARTBEAT_ACK { seq=N, status=OK|DEGRADED }
+
+    If status is DEGRADED, Lazarus increases monitoring frequency
+    for that service and logs a warning.
+
+    If no ACK is received within the timeout, Lazarus treats it
+    as equivalent to a crash and triggers the restart pipeline.
+
+
+================================================================================
+  9. SELF-HEALING SUBSYSTEM
+================================================================================
+
+  9.1  FAILURE DETECTION MECHANISMS
+  ----------------------------------
+
+  The self-healing subsystem detects failures through multiple
+  independent channels:
+
+    CRASH NOTIFICATION (via micro-kernel):
+      The micro-kernel sends a death notification to the Lazarus
+      Server when any monitored process terminates abnormally
+      (segmentation fault, bus error, unhandled exception, etc.).
+
+    HEARTBEAT TIMEOUT (via Lazarus Server):
+      Periodic heartbeat messages detect processes that are alive
+      but unresponsive (deadlocked, infinite-looping, or starved).
+
+    HEALTH CHECK DEGRADATION (via service self-report):
+      Services that detect internal errors (corrupted data structures,
+      I/O errors, resource exhaustion) report DEGRADED status in
+      their heartbeat responses.
+
+    MEMORY CORRUPTION DETECTION (via guard pages):
+      The zone allocator places guard pages (unmapped memory pages)
+      between zone pools. Any out-of-bounds write triggers a page
+      fault that is caught and reported to the Lazarus Server.
+
+    WATCHDOG TIMER (hardware):
+      On platforms with hardware watchdog timers (most IoT boards,
+      some server motherboards), the micro-kernel periodically
+      resets the watchdog. If the kernel itself hangs, the hardware
+      watchdog forces a system reset.
+
+
+  9.2  AUTOMATIC RECOVERY PIPELINE
+  ----------------------------------
+
+  When a failure is detected, the self-healing subsystem executes
+  the following pipeline:
+
+    STEP 1: ISOLATION
+      The failed process is immediately isolated:
+        - Its IPC ports are suspended (messages are queued)
+        - Its memory pages are marked read-only to prevent
+          further corruption
+        - Dependent services are notified
+
+    STEP 2: DIAGNOSIS
+      The Lazarus Server collects diagnostic information:
+        - Process exit code or signal number
+        - Last N heartbeat responses
+        - Memory dump of the failed process (if configured)
+        - Hardware register state (for driver failures)
+
+    STEP 3: RECOVERY DECISION
+      Based on the Lazarus Policy and failure history:
+        - RESTART: Start a new instance (with or without checkpoint)
+        - FAILOVER: Switch to standby instance (if redundancy enabled)
+        - ESCALATE: Mark as permanently failed, notify user
+        - DEGRADE: Continue operating with reduced functionality
+
+    STEP 4: EXECUTION
+      The chosen recovery action is executed. For restarts:
+        - Load binary from disk
+        - Start new process
+        - Transfer IPC ports
+        - Restore checkpoint (if RESTART_WITH_STATE)
+        - Resume queued IPC messages
+
+    STEP 5: VERIFICATION
+      After restart, the Lazarus Server enters a grace period
+      where it monitors the service at increased frequency.
+      If the service crashes again during the grace period,
+      the restart count is incremented and the pipeline repeats.
+
+
+  9.3  INTEGRATION WITH LAZARUS SERVER
+  --------------------------------------
+
+  The self-healing subsystem is implemented within the Lazarus Server
+  itself. It is not a separate component. The Lazarus Server combines:
+
+    - Service registration and tracking (Section 8.3, item 1)
+    - Heartbeat monitoring (Section 8.3, item 2)
+    - Crash detection (Section 8.3, item 3)
+    - Recovery execution (Section 8.3, item 4)
+    - Escalation handling (Section 8.3, item 5)
+    - Live update coordination (Section 8.3, item 6)
+
+  into a unified self-healing engine.
+
+
+================================================================================
+  10. USER-MODE ISOLATION
+================================================================================
+
+  10.1 macOS DriverKit USER-SPACE DRIVER MODEL
+  -----------------------------------------------
+
+  Starting with macOS Catalina (2019), Apple introduced DriverKit to
+  move drivers out of the kernel:
+
+    - Drivers are compiled as user-space System Extensions (dexts)
+    - They run in separate processes with their own address spaces
+    - If a driver crashes, the kernel and other drivers are unaffected
+    - DriverKit provides a subset of IOKit APIs for hardware access
+    - Hardware registers are accessed via memory-mapped I/O through
+      special entitlements, not direct kernel pointers
+    - User-space drivers must be signed and notarized by Apple
+
+  Key Benefit: Kernel stability is dramatically improved because
+  driver bugs (the most common source of kernel panics on macOS)
+  can no longer crash the kernel.
+
+
+  10.2 BSD PROCESS SEPARATION AND kqueue MONITORING
+  ---------------------------------------------------
+
+  BSD kernels achieve process isolation through standard Unix
+  mechanisms:
+
+    - Each process has its own virtual address space
+    - Processes communicate via pipes, sockets, or shared memory
+    - kqueue provides efficient event monitoring:
+        * EVFILT_PROC: Monitor process state changes (exit, fork)
+        * EVFILT_READ/WRITE: Monitor I/O readiness
+        * EVFILT_TIMER: Periodic timer events
+        * EVFILT_SIGNAL: Signal delivery notifications
+
+  A supervisor process can use kqueue to monitor all managed services,
+  detect crashes instantly, and take corrective action.
+
+
+  10.3 PROPOSED LIBREDOS USER-MODE DRIVER FRAMEWORK
+  ---------------------------------------------------
+
+  LibreDOS user-mode drivers execute as separate processes with
+  isolated memory spaces. The framework provides:
+
+  PROCESS CREATION:
+    The Lazarus Server spawns each Tier 2/Tier 3 driver as a
+    separate process using the micro-kernel's task creation API.
+    Each driver process receives:
+      - Its own virtual address space (or its own dos_chunk_t
+        in the LMS model for legacy compatibility)
+      - A set of IPC ports for communication with the kernel,
+        other drivers, and client processes
+      - Memory-mapped access to specific hardware registers
+        (granted by the micro-kernel based on the driver's
+        hardware binding, similar to DriverKit entitlements)
+
+  FAULT CONTAINMENT:
+    Because each driver runs in its own address space:
+      - A null pointer dereference in a driver causes a fault
+        in that driver's process only, not a system crash
+      - Buffer overflows in a driver cannot corrupt kernel memory
+      - A deadlocked driver can be terminated and restarted
+        without affecting other system components
+      - Memory leaks in a driver are confined to its address
+        space and are reclaimed when the driver is restarted
+
+  HARDWARE ACCESS CONTROL:
+    The micro-kernel mediates all hardware access:
+      - Drivers request I/O port access via IPC
+      - The micro-kernel validates the request against the
+        driver's registered device bindings
+      - Only the bound I/O ports and memory-mapped regions
+        are accessible to the driver
+      - DMA buffer management uses bounce buffers in
+        conventional memory (as documented in driver_tutorial.md)
+
+
+  10.4 IPC MESSAGE-PASSING CHANNEL DESIGN
+  ----------------------------------------
+
+  Communication between the micro-kernel, servers, and drivers uses
+  a lightweight IPC mechanism inspired by Mach ports:
+
+  PORT STRUCTURE:
+    typedef struct {
+        uint32_t port_id;            /* Unique port identifier       */
+        uint32_t owner_task_id;      /* Task that owns this port     */
+        uint32_t rights;             /* SEND, RECEIVE, SEND_ONCE     */
+        void    *message_queue;      /* Pointer to message ring buf  */
+        uint32_t queue_capacity;     /* Max messages in queue        */
+        uint32_t queue_count;        /* Current messages in queue    */
+    } ld_port_t;
+
+  MESSAGE STRUCTURE:
+    typedef struct {
+        uint32_t msg_id;             /* Unique message identifier    */
+        uint32_t msg_type;           /* REQUEST, REPLY, NOTIFICATION */
+        uint32_t src_port;           /* Sender's reply port          */
+        uint32_t dst_port;           /* Destination port             */
+        uint32_t payload_size;       /* Size of payload in bytes     */
+        uint8_t  payload[];          /* Variable-length payload      */
+    } ld_message_t;
+
+  OPERATIONS:
+    ld_port_create()    - Create a new port
+    ld_port_destroy()   - Destroy a port and reclaim resources
+    ld_msg_send()       - Send a message to a port (may block)
+    ld_msg_receive()    - Receive a message from a port (may block)
+    ld_msg_send_once()  - Send a one-time notification message
+    ld_port_transfer()  - Transfer port rights to another task
+
+  DOS API INTEGRATION:
+    When a legacy application issues Int 21h, the interrupt handler
+    in the micro-kernel packages the request parameters (register
+    values and translated pointers) into an ld_message_t and sends
+    it to the DOS API Server's port. The server processes the request
+    and sends a reply message. The micro-kernel unpacks the reply
+    into the application's register context and returns control.
+
+    For performance-critical paths (e.g., single-character I/O),
+    the micro-kernel may implement fast-path shortcuts that bypass
+    full IPC serialization.
+
+
+================================================================================
+  11. SANDBOXING
+================================================================================
+
+  11.1 macOS APP SANDBOX AND SYSTEM INTEGRITY PROTECTION
+  -------------------------------------------------------
+
+  macOS enforces two layers of sandboxing:
+
+  SYSTEM INTEGRITY PROTECTION (SIP):
+    - Global, kernel-enforced protection of system directories
+      (/System, /usr, /bin, /sbin)
+    - Even the root user cannot modify protected files
+    - Only Apple-signed code with specific entitlements can
+      perform privileged operations
+    - Prevents unauthorized kernel extensions from loading
+
+  APP SANDBOX:
+    - Per-application confinement using Mandatory Access Control
+    - Each sandboxed app has access to:
+        * Its own container directory
+        * Files explicitly opened by the user (via file dialogs)
+        * Specific entitlements (network, camera, microphone, etc.)
+    - Cannot access other apps' data or arbitrary filesystem paths
+
+
+  11.2 FreeBSD CAPSICUM CAPABILITY-BASED SANDBOXING
+  ---------------------------------------------------
+
+  FreeBSD Capsicum provides fine-grained sandboxing:
+
+    - cap_enter(): Process enters "capability mode" and permanently
+      loses access to global namespaces (filesystem, PID space,
+      network sockets via name)
+    - After cap_enter(), the process can only operate on existing
+      file descriptors
+    - File descriptors can be attenuated with specific rights:
+        * CAP_READ: Allow read operations
+        * CAP_WRITE: Allow write operations
+        * CAP_IOCTL: Allow specific ioctl commands
+        * CAP_SEEK: Allow seek operations
+    - The Casper service library allows splitting programs into
+      privileged manager and unprivileged sandboxed worker processes
+
+  Key Benefit: Extremely fine-grained control over what a process
+  can do after entering sandbox mode.
+
+
+  11.3 OpenBSD pledge() SYSTEM CALL RESTRICTION
+  -----------------------------------------------
+
+  OpenBSD pledge() restricts the system call surface of a process:
+
+    - Process "pledges" categories of operations it will perform:
+        * "stdio"   - Basic I/O (read, write, close, etc.)
+        * "rpath"   - Read-only filesystem access
+        * "wpath"   - Write filesystem access
+        * "cpath"   - Create/delete filesystem entries
+        * "inet"    - IPv4/IPv6 network operations
+        * "proc"    - Fork and process management
+        * "exec"    - Execute other programs
+
+    - If the process attempts a system call outside its pledges,
+      the kernel immediately terminates it with SIGABRT.
+
+    - pledge() is irrevocable: once pledged, restrictions cannot
+      be relaxed.
+
+  Key Benefit: Extremely simple API (single function call) that
+  provides immediate security hardening.
+
+
+  11.4 PROPOSED LIBREDOS SANDBOX ARCHITECTURE
+  --------------------------------------------
+
+  LibreDOS implements a hybrid sandbox inspired by both Capsicum
+  and pledge:
+
+  SANDBOX LEVELS:
+
+    LEVEL 0: UNRESTRICTED (Micro-kernel core only)
+      Full access to all system resources. Only the micro-kernel
+      core and Lazarus Server operate at this level.
+
+    LEVEL 1: SYSTEM SERVICE (Tier 2 drivers)
+      Access to:
+        - Assigned hardware I/O ports and memory-mapped regions
+        - IPC ports for registered services
+        - Disk sectors for assigned drive letters
+        - Console output (for logging)
+      Restricted from:
+        - Loading other drivers
+        - Modifying kernel memory structures
+        - Accessing other services' memory spaces
+        - Creating raw hardware interrupts
+
+    LEVEL 2: APPLICATION DRIVER (Tier 3 drivers)
+      Access to:
+        - Assigned hardware I/O ports only
+        - IPC ports for the driver's own service registration
+        - A private filesystem sandbox directory
+      Restricted from:
+        - Everything restricted at Level 1, plus:
+        - Direct disk sector access (must go through Block Server)
+        - Console output (must go through Console Server)
+        - Network access (if/when implemented)
+
+    LEVEL 3: USER APPLICATION (Legacy DOS programs)
+      Standard DOS sandbox provided by the LMS 1MB Hybrid Memory
+      Mode (dos_chunk_t). Applications execute within their 1MB
+      chunk and cannot access memory outside their chunk boundary.
+      All hardware access is mediated through Int 21h and the
+      device driver chain.
+
+  ENFORCEMENT:
+
+    Sandboxing is enforced by the micro-kernel's memory protection
+    and IPC routing mechanisms:
+
+    MEMORY PROTECTION:
+      Each process's page tables only map the memory regions it
+      is authorized to access. Attempts to access unmapped memory
+      trigger page faults that are caught by the micro-kernel and
+      reported to the Lazarus Server.
+
+    IPC ROUTING:
+      The micro-kernel's IPC router checks that the sender has
+      appropriate port rights before delivering messages. A Tier 3
+      driver cannot send messages to a Tier 1 port unless explicitly
+      authorized.
+
+    HARDWARE ACCESS CONTROL:
+      The micro-kernel's I/O permission bitmap restricts which
+      I/O ports each process can access. Only ports registered in
+      the driver's device binding are permitted.
+
+  PLEDGE-STYLE DECLARATIONS:
+
+    Drivers declare their required privileges at registration time
+    using a pledge-style capability list:
+
+      ld_sandbox_pledge(LD_PLEDGE_STDIO |    /* basic I/O          */
+                        LD_PLEDGE_DISK  |    /* sector read/write  */
+                        LD_PLEDGE_DMA   |    /* DMA buffer access  */
+                        LD_PLEDGE_IRQ);      /* interrupt handling  */
+
+    If the driver attempts an operation not covered by its pledges,
+    the micro-kernel terminates it and notifies the Lazarus Server
+    for potential restart.
+
+
+================================================================================
+  12. IMPLEMENTATION ROADMAP
+================================================================================
+
+  The integration of XNU and BSD features into LibreDOS is divided
+  into four phases:
+
+  PHASE 1: FOUNDATION (Micro-Kernel Core and IPC)
+  ------------------------------------------------
+    - Implement ld_port_t and ld_message_t IPC primitives
+    - Implement the micro-kernel task/thread scheduler
+    - Split the interrupt dispatcher to route Int 21h calls
+      through IPC to a DOS API Server process
+    - Implement guard pages in the zone allocator
+    - Add conditional compilation with MICRO_KERNEL_CORE macro
+    - Estimated scope: 8-12 new/modified source files
+
+  PHASE 2: LAZARUS SERVER AND SELF-HEALING
+  -----------------------------------------
+    - Implement the Lazarus Server as a Tier 1 service
+    - Add service registration, heartbeat monitoring, and
+      crash detection
+    - Implement automatic restart with restart policies
+    - Add checkpoint/restore for stateful services
+    - Implement escalation and permanent failure handling
+    - Estimated scope: 3-5 new source files
+
+  PHASE 3: USER-MODE DRIVER ISOLATION
+  ------------------------------------
+    - Move Tier 2 drivers (filesystem, block, console) to
+      user-space processes
+    - Implement memory protection via page tables
+    - Implement hardware access control via I/O permission bitmaps
+    - Update trampoline wrappers to route through IPC
+    - Implement bounce buffer management for DMA operations
+    - Estimated scope: 6-10 modified source files
+
+  PHASE 4: SANDBOXING AND LIVE UPDATES
+  -------------------------------------
+    - Implement sandbox levels (0-3) with enforcement
+    - Implement pledge-style capability declarations
+    - Implement the live update protocol (quiescence,
+      state transfer, port transfer, rollback)
+    - Add auto-update mode to the Lazarus Server
+    - Security audit and hardening
+    - Estimated scope: 4-6 new source files
+
+  BACKWARD COMPATIBILITY:
+    Throughout all phases, the monolithic build configuration
+    (without MICRO_KERNEL_CORE defined) must continue to produce
+    a fully functional, 100% MS-DOS/PC-DOS compatible kernel that
+    passes all existing regression tests.
+
+
+================================================================================
+  13. MAPPING TO EXISTING LIBREDOS SOURCE FILES
+================================================================================
+
+  The following table maps proposed new components to existing source
+  files that will be modified or extended:
+
+  Proposed Component         Existing File(s)              Action
+  -----------------------------------------------------------------------
+  IPC Port/Message System    kernel/entry.c                MODIFY
+                             kernel/procsupt.c             MODIFY
+                             kernel/ipc.c                  NEW
+
+  Micro-Kernel Scheduler     kernel/task.c                 MODIFY
+                             kernel/irqstack.c             MODIFY
+                             kernel/scheduler.c            NEW
+
+  Lazarus Server             kernel/lazarus.c              NEW
+                             kernel/lazarus.h              NEW
+
+  Zone Allocator             kernel/memmgr.c               MODIFY
+                             kernel/zone.c                 NEW
+                             kernel/zone.h                 NEW
+
+  User-Mode Driver Framework kernel/execrh.c               MODIFY
+                             kernel/chario.c               MODIFY
+                             kernel/dsk.c                  MODIFY
+                             drivers/userdrv.c             NEW
+
+  Sandbox Enforcement        kernel/sandbox.c              NEW
+                             kernel/sandbox.h              NEW
+
+  Live Update Protocol       kernel/liveupdate.c           NEW
+                             kernel/liveupdate.h           NEW
+
+  Device Registry            kernel/devreg.c               NEW
+                             kernel/devreg.h               NEW
+
+  Driver Matching Engine     kernel/devmatch.c             NEW
+                             kernel/devmatch.h             NEW
+
+  Health Check / Heartbeat   kernel/healthcheck.c          NEW
+                             hdr/lazarus_api.h             NEW
+
+  Checkpoint/Restore         kernel/checkpoint.c           NEW
+                             kernel/checkpoint.h           NEW
+
+  Purgeable Memory           kernel/memmgr.c               MODIFY
+                             hdr/lms.h                     MODIFY
+
+  Memory Pressure Callbacks  kernel/memmgr.c               MODIFY
+                             hdr/lms.h                     MODIFY
+
+
+================================================================================
+  14. ARCHITECTURAL MAINTENANCE GUIDELINES
+================================================================================
+
+  A. WHAT WE CAN CHANGE
+  ----------------------
+    - IPC message formats and payload structures
+    - Lazarus Server heartbeat intervals and restart policies
+    - Zone allocator pool sizes and zone definitions
+    - Sandbox level definitions and pledge categories
+    - Live update timeout and rollback parameters
+    - Driver matching rules and priority ordering
+    - Memory pressure thresholds and callback registration
+
+  B. WHAT WE CANNOT CHANGE
+  -------------------------
+    - The 1MB Hybrid Memory Mode boundary translation math in
+      ld_translate_address() (architecture.md, Section 5B)
+    - The List of Lists (LoL) segment layout and anchor offsets
+      (kernel_architecture.md, Section 5B)
+    - The Swappable Data Area (SDA) field ordering
+    - The trampoline device wrapper 32-byte stub layout
+      (driver_tutorial.md, Section 6B)
+    - The DOS interrupt vector mappings (Int 21h, Int 2Fh, etc.)
+      (programmers_guide.md, Section 5B)
+    - The legacy Strategy/Interrupt driver calling convention
+
+  C. WHAT TO EXPECT
+  ------------------
+    - IPC overhead: Message-passing adds latency compared to
+      direct function calls. The micro-kernel build will be
+      slower than the monolithic build for I/O-intensive
+      operations. Optimize with fast-path shortcuts for
+      critical paths (character I/O, sector reads).
+    - Memory overhead: Each user-mode driver process requires
+      its own stack and page tables. The minimum additional
+      memory per driver is approximately 16KB-64KB.
+    - Complexity: The micro-kernel build is significantly more
+      complex than the monolithic build. Thorough testing and
+      a comprehensive test suite are essential.
+
+  D. WHAT TO DO IF SOMETHING BREAKS / TROUBLESHOOTING
+  ----------------------------------------------------
+    - IPC DEADLOCK: If two services are waiting for each other's
+      replies, check for circular IPC dependencies. Use the
+      Lazarus Server's heartbeat timeout to break deadlocks.
+    - LAZARUS RESTART LOOP: If a service crashes immediately
+      after restart, check the max restart count and cooldown
+      interval. Review the service's crash log for the root cause.
+    - SANDBOX VIOLATION: If a driver is unexpectedly terminated,
+      check the pledge declarations. Ensure all required
+      capabilities are declared. Review the micro-kernel's
+      violation log for the specific system call or memory access
+      that triggered the termination.
+    - LIVE UPDATE FAILURE: If a live update fails during state
+      transfer, check that the new binary version implements the
+      same state serialization format as the old version. Review
+      the Lazarus Server's update log for error details.
+    - ZONE ALLOCATOR EXHAUSTION: If zone allocations fail, check
+      the zone's page count and consider increasing the zone's
+      maximum page limit. Review the zone statistics (allocated,
+      freed, in-use counts) for potential memory leaks.
+
+
+================================================================================
+  15. REFERENCES AND FURTHER READING
+================================================================================
+
+  XNU / macOS:
+    - Apple Developer: Kernel Architecture Overview
+      https://developer.apple.com/library/archive/documentation/
+      Darwin/Conceptual/KernelProgramming/Architecture/Architecture.html
+    - Apple Developer: IOKit Fundamentals
+      https://developer.apple.com/library/archive/documentation/
+      DeviceDrivers/Conceptual/IOKitFundamentals/
+    - Apple Developer: DriverKit Documentation
+      https://developer.apple.com/documentation/driverkit
+    - Apple Developer: System Integrity Protection
+      https://support.apple.com/en-us/102149
+    - XNU Source Code (GitHub mirror)
+      https://github.com/apple-oss-distributions/xnu
+
+  BSD:
+    - FreeBSD Capsicum Documentation
+      https://wiki.freebsd.org/Capsicum
+    - OpenBSD pledge(2) Manual Page
+      https://man.openbsd.org/pledge
+    - FreeBSD kqueue(2) Manual Page
+      https://man.freebsd.org/cgi/man.cgi?kqueue
+    - NetBSD UVM Virtual Memory System
+      https://netbsd.org/docs/internals/en/chap-uvm.html
+
+  Microkernels:
+    - MINIX 3: A Reliable, Self-Healing Operating System
+      https://www.minix3.org/
+    - MINIX 3 Live Update Mechanism
+      https://wiki.minix3.org/doku.php?id=developersguide:liveupdate
+    - QNX Neutrino Microkernel Architecture
+      https://www.qnx.com/developers/docs/
+    - Andrew S. Tanenbaum, "Can We Make Operating Systems Reliable
+      and Secure?" IEEE Computer, May 2006.
+
+  LibreDOS Internal Documentation:
+    - architecture.md       (C Abstraction Architecture & Porting Guide)
+    - kernel_architecture.md (Kernel Architecture & Design Guide)
+    - LMS.md                (LibreDOS Memory Specification)
+    - driver_tutorial.md    (Modern Driver Integration Tutorial)
+    - programmers_guide.md  (Programmer's Guide & Modernization Manual)
+    - UEIF.md               (UEFI System Integration & Architecture Guide)
+    - API.md                (API Reference)
+
+================================================================================
+  END OF DOCUMENT
+================================================================================
