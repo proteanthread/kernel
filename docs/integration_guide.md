@@ -1,4 +1,4 @@
-# Proposed Integration Guide
+# PROPOSED INTEGRATION GUIDE
 
 > A Design and Integration Reference Guide
 
